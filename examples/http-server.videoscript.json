@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0.0",
+  "script_id": "fixture-http-request-001",
+  "revision": 1,
+  "profile": "technology-explainer",
+  "topic": "How does an HTTP server handle a request?",
+  "audience": "beginner",
+  "language": "en",
+  "target": { "aspect_ratio": "9:16", "width": 1080, "height": 1920, "fps": 30 },
+  "sources": [
+    {
+      "source_id": "source-mdn-http",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview",
+      "title": "Overview of HTTP",
+      "retrieved_at": null,
+      "source_kind": "official_documentation",
+      "license_review": "link_only_no_republication",
+      "revision": null,
+      "content_sha256": null
+    },
+    {
+      "source_id": "source-rfc-9110",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110",
+      "title": "HTTP Semantics",
+      "retrieved_at": null,
+      "source_kind": "standard",
+      "license_review": "link_only_no_republication",
+      "revision": "RFC 9110",
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "claim-http-request-response",
+      "text": "HTTP uses a request-response interaction model.",
+      "source_ids": ["source-mdn-http", "source-rfc-9110"],
+      "status": "needs_human_review",
+      "scope": "introductory HTTP concepts"
+    },
+    {
+      "claim_id": "claim-http-status",
+      "text": "An HTTP response includes a status code and may include content.",
+      "source_ids": ["source-rfc-9110"],
+      "status": "needs_human_review",
+      "scope": "introductory semantics"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "scene-01-hook",
+      "educational_goal": "Introduce the question and entities",
+      "narration": "You type a URL. What does the server actually do?",
+      "claim_ids": [],
+      "visual": {
+        "type": "title-card",
+        "heading": "What happens inside an HTTP server?",
+        "subheading": "Follow one request",
+        "variant": "hook"
+      },
+      "timing": { "min_seconds": 3, "preferred_seconds": 5, "max_seconds": 8 }
+    },
+    {
+      "scene_id": "scene-02-request",
+      "educational_goal": "Show the browser requesting a resource",
+      "narration": "The browser sends an HTTP request, for example GET slash.",
+      "claim_ids": ["claim-http-request-response"],
+      "visual": {
+        "type": "tech-animation",
+        "component": "BrowserRequestFlow",
+        "props": {
+          "visualPhase": "request",
+          "request": { "method": "GET", "path": "/", "protocolLabel": "HTTP/1.1" },
+          "show": { "browser": true, "network": true, "server": true, "handler": false },
+          "focus": "packet",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "send-request",
+            "trigger": { "kind": "progress", "from": 0.3, "to": 0.85 },
+            "action": { "kind": "move", "target": "http-request" }
+          }
+        ]
+      },
+      "timing": { "min_seconds": 7, "preferred_seconds": 10, "max_seconds": 14 }
+    },
+    {
+      "scene_id": "scene-03-parse",
+      "educational_goal": "Show request parsing",
+      "narration": "The server receives and interprets the request, then identifies the requested path.",
+      "claim_ids": ["claim-http-request-response"],
+      "visual": {
+        "type": "tech-animation",
+        "component": "BrowserRequestFlow",
+        "props": {
+          "visualPhase": "parse",
+          "request": { "method": "GET", "path": "/", "protocolLabel": "HTTP/1.1" },
+          "show": { "browser": true, "network": true, "server": true, "handler": true },
+          "focus": "server",
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": { "min_seconds": 7, "preferred_seconds": 10, "max_seconds": 14 }
+    },
+    {
+      "scene_id": "scene-04-route",
+      "educational_goal": "Show the selected route handler",
+      "narration": "A route handler decides what this path should return.",
+      "claim_ids": ["claim-http-request-response"],
+      "visual": {
+        "type": "tech-animation",
+        "component": "BrowserRequestFlow",
+        "props": {
+          "visualPhase": "route",
+          "request": { "method": "GET", "path": "/", "protocolLabel": "HTTP/1.1" },
+          "show": { "browser": true, "network": true, "server": true, "handler": true },
+          "focus": "handler",
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": { "min_seconds": 6, "preferred_seconds": 9, "max_seconds": 12 }
+    },
+    {
+      "scene_id": "scene-05-response",
+      "educational_goal": "Show response travelling back to browser",
+      "narration": "The server replies with a status code, headers, and sometimes a response body.",
+      "claim_ids": ["claim-http-status"],
+      "visual": {
+        "type": "tech-animation",
+        "component": "BrowserRequestFlow",
+        "props": {
+          "visualPhase": "response",
+          "request": { "method": "GET", "path": "/", "protocolLabel": "HTTP/1.1" },
+          "response": { "status": 200, "statusText": "OK", "bodyPreview": "<html>...</html>" },
+          "show": { "browser": true, "network": true, "server": true, "handler": true },
+          "focus": "packet",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "return-response",
+            "trigger": { "kind": "progress", "from": 0.4, "to": 0.95 },
+            "action": { "kind": "move", "target": "http-response" }
+          }
+        ]
+      },
+      "timing": { "min_seconds": 8, "preferred_seconds": 12, "max_seconds": 16 }
+    },
+    {
+      "scene_id": "scene-06-wrap",
+      "educational_goal": "Summarize the request-response loop",
+      "narration": "That's the core request-response idea. Real systems add security and several more layers.",
+      "claim_ids": ["claim-http-request-response"],
+      "visual": {
+        "type": "title-card",
+        "heading": "Request → Process → Response",
+        "subheading": "One useful model, not the whole network stack",
+        "variant": "summary"
+      },
+      "timing": { "min_seconds": 5, "preferred_seconds": 9, "max_seconds": 12 }
+    }
+  ],
+  "editorial": {
+    "title_options": ["What really happens inside an HTTP server?", "HTTP request explained in 60 seconds"],
+    "summary": "A simplified HTTP request-response walkthrough for beginner developers.",
+    "simplifications": ["Illustrates HTTP/1.1 style message framing", "Does not animate TCP, TLS, proxies, HTTP/2 or HTTP/3 internals", "Route handler is an application-level abstraction"]
+  },
+  "provenance": {
+    "prompt_version": "fixture-manual-v1",
+    "model_id": "none",
+    "created_at": "2026-11-06T00:00:00Z"
+  }
+}
