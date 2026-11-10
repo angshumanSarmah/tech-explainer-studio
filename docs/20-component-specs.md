@@ -129,3 +129,10 @@ Text is escaped and line-wrapped with mobile-safe bounds. No external images by 
 6. Expose component ID in Director's *read-only* registry summary.
 
 Never ask the LLM to fabricate React source code dynamically during video production; component creation remains an explicit developer task.
+
+
+## Phase 06 Director export and brand consumption
+
+`director export` emits the registered props/cue schemas directly from Zod plus explicit current renderer restrictions and a valid example. Application preflight still enforces runtime-only bounds/action-phase rules; the broader cue schema is not a claim that every enum action is executable. Phrase cues need unique literal narration plus later reviewed word alignment. Title cards retain authored HTTP decorations; the catalog explicitly scopes this renderer to HTTP stories and requires unsupported-visual diagnostics for other mechanisms.
+
+Existing SVG components consume the approved BrandProfile palette, font size/weight scale and captions; geometry, node routing and component causality remain local renderer concerns. See document 26 for the audit. No new component, arbitrary theme override, generated React execution or aesthetic redesign is introduced.

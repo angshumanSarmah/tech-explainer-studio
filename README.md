@@ -1,6 +1,6 @@
 # Tech Explainer Studio
 
-> **Phases 01–05 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots and manual JSON claim review (mock verified; live ingestion unverified). Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+> **Phases 01–06 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, and centralized branding. Director/provider tests are mocked; live provider and ingestion checks remain unverified. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 >
 > **Read [EXECUTION_FLOW.md](EXECUTION_FLOW.md) first for the exact Codex build process.**
 
@@ -219,10 +219,79 @@ Run the source/security tests with real network access denied:
 node --import ./tests/helpers/no-network.ts --test tests/sources/*.test.ts
 ```
 
+## Content Director: manual and optional automated creation (Phase 06)
+
+To render the **included HTTP example immediately**, run:
+
+```bash
+npm run demo:manual-http
+```
+
+This uses the existing `examples/http-server.videoscript.json`; no external AI output file is needed. The name `external.videoscript.json` in the workflow below is a placeholder for a file you must first create/save yourself. It is not supplied or automatically generated. Missing inputs produce `INPUT_NOT_FOUND`, and the demo stops before creating output or starting speech/rendering.
+
+Manual creation is a first-class, keyless workflow. Export the actual Zod-derived schema, registered renderer catalog, valid HTTP example, approved brand tokens and versioned external-AI prompt:
+
+```bash
+npm run studio -- director export --output output/director-contract
+```
+
+Give `output/director-contract/contract.json`, `external-director.md` and `request.json` to ChatGPT, Claude, Codex or another external tool yourself. The app does not send or upload these files. The prompt requests directly importable VideoScript JSON, including narration, source/claim IDs and supported storyboard cues. Only HTTP request/response visuals and HTTP-decorated title cards exist today; other mechanisms must return `unsupported_visual`, rather than substitute unrelated visuals. The schema is generated from actual runtime Zod definitions, with separate executable catalog constraints and tested producer preflight. The `research`, `audit`, `narration`, `storyboard` and `repair` prompt fragments have versions/hashes and are included in the export.
+
+For grounded external work, first perform Phase 05's real human claim review. Then add `--bundle <saved-research-bundle.json> --ledger <approved-ledger.json>` to export/import/validate. Export includes bounded reviewed quotes, source records, claims and source IDs; pasted notes remain user assertions. `--brief brief.json` can supply:
+
+```json
+{"topic":"How an HTTP server handles a request","targetAudience":"Beginning developers","audienceKnowledge":"Basic browser usage","targetSeconds":45,"format":"vertical-short","aspectRatio":"9:16","depth":"introductory","emphasize":["Request-response causality"],"exclude":["TLS internals"],"additionalInstructions":["Use one illustrative GET request"]}
+```
+
+Topic/audience/emphasis/exclusions default to the saved bundle. Only the existing vertical 1080×1920@30 producer is supported. Editorial duration remains a target, not measured speech or a license to clip it. Oversized contexts (>96 KiB before provider framing) fail; select a smaller human-reviewed bundle rather than sending full documents. No source fetching occurs in Director commands.
+
+Save the external tool's complete JSON as `external.videoscript.json`, then:
+
+```bash
+npm run studio -- director import --file external.videoscript.json --output output/director-draft
+npm run studio -- director validate --file output/director-draft/videoscript.json
+npm run studio -- director review --draft output/director-draft/draft.json --reviewer 'Your name' --rationale 'Explain the narration and storyboard review; record pending fact or rights issues' --output output/director-reviewed
+npm run studio -- audio narrate --config narration.config.example.json --script output/director-reviewed/videoscript.json --output output/director-audio --allow-local-synthesis
+npm run studio -- render --script output/director-reviewed/videoscript.json --narration output/director-audio --output output/director-preview --allow-caption-fallback
+```
+
+Every output directory is new. `draft.json` records exact script/brand/research hashes, pending review axes and optional model/usage metadata; `videoscript.json` goes to the existing Producer. Manual import without research is allowed as an **unapproved preview draft** with explicit missing-provenance findings. Imported claim statuses are never treated as evidence approval. With a bundle/ledger, exact reviewed claim text, status/source mappings and immutable source provenance must match; conflicts/insufficiency/unreviewed evidence fail. Every bound scene needs claim IDs, including explicitly reviewed illustrative transitions. Re-supply the same bundle/ledger when reviewing a bound draft. Human review records a hash-bound local preview decision; it does not grant facts, timing, rights or release approval. Existing low-level render commands remain unapproved preview tools, not release gates.
+
+VideoScript 1.0.0 remains supported unchanged. New1.1.0 adds a validated optional brand reference and nullable URL only for `pasted_text` sources. No invented URL is needed for notes. The Director always enforces the existing renderer's props, layout and cue/action capabilities. Phrase cues need exact unique narration anchors and later WAV-bound reviewed word timings; import never invents these or bypasses Phase 04 timing review. Unsupported visuals, malformed JSON, invalid props/brand/cues or evidence mismatches produce typed diagnostics. Imports are not silently repaired.
+
+The optional automated path uses the same import function and draft/review/Producer contracts:
+
+```bash
+npm run studio -- plan --bundle reviewed-bundle.json --ledger approved-ledger.json --brief brief.json --provider mock --mock-script external.videoscript.json --output output/mock-plan
+npm run studio -- plan --bundle reviewed-bundle.json --ledger approved-ledger.json --brief brief.json --provider deepseek --dry-run --output output/send-preview
+```
+
+Mock planning requires no key and uses a local response fixture. Dry-run writes the exact request for operator inspection, without creating a provider or calling an API. These example input paths must refer to your actual reviewed files. Automatic generation requires an approved ledger bound to the exact bundle; it cannot create its own factual approval. At most one JSON/schema repair is allowed; unsafe text, evidence mismatches and explicit review/unsupported responses stop directly. Generated narration and storyboard remain human-review drafts, even when linked claims were approved.
+
+Real DeepSeek is separately opt-in, usage-priced, and **was not called during implementation**. Only after choosing to authorize a paid run, set `DEEPSEEK_API_KEY` securely in the local environment (never in JSON or command history), review `deepseek.config.example.json`, then use:
+
+```bash
+npm run studio -- plan --bundle reviewed-bundle.json --ledger approved-ledger.json --brief brief.json --provider deepseek --config deepseek.config.example.json --max-api-usd 0.10 --allow-paid --output output/deepseek-plan
+```
+
+The config has model/HTTPS endpoint, timeout, up to two retries, bounded output tokens, maximum estimated spend and operator-reviewed input/output rates. The CLI cap can only lower the config cap. Each call/repair/retry reserves a conservative input-byte/framing and maximum-output estimate; ambiguous failures retain that full reserve. Usage/model/price-policy metadata is recorded, and budget exhaustion blocks further calls. This is an estimate based on configured rates, not a guaranteed provider-side billing cap. Verify rates before a live call; native TLS, public DNS pinning, response byte bounds, disabled tool/thinking modes and safe errors are enforced. No credentials/raw failed responses are persisted. The adapter uses the official [Chat Completions](https://api-docs.deepseek.com/api/create-chat-completion/) / [JSON output](https://api-docs.deepseek.com/guides/json_mode/) contract. The example records peak Flash rates verified on 2026-11-10 from [official pricing](https://api-docs.deepseek.com/quick_start/pricing/); prices/model aliases may change. Claude and Ollama adapters are extension points, not implemented integrations.
+
+Brand defaults are centralized in `src/branding/profile.ts`: palette, approved Inter typography, captions/safe zones, existing entrance motion and `af_heart`/rate1/settings/seed. Explicit existing narration `settings` still override brand defaults. Model files, resource limits, geometry and semantic animation timing stay in their existing modules. See [brand audit](docs/26-brand-profile.md) for ownership and remaining renderer-specific values. No logo, font download, audio filtering or visual redesign was added. Producer manifests record brand ID/version/configuration hash alongside actual model/voice identities.
+
+Rerun the complete manual HTTP demonstration locally:
+
+```bash
+npm run demo:manual-http
+# Or supply an externally authored valid script:
+npm run demo:manual-http -- --file external.videoscript.json
+```
+
+This exports/imports/validates, synthesizes local Kokoro speech and renders via the existing Remotion/FFmpeg commands into a fresh ignored `output/phase06/manual-http-<suffix>/`. No model API, OAuth or publisher is involved. The saved preview remains unapproved; the fallback captions require review. Current observed media, test evidence and sandbox retry are recorded in PROJECT_STATUS.md.
+
 ## Detailed reference documentation
 
 The [`docs/`](docs/) directory retains the complete product and engineering blueprint: product requirements, content strategy, schemas, video engine, workflow, security, testing, operations, decisions, animations and content backlog. Refer to the relevant documentation **for the current phase** rather than reading every file for every task. See [docs/25-build-phase-map.md](docs/25-build-phase-map.md).
 
 ## What is not included
 
-The package contains script validation, local previews, narration, measured captioned assembly, bounded source ingestion and JSON claim review. It does **not** contain an automatic aligner, director, database, dashboard, publisher, API credentials, model weights, third-party media, or authorized copies of workplace code. Those later application stages remain a design target; model files and generated media stay outside Git.
+The package contains script validation, local previews, narration, measured captioned assembly, bounded source ingestion and JSON claim review. It does **not** contain an automatic aligner, autonomous researcher, database, dashboard, publisher, API credentials, model weights, third-party media, or authorized copies of workplace code. Those later application stages remain a design target; model files and generated media stay outside Git.

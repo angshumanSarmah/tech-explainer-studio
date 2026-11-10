@@ -1,12 +1,12 @@
 import { readFile } from 'node:fs/promises';
-import type { VideoScriptV1 } from '../domain/videoscript.ts';
+import type { VideoScript } from '../domain/videoscript.ts';
 import { MediaError } from '../media/error.ts';
 import { renderNarratedPreview } from '../media/pipeline.ts';
 import { RenderInputError } from '../renderers/remotion/plan.ts';
 import type { CliOutput } from './run.ts';
 
 export async function narratedCli(
-  script: VideoScriptV1,
+  script: VideoScript,
   options: {
     narration: string;
     output: string | undefined;

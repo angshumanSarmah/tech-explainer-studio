@@ -10,6 +10,14 @@ Keep prompts **small, versioned, and task-specific**. Move hard constraints (sch
 
 Approved context is exported only as inert `untrusted_reference_data` with `commandsAllowed: false` and exact reviewed quotes/provenance. Raw sources cannot become a system prompt, tool call or schema override through these commands. A future provider must preserve this boundary; no prompts/provider integration or automatic factual approval is implemented in Phase 05. The packages and prompts below remain proposals.
 
+## Implemented Phase 06 templates and evaluations
+
+`src/director/prompts.ts` contains small versioned research, audit, narration, storyboard and repair fragments. Their aggregate hash accompanies drafts; `director export` writes separate `*-v1.md` fragments plus a reusable external-AI template and exact contract/request JSON. Source material stays in bounded user-role JSON data. No model tools, secret-reading capability or generated-code execution exists.
+
+`tests/director/` exercises the current HTTP example, external JSON import, schema/catalog consistency, unknown components/props/actions, phrase anchor errors, source/claim/ledger integrity, contradictions/insufficiency, malicious fake instructions, manual review hashes, mocked generation and at most one repair. Provider tests cover opt-in/missing credentials, HTTP429, timeout/cancellation, malformed/blank/truncated/secret-bearing responses, retry accounting and budget exhaustion before requests/repairs. `tests/branding/` verifies old token values, default/explicit voice resolution, invalid profiles and consistent immutable identities. Network-denying runs and real media evidence are recorded in PROJECT_STATUS.md. These are deterministic boundary/prompt-contract evaluations, not evidence that a live model is technically correct or injection-proof.
+
+The proposed suite below remains future multi-topic/live-model evaluation; the current renderer supports only HTTP stories. No DNS/queue/B-tree/Git benchmark or live DeepSeek score is claimed.
+
 ## Prompt packages
 
 ```text

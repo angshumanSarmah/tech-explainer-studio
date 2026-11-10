@@ -1,6 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { z } from 'zod';
+import { BRAND, BrandSelectionSchema } from '../branding/profile.ts';
+import { SettingsSchema } from './voice-settings.ts';
+
+export { SettingsSchema } from './voice-settings.ts';
 
 export const LimitsSchema = z.strictObject({
   timeoutMs: z.int().min(100).max(600000),
@@ -11,19 +15,12 @@ export const LimitsSchema = z.strictObject({
   maxWavBytes: z.int().min(1024).max(67108864),
   maxAudioSeconds: z.number().positive().max(600),
 });
-export const SettingsSchema = z.strictObject({
-  version: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
-  voiceId: z.string().regex(/^[a-z][a-z0-9_-]{0,63}$/),
-  language: z.enum(['en-us', 'en-gb']),
-  rate: z.number().min(0.5).max(2),
-  seed: z.int().min(0).max(2147483647),
-  lexiconVersion: z.literal('tech-en-v1'),
-});
 const path = z.string().min(1).max(4096);
 const sha = z.string().regex(/^[a-f0-9]{64}$/);
 const base = {
   schemaVersion: z.literal('1.0.0'),
-  settings: SettingsSchema,
+  brand: BrandSelectionSchema.optional(),
+  settings: SettingsSchema.prefault(BRAND.narration),
   limits: LimitsSchema,
 };
 export const NarrationConfigSchema = z.discriminatedUnion('provider', [

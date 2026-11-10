@@ -1,3 +1,4 @@
+import { BRAND } from '../branding/profile.ts';
 import type { BrowserRequestFlowProps, VisualSpec } from '../domain/visuals.ts';
 import { CAPTION, THEME } from '../renderers/remotion/theme.ts';
 import { flowState } from './flow-state.ts';
@@ -59,10 +60,10 @@ function Packet({
         text={label}
         x={x}
         y={y - 10}
-        size={32}
+        size={BRAND.typography.sizes.s32}
         columns={12}
         anchor="middle"
-        weight={700}
+        weight={BRAND.typography.weights.heading}
         color={color}
         gap={34}
       />
@@ -70,7 +71,7 @@ function Packet({
         text={secondary}
         x={x}
         y={y + 44}
-        size={24}
+        size={BRAND.typography.sizes.s24}
         columns={20}
         anchor="middle"
         color={THEME.muted}
@@ -126,7 +127,13 @@ export function BrowserRequestFlow({
           <circle cx={135} cy={616} r={6} fill={THEME.flow} />
           <circle cx={159} cy={616} r={6} fill={THEME.grid} />
           <circle cx={183} cy={616} r={6} fill={THEME.grid} />
-          <SvgText text="Browser" x={224} y={645} size={46} weight={650} />
+          <SvgText
+            text="Browser"
+            x={224}
+            y={645}
+            size={BRAND.typography.sizes.s46}
+            weight={BRAND.typography.weights.strong}
+          />
           <rect
             x={130}
             y={680}
@@ -139,7 +146,7 @@ export function BrowserRequestFlow({
             text={`example.test${props.request.path}`}
             x={155}
             y={720}
-            size={32}
+            size={BRAND.typography.sizes.s32}
             columns={35}
             color={THEME.muted}
           />
@@ -151,7 +158,7 @@ export function BrowserRequestFlow({
             text="TO SERVER"
             x={280}
             y={810}
-            size={26}
+            size={BRAND.typography.sizes.s26}
             anchor="middle"
             color={THEME.flow}
           />
@@ -159,7 +166,7 @@ export function BrowserRequestFlow({
             text="TO BROWSER"
             x={740}
             y={810}
-            size={26}
+            size={BRAND.typography.sizes.s26}
             anchor="middle"
             color={THEME.success}
           />
@@ -179,7 +186,13 @@ export function BrowserRequestFlow({
             stroke={props.focus === 'server' ? THEME.highlight : THEME.grid}
             strokeWidth={3}
           />
-          <SvgText text="HTTP server" x={136} y={1185} size={44} weight={650} />
+          <SvgText
+            text="HTTP server"
+            x={136}
+            y={1185}
+            size={BRAND.typography.sizes.s44}
+            weight={BRAND.typography.weights.strong}
+          />
           <rect
             x={136}
             y={1220}
@@ -192,7 +205,7 @@ export function BrowserRequestFlow({
             text="Parse request"
             x={158}
             y={1266}
-            size={30}
+            size={BRAND.typography.sizes.s30}
             color={
               state.parserActive
                 ? THEME.bg
@@ -223,7 +236,7 @@ export function BrowserRequestFlow({
                 text="Route handler"
                 x={528}
                 y={1266}
-                size={30}
+                size={BRAND.typography.sizes.s30}
                 color={state.handlerActive ? THEME.bg : THEME.muted}
               />
             </g>
@@ -254,7 +267,7 @@ export function BrowserRequestFlow({
           text={detail}
           x={96}
           y={1352 - lift}
-          size={24}
+          size={BRAND.typography.sizes.s24}
           columns={70}
           color={THEME.muted}
         />
@@ -278,15 +291,15 @@ export function BrowserRequestFlow({
             }
             x={128}
             y={1396}
-            size={23}
+            size={BRAND.typography.sizes.s23}
             color={THEME.muted}
-            weight={650}
+            weight={BRAND.typography.weights.strong}
           />
           <SvgText
             text={detail}
             x={128}
             y={1448}
-            size={32}
+            size={BRAND.typography.sizes.s32}
             columns={40}
             gap={36}
           />

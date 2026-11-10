@@ -1,7 +1,7 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phase 05 multi-source research bundles, source snapshots and JSON claim review are implemented and mock-verified (148/148 regression tests). Live ingestion was skipped at the user's explicit request; human phase review remains pending. Phase 04 media and default narrator are preserved.
-> **Next phase:** Review Phase 05 below. Phase 06 requires a new explicit request after acceptance; no Director or later-phase work has begun. Current deliverables remain unapproved for release/publication.
+> **Status baseline:** Phase 06 manual/automated Director and brand consolidation implemented; 176/176 regression tests pass, with a real 37.1-second narrated HTTP preview and six-frame/six-WAV baseline comparisons. Live DeepSeek is UNVERIFIED and was not authorized/called.
+> **Next phase:** Review Phase 06 artifacts and narration/caption/fact/rights limitations. Phase 07 requires a new explicit request; no later phase is started and all media remains unapproved for release.
 > **Last updated:** 2026-11-10 (Asia/Kolkata).
 
 ## Phase tracker
@@ -14,7 +14,7 @@
 | 03 | Local Kokoro narration adapter and pronunciation | Needs review | 82/82 tests; source/compiled seeded real Kokoro WAVs match, 4.233333 seconds; human listening pending |
 | 04 | Measured timeline, subtitles, assembly and media QC | Done | User confirmed phase complete and audible playback; latest caption-clearance revision passes 93/93 tests, 37.1s H.264/AAC, reserved 42px caption band; human release review remains pending |
 | 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Needs review | Extended for multi-source bundles; 55/55 network-denied source tests, 148/148 full tests, typecheck/lint/build pass; live ingestion UNVERIFIED by user choice |
-| 06 | DeepSeek Director: sourced script and animation storyboard | Not started | — |
+| 06 | Manual/optional AI Director, sourced storyboard and BrandProfile | Needs review | 28/28 network-denied Director/brand tests; 176/176 full tests; manual Kokoro/Remotion/FFmpeg preview verified; live DeepSeek unverified |
 | 07 | SQLite job state, resumability and incremental rerendering | Not started | — |
 | 08 | Human fact/media/video approval and immutable release manifest | Not started | — |
 | 09 | YouTube OAuth, private upload, retries and reconciliation | Not started | — |
@@ -503,3 +503,77 @@ Both review findings are fixed within Phase 05:
 - README, contract and security references clarify actual behavior. No architectural boundary, saved contract version, default narrator, media layout or agent instructions changed in this fix.
 
 Actual verification: `npm run format`, `npm run typecheck`, `npm run lint`, `npm run build` all PASS; network-denied source tests **55/55 PASS**, full `npm test` **148/148 PASS**, zero skipped. Logs: ignored `output/phase05/review-fixes-before.log`, `review-fixes-source-tests.log`, `review-fixes-tests.log`. Live fetching remains UNVERIFIED/skipped by the user's mock-only instruction. Phase 05 remains ready for human review; no later phase was started.
+
+
+## Phase 06 — Unified Director and preserved brand (2026-11-10)
+
+### Observed result and boundaries
+
+**Implemented; Needs review.** The pasted extended Phase 06 request controls this work, including first-class manual external-AI import and mandatory brand consolidation. Initial Git state was `main` synced at `324e1c1`, with only the user-provided untracked `codex/06-deepseek-content-director-iteration-2.md`; that file was preserved. No commit/push, paid provider request, OAuth, upload, publishing, package installation, large download, dashboard, broad research or Phase 07 work ran. Official DeepSeek API/JSON/pricing documentation was read to implement the adapter; no live research ingestion or model generation occurred.
+
+### Implemented components and changed files
+
+- `src/director/{contracts,prompts,core}.ts`: Zod-derived current/legacy schemas, registered prop/cue catalog plus actual executable restrictions, valid example, small versioned research/audit/narration/storyboard/repair templates, bounded approved research context, strict manual/provider import, exact claim/source bindings and hash-bound local narration/storyboard review. Every result remains an unapproved draft with human/timing review requirements. Manual import without provenance is explicit missing-evidence preview material; it never invents sources or trusts script-declared approvals. Automated planning requires an already human-approved ledger bound to the exact Phase 05 bundle; no generated factual approval.
+- `src/cli/director-cli.ts`, dispatch/help in `src/cli/run.ts`: `director export/import/validate/review`, `plan` mock/dry-run/explicit paid modes, protected new-directory outputs and safe field diagnostics. Existing source/claim commands and render-only paths remain independent. Exports include machine-readable schema/catalog/brand/example/request and external-AI prompt fragments, with hashes. Inputs and provider responses are bounded; decoded JSON strings/property names are screened before diagnostics and persistence.
+- `src/llm/{provider,transport,deepseek}.ts`: provider-independent request/cancellation/accounting interface (future adapter IDs do not require Producer changes), explicit local response mock and optional DeepSeek adapter. Environment key only, explicit paid opt-in and lowered CLI budget cap, configurable HTTPS model/endpoint, public DNS pinning/native TLS/no redirects, fixed JSON-output roles/no tools/thinking, bounded output/response/input/attempts/timeouts/retries and one JSON repair. Successful usage records actual reported model, token estimates, rate policy and request/prompt identity; ambiguous attempts retain full reserved cost. Estimates are not exact provider billing. Encoded credential echoes and unsafe output are rejected without raw response/key logs.
+- `src/branding/{profile,identity}.ts`, `src/config/voice-settings.ts`, narration config/schema: one approved immutable versioned profile consolidates existing palette/Inter sizes/weights/captions/safe area/entrance motion and `af_heart`, rate 1, en-us, seed0, `kokoro-http-v2`, lexicon `tech-en-v1`. `narration.config.example.json` references the brand rather than duplicating settings; explicit existing per-video settings still win. Model/voice files, hashes, CPU/time/thread limits and audio execution remain in existing modules. Brand audit: `docs/26-brand-profile.md`.
+- Remotion theme/Composition, BrowserRequestFlow/SvgText, silent and narrated manifests, audio CLI: consume the shared profile and record ID/version/configuration SHA-256; actual per-scene voice/model metadata remains intact. Geometry, wrap bounds/node layout, packet causal timing and sample/frame arithmetic stay renderer/service concerns. No palette, font, logo, narrator, waveform filtering or animation redesign.
+- `src/domain/{videoscript,validation}.ts`: preserve exact legacy 1.0.0 schema; add 1.1.0 optional registered brand ref and explicit null URL only for pasted sources. General `VideoScript` covers accepted versions; `VideoScriptV1` remains the legacy type. Producers use the general type; test fixture helper narrows the original fixture explicitly. Existing fixture JSON is unchanged.
+- New Director/provider/brand tests and synthetic helper fixtures; `deepseek.config.example.json`; `scripts/manual-http-preview.mjs`; package test globs and `demo:manual-http`. README, both architecture docs, affected contract/Director/security/component/evaluation references and ADR-014 updated. AGENTS.md and CLAUDE.md unchanged.
+
+### Actual verification commands and outcomes
+
+| Command / check | Actual outcome |
+|---|---|
+| `npm run format` | PASS; 88 files checked, no final outstanding issues |
+| `npm run typecheck` / `npm run lint` | PASS |
+| `node --import ./tests/helpers/no-network.ts --test tests/director/*.test.ts tests/branding/*.test.ts` | **26/26 PASS**, zero skipped; no network permitted |
+| `npm test` | **174/174 PASS**, zero skipped, including all 148 earlier phase tests and FFmpeg/mock-narration integration |
+| `npm run build` | PASS; compiled CLI/modules and audio worker packaged |
+| Compiled `director export`, `director import`, `director validate` under network-denying preload | PASS; complete contract, keyless original fixture draft, valid script and explicit missing-provenance/human-review flags |
+| `node --import ./tests/helpers/no-network.ts output/phase06/synthetic-mock-demo.mjs` | PASS; fixture-only multi-source mock plan, bound contract export and unapproved draft; no real source/model request |
+| `node src/cli/index.ts audio doctor --config narration.config.example.json` | Ready; installed model/voice hashes and local runtime verified |
+| `node scripts/manual-http-preview.mjs` | Export/import/validate and all six real Kokoro WAVs succeeded. Initial Remotion stage FAILED at Chrome launch inside sandbox; failure journal retained |
+| Existing `render --script .../draft/videoscript.json --narration .../narration --output .../render-retry --allow-caption-fallback`, with authorized local execution outside sandbox | PASS; 1113 measured frames, complete H.264/AAC MP4/SRT/manifest/QC, no source/model call |
+| Independent ffprobe audit via existing `executeMedia` wrapper | PASS; exactly two streams, H.264/yuv420p 1080×1920@30, AAC, both 37.100000s. An initial direct bundled ffprobe invocation failed to locate its dylib; using the existing wrapper's required library environment resolved it |
+| Six saved PNG / six scene WAV SHA-256 comparisons against `output/captions-clear-pjqbbfuq/render` | **All six representative PNGs and all six WAVs byte-identical**, same sampled frame indices. Not a comparison of every decoded video frame or cross-platform guarantee |
+| Visual inspection | Viewed hook, parse and response PNGs. Captions fit the reserved lower band and do not overlap diagram nodes; per-frame browser collision/bounds checks completed during rendering |
+
+Intermediate refactor/type/schema/repair-test failures were fixed before the final passing validation; no skipped command is counted as passed. Director tests cover all requested invalid-input/evidence/provider/budget/repair/brand/default-override cases, including escaped JSON instructions/secrets and a future provider interface stub. Prompt evaluations are deterministic contract/safety tests, **not** live model technical-quality scores.
+
+### Artifacts and manual demonstration
+
+All generated artifacts are ignored under `output/phase06/`:
+
+- Final compiled schema/catalog/prompt/example export: `contract-final/` (`contract.json`, `videoscript.schema.json`, `animation-catalog.json`, `example.videoscript.json`, `external-director.md`, `request.json`, five prompt fragments and export manifest).
+- Final keyless imported original HTTP draft: `import-final/{draft.json,videoscript.json}`. No actual external ChatGPT conversation or factual approval is claimed; the existing fixture demonstrates the same structured JSON import path.
+- Fixture-only bound mock planning/export: `synthetic-mock/` with explicit TEST-ONLY reviewer/notes labels and README; this is not real factual approval or live model output. Tests also exercise dry-run and paid gates with network denied.
+- Successful full manual preview: `manual-http-OLvVjn/render-retry/video.mp4`; matching `captions.srt`, `render-manifest.json`, `qc-report.json`, `timeline.json`, `ffprobe.json`, decoded AAC evidence and `visuals/*.png`. MP4 SHA-256: `d96fd5da2e467c4b39060054a875bd107a79273f5101050eac29c48d9261eea0`.
+- Preserved local speech: `manual-http-OLvVjn/narration/<scene_id>/<scene_id>.wav` and narration metadata/manifest, imported `draft/` and contract export. Initial failed `render/` and `manual-run.json` are intentionally retained; `recovery.json` records the successful retry.
+- `media-audit.json`, independent `ffprobe.json`, `audio-health.json`, `manual-preview.log`, `render-retry.log`, `director-tests.log`, `tests.log`, `mock-demo.log` and local audit drivers.
+
+Measured output: **37.1s**, 1113 frames, 1080×1920, 30fps, H.264/AAC. Media QC reports `mediaChecksPassed: true`, `releaseApproved: false`, `requiresTimingReview: true`. Speech-span fallback remains coarse; no alignment was fabricated. The default voice remains `af_heart`/rate1; the existing voice clarity/DC-bias concern is preserved for human listening rather than silently filtered. Brand identity: `tech-explainer@1.0.0`, configuration SHA-256 `8403ee5e251a953ad270c75426cc2a1ac00a288539cf7ccec75737f0492ab7a1`.
+
+Manual workflow: export the contract; give its template/schema/catalog/brief and optional approved research to an external AI yourself; save its JSON; `director import` then `director validate`; perform human narration/storyboard review with `director review`; send the saved `videoscript.json` through existing `audio narrate` and `render --narration`. README has exact flags. `npm run demo:manual-http` reruns export/import/real local speech/render into a new directory; `-- --file <external.json>` selects another supported input. Chrome requires normal local execution permission; no unsafe browser flags were introduced.
+
+### Final audit and concurrent workspace changes
+
+`git diff --check` scoped to this phase's architecture/status/README/reference docs, config/package, source and existing test-helper changes PASS. A global check also sees whitespace in independently changed `codex/06-*.md` / `codex/12-*.md` prompt files. Late in this run, additional prompt/amendment assets appeared (`codex/06–14`, `docs-amendments/`, `FILE_MANIFEST.json`, `tests/apply-phase-prompts.sh`); they were left untouched and their scripts were not executed. No later-phase implementation is attributed to this phase. Final export hash, current brand hash and saved media audit agree (`output/phase06/final-audit.json`). Final typecheck/lint/build logs are saved alongside the passing test logs.
+
+### Limits, risks and next human action
+
+- **UNVERIFIED:** live DeepSeek API compatibility, real-model prompt quality and exact provider billing. No live paid smoke was authorized or run. Adapter/mock tests do not establish factual accuracy or jailbreak immunity. Check current official model/rates and inspect dry-run before separately authorizing a capped real call.
+- Only the existing HTTP-specific visuals/title-card decorations and one approved brand are implemented; other topics need explicit unsupported-visual findings or future component work. No Claude/Ollama integration, autonomous research or dashboard was added.
+- Local fact/preview review identities are assertions, not authenticated signatures. Approved claims do not prove generated narration/visual scope; human semantic, rights, source-freshness and final release review remain essential. Missing-provenance manual previews remain visibly unapproved; no fake URL or silent evidence approval is used.
+- Caption timing/voice naturalness/phone playback remain human checks. Preview review cannot override `requiresTimingReview` or confer publication approval. No later-phase database, cache, publisher or release system is implemented.
+- Review the code diff, exported contract/brand audit, representative frames and full MP4 with sound. Confirm the preserved style/default narrator and human fact/rights/timing decisions. Recommend Phase 07 only after review and a new explicit request. **Stop after Phase 06.**
+
+
+### Phase 06 follow-up — Missing manual input diagnostics (2026-11-10)
+
+The user ran the illustrative `external.videoscript.json` commands before creating that external-AI output file. Verified that file is absent; the later validation/demo failures followed from the failed import. The included `examples/http-server.videoscript.json` remains available and imports/validates successfully under network denial.
+
+- `src/cli/director-cli.ts`: file reads now distinguish `INPUT_NOT_FOUND` and `INPUT_READ_FAILED` from schema/JSON errors, without echoing input contents or sensitive paths. Missing input guidance points to the working included demonstration.
+- `scripts/manual-http-preview.mjs`: validate input before making output directories/exporting contracts or invoking Kokoro/Remotion. Expected stage failures now end with a concise message rather than an uncaught child-process stack trace.
+- `tests/director/director.test.ts`: regressions verify specific missing-file diagnostics, no draft creation, and early demo exit before exports/narration/rendering. README now leads with `npm run demo:manual-http` and explicitly labels external filenames as user-created placeholders.
+- Actual final checks: format, typecheck, lint, build PASS; **28/28** network-denied Director/brand tests and **176/176** full tests PASS. Included-fixture import and validation PASS under network denial. Existing media remains unchanged; no new media render is needed for these input/preflight changes. No paid API, publishing, commit/push or later-phase work occurred.

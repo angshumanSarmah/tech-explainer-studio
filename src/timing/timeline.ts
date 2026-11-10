@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { SceneV1, VideoScriptV1 } from '../domain/videoscript.ts';
+import type { SceneV1, VideoScript } from '../domain/videoscript.ts';
 import { MediaError } from '../media/error.ts';
 import {
   type PlannedScene,
@@ -176,7 +176,7 @@ export function validateCaptions(
       );
 }
 export function planNarratedRender(
-  script: VideoScriptV1,
+  script: VideoScript,
   audio: AudioTiming[],
   options: { allowFallback: boolean; alignment?: Alignment },
 ): Timeline {
@@ -422,7 +422,7 @@ export function planNarratedRender(
       'ceil(max(measured_samples/24000, authored_min_seconds)*30); starts=sum(durationFrames)',
   };
 }
-export function resolvePresentation(script: VideoScriptV1, raw: unknown) {
+export function resolvePresentation(script: VideoScript, raw: unknown) {
   const presentation = PresentationSchema.parse(raw);
   if (presentation.scenes.length !== script.scenes.length)
     throw new Error('Presentation scene count differs');

@@ -7,8 +7,9 @@ import {
   interpolate,
   useCurrentFrame,
 } from 'remotion';
+import { BRAND } from '../../branding/profile.ts';
 import { parseVideoScript } from '../../domain/validation.ts';
-import type { VideoScriptV1 } from '../../domain/videoscript.ts';
+import type { VideoScript } from '../../domain/videoscript.ts';
 import {
   type Presentation,
   resolvePresentation,
@@ -20,7 +21,7 @@ import { renderRegistry } from './registry.tsx';
 import { CAPTION, MOTION, SAFE, THEME, VIDEO, wrapText } from './theme.ts';
 
 export type CompositionProps = {
-  script?: VideoScriptV1;
+  script?: VideoScript;
   guides?: boolean;
   presentation?: Presentation;
 };
@@ -92,7 +93,7 @@ export function ExplainerComposition({
   const [fontHandle] = useState(() => delayRender('Load bundled Inter font'));
   useEffect(() => {
     document.fonts
-      .load('600 48px "Inter Variable"')
+      .load(BRAND.typography.fontLoad)
       .then(() => document.fonts.ready)
       .then(() => continueRender(fontHandle))
       .catch(cancelRender);
@@ -108,10 +109,15 @@ export function ExplainerComposition({
       .catch(cancelRender);
   }, [frame, scene.scene_id]);
   const index = plan.scenes.indexOf(active);
-  const opacity = interpolate(localFrame, [0, MOTION.appearFrames], [0.85, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+  const opacity = interpolate(
+    localFrame,
+    [0, MOTION.appearFrames],
+    [BRAND.motion.initialOpacity, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    },
+  );
   return (
     <AbsoluteFill style={{ backgroundColor: THEME.bg }}>
       <svg
@@ -135,10 +141,10 @@ export function ExplainerComposition({
             text={`HTTP / ONE REQUEST     ${String(index + 1).padStart(2, '0')} / ${String(plan.scenes.length).padStart(2, '0')}`}
             x={96}
             y={220}
-            size={28}
+            size={BRAND.typography.sizes.s28}
             columns={60}
             color={THEME.muted}
-            weight={650}
+            weight={BRAND.typography.weights.strong}
           />
           <g data-scene-content={presentation ? 'true' : undefined}>
             {visual.type === 'title-card' ? (
@@ -147,17 +153,17 @@ export function ExplainerComposition({
                   text={visual.heading}
                   x={96}
                   y={380}
-                  size={76}
+                  size={BRAND.typography.sizes.s76}
                   columns={19}
                   gap={90}
-                  weight={700}
+                  weight={BRAND.typography.weights.heading}
                 />
                 {visual.subheading && (
                   <SvgText
                     text={visual.subheading}
                     x={96}
                     y={860}
-                    size={42}
+                    size={BRAND.typography.sizes.s42}
                     columns={30}
                     gap={52}
                     color={THEME.muted}
@@ -188,7 +194,7 @@ export function ExplainerComposition({
                     text={line}
                     x={132}
                     y={presentation ? 1060 + i * 70 : 1140 + i * 82}
-                    size={36}
+                    size={BRAND.typography.sizes.s36}
                     columns={38}
                     color={
                       i === 1
@@ -206,16 +212,16 @@ export function ExplainerComposition({
                   text={PHASE_LABELS[visual.props.visualPhase][0]}
                   x={96}
                   y={330}
-                  size={68}
+                  size={BRAND.typography.sizes.s68}
                   columns={20}
                   gap={78}
-                  weight={700}
+                  weight={BRAND.typography.weights.heading}
                 />
                 <SvgText
                   text={PHASE_LABELS[visual.props.visualPhase][1]}
                   x={96}
                   y={490}
-                  size={34}
+                  size={BRAND.typography.sizes.s34}
                   columns={40}
                   gap={42}
                   color={THEME.muted}
@@ -234,7 +240,7 @@ export function ExplainerComposition({
             text="Illustrative HTTP flow / transport and security omitted"
             x={96}
             y={presentation ? 1324 : 1530}
-            size={24}
+            size={BRAND.typography.sizes.s24}
             columns={70}
             color={THEME.muted}
           />
@@ -264,7 +270,7 @@ export function ExplainerComposition({
               width={824}
               height={CAPTION.bandHeight}
               rx={18}
-              fill={THEME.bg}
+              fill={CAPTION.background}
             />
             <SvgText
               text={caption.text}
@@ -277,10 +283,11 @@ export function ExplainerComposition({
                   2
               }
               size={CAPTION.fontSize}
+              color={CAPTION.text}
               columns={CAPTION.columns}
               gap={CAPTION.lineGap}
               anchor="middle"
-              weight={650}
+              weight={BRAND.typography.weights.strong}
             />
           </g>
         )}

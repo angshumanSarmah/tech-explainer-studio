@@ -1,4 +1,4 @@
-import type { VideoScriptV1 } from '../domain/videoscript.ts';
+import type { VideoScript } from '../domain/videoscript.ts';
 import { RenderInputError } from '../renderers/remotion/plan.ts';
 import {
   RenderStageError,
@@ -7,7 +7,7 @@ import {
 import type { CliOutput } from './run.ts';
 
 export async function renderCli(
-  script: VideoScriptV1,
+  script: VideoScript,
   options: {
     output: string | undefined;
     browser: string | undefined;

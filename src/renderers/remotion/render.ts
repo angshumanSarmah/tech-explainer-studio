@@ -18,8 +18,9 @@ import {
   selectComposition,
 } from '@remotion/renderer';
 import { VERSION } from 'remotion';
+import { brandIdentity } from '../../branding/identity.ts';
 import { parseVideoScript } from '../../domain/validation.ts';
-import type { VideoScriptV1 } from '../../domain/videoscript.ts';
+import type { VideoScript } from '../../domain/videoscript.ts';
 import {
   type Presentation,
   resolvePresentation,
@@ -53,7 +54,7 @@ export interface RenderOptions {
 }
 
 export async function renderSilentPreview(
-  input: VideoScriptV1,
+  input: VideoScript,
   options: RenderOptions,
 ) {
   const script = parseVideoScript(input);
@@ -200,7 +201,7 @@ export async function renderSilentPreview(
       (item) =>
         item.visual.type === 'tech-animation' && item.visual.props.response,
     );
-    const galleryInputs: VideoScriptV1[] = [];
+    const galleryInputs: VideoScript[] = [];
     if (
       !options.presentation &&
       sourceScene?.visual.type === 'tech-animation'
@@ -280,6 +281,7 @@ export async function renderSilentPreview(
     );
     const manifest = {
       kind: options.presentation ? 'narrated-visuals' : 'silent-preview',
+      brand: brandIdentity('brand' in script ? script.brand : undefined),
       approvedForRelease: false,
       script_id: script.script_id,
       scriptRevision: script.revision,

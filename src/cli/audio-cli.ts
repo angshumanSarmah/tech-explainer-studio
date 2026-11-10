@@ -3,6 +3,7 @@ import { dirname, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { createNarrationProvider } from '../audio/provider.ts';
 import { type NarrationArtifact, NarrationError } from '../audio/types.ts';
+import { brandIdentity } from '../branding/identity.ts';
 import { loadNarrationConfig } from '../config/narration.ts';
 import {
   parseVideoScriptJson,
@@ -165,6 +166,7 @@ export async function runAudioCli(
     const manifest = {
       schemaVersion: '1.0.0',
       kind: 'narration-only',
+      brand: brandIdentity('brand' in script ? script.brand : undefined),
       status: 'complete',
       provider: provider.id,
       isMock: provider.id === 'mock',

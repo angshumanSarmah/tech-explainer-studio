@@ -1,15 +1,16 @@
+import { BRAND } from '../branding/profile.ts';
 import { THEME, wrapText } from '../renderers/remotion/theme.ts';
 
 export function SvgText({
   text,
   x,
   y,
-  size = 36,
+  size = BRAND.typography.sizes.s36,
   columns = 40,
   color = THEME.text,
-  weight = 500,
+  weight = BRAND.typography.weights.body,
   anchor = 'start',
-  gap = size * 1.22,
+  gap = size * BRAND.typography.lineHeight,
 }: {
   text: string;
   x: number;

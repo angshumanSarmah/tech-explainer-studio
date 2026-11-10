@@ -6,6 +6,8 @@ import {
 } from '../domain/validation.ts';
 
 export const HELP = `Usage:
+  studio director --help
+  studio plan --help
   studio script validate --file <videoscript.json>
   studio source ingest --url <public-url> --confirm-public --output <new-directory>
   studio research ingest --file <bundle-input.json> --output <new-directory>
@@ -31,6 +33,10 @@ export async function runCli(
   args: string[],
   output: CliOutput,
 ): Promise<number> {
+  if (args[0] === 'director' || args[0] === 'plan') {
+    const { runDirectorCli } = await import('./director-cli.ts');
+    return runDirectorCli(args[0], args.slice(1), output);
+  }
   if (args[0] === 'source' || args[0] === 'claims' || args[0] === 'research') {
     const { runEvidenceCli } = await import('./evidence-cli.ts');
     return runEvidenceCli(args[0], args.slice(1), output);

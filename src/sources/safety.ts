@@ -125,3 +125,28 @@ export function documentText(body: string, html: boolean): string {
   // Text extraction only; never render this as HTML, evaluate it or follow its links.
   return entities(text).replace(/\s+/gu, ' ').trim();
 }
+
+// Inspect decoded JSON values AND property names before producing field diagnostics.
+// Iteration bounds nesting/size without executing data or recursively exhausting the stack.
+export function hasUnsafeJson(value: unknown, actualSecret?: string): boolean {
+  const pending: unknown[] = [value];
+  let visited = 0;
+  while (pending.length) {
+    if (++visited + pending.length > 100000) return true;
+    const item = pending.pop();
+    if (typeof item === 'string') {
+      if (
+        (actualSecret && item.includes(actualSecret)) ||
+        assessText(item).length
+      )
+        return true;
+    } else if (Array.isArray(item)) {
+      for (const child of item) pending.push(child);
+    } else if (item !== null && typeof item === 'object') {
+      for (const [key, child] of Object.entries(item)) {
+        pending.push(key, child);
+      }
+    }
+  }
+  return false;
+}

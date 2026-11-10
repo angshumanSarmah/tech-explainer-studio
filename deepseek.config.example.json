@@ -1,0 +1,11 @@
+{
+  "model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com/chat/completions",
+  "timeoutMs": 30000,
+  "retries": 1,
+  "maxOutputTokens": 8192,
+  "maxApiUsd": 0.1,
+  "inputUsdPerMillion": 0.3,
+  "outputUsdPerMillion": 1.2,
+  "pricingReviewedAt": "2026-11-10T00:00:00Z"
+}

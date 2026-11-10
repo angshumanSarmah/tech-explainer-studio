@@ -1,5 +1,9 @@
 import type { z } from 'zod';
-import { type VideoScriptV1, VideoScriptV1Schema } from './videoscript.ts';
+import {
+  type VideoScript,
+  VideoScriptV1Schema,
+  VideoScriptV11Schema,
+} from './videoscript.ts';
 
 export interface ValidationIssue {
   code:
@@ -64,8 +68,20 @@ function formatPath(path: PropertyKey[]): string {
   return `$${path.map((part) => (typeof part === 'number' ? `[${part}]` : `[${JSON.stringify(String(part))}]`)).join('')}`;
 }
 
-export function parseVideoScript(input: unknown): VideoScriptV1 {
-  const result = VideoScriptV1Schema.safeParse(input);
+export function parseVideoScript(input: unknown): VideoScript {
+  const version = record(input)?.schema_version;
+  if (version !== '1.0.0' && version !== '1.1.0')
+    throw new ScriptValidationError('SCRIPT_VALIDATION_FAILED', [
+      {
+        code: 'INVALID_INPUT',
+        scene_id: null,
+        path: '$["schema_version"]',
+        reason: 'Supported VideoScript versions: 1.0.0 and 1.1.0',
+      },
+    ]);
+  const result = (
+    version === '1.0.0' ? VideoScriptV1Schema : VideoScriptV11Schema
+  ).safeParse(input);
   if (result.success) return result.data;
   const issues = result.error.issues.flatMap((issue): ValidationIssue[] => {
     // Zod reports unknown keys on their parent; attach each key for actionable paths.
@@ -86,7 +102,7 @@ export function parseVideoScript(input: unknown): VideoScriptV1 {
   throw new ScriptValidationError('SCRIPT_VALIDATION_FAILED', issues);
 }
 
-export function parseVideoScriptJson(text: string): VideoScriptV1 {
+export function parseVideoScriptJson(text: string): VideoScript {
   let input: unknown;
   try {
     input = JSON.parse(text);

@@ -3,8 +3,9 @@ import { dirname, join, resolve } from 'node:path';
 import { z } from 'zod';
 import { NarrationError } from '../audio/types.ts';
 import { probeWav } from '../audio/wav.ts';
+import { brandIdentity } from '../branding/identity.ts';
 import { parseVideoScript } from '../domain/validation.ts';
-import type { VideoScriptV1 } from '../domain/videoscript.ts';
+import type { VideoScript } from '../domain/videoscript.ts';
 import {
   hash,
   NarrationArtifactSchema,
@@ -44,7 +45,7 @@ export interface NarratedOptions {
 export interface PipelineDependencies {
   runner?: MediaRunner;
   renderVisuals?: (
-    script: VideoScriptV1,
+    script: VideoScript,
     options: RenderOptions,
   ) => Promise<{ outputDir: string; manifest: unknown }>;
 }
@@ -58,7 +59,7 @@ type AudioAsset = Awaited<ReturnType<typeof probeWav>> &
     pcm: Buffer;
   };
 export async function renderNarratedPreview(
-  input: VideoScriptV1,
+  input: VideoScript,
   options: NarratedOptions,
   deps: PipelineDependencies = {},
 ) {
@@ -301,6 +302,7 @@ export async function renderNarratedPreview(
     const manifest = {
       schemaVersion: '1.0.0',
       kind: 'narrated-preview',
+      brand: brandIdentity('brand' in script ? script.brand : undefined),
       approvedForRelease: false,
       isMock,
       scriptId: script.script_id,

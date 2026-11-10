@@ -1,38 +1,17 @@
+import { BRAND } from '../../branding/profile.ts';
 export const VIDEO = Object.freeze({ width: 1080, height: 1920, fps: 30 });
-export const SAFE = Object.freeze({
-  left: 80,
-  right: 920,
-  top: 180,
-  bottom: 1540,
-});
+export const SAFE = BRAND.safe;
 export const THEME = Object.freeze({
   version: 'signal-trace-1',
-  bg: '#101826',
-  surface: '#192A3A',
-  text: '#EDF4FA',
-  muted: '#B0C3D1',
-  flow: '#45B8D8',
-  highlight: '#F6C56B',
-  success: '#5FC8A4',
-  grid: '#25384A',
-  font: 'Inter Variable, sans-serif',
+  ...BRAND.colors,
+  font: BRAND.typography.font,
 });
 export const MOTION = Object.freeze({
-  appearFrames: 12,
+  ...BRAND.motion,
   travelFrom: 0.2,
   travelTo: 0.8,
 });
-export const CAPTION = Object.freeze({
-  layoutVersion: 'separate-caption-band-v2',
-  columns: 34,
-  maxLines: 3,
-  fontSize: 42,
-  lineGap: 42,
-  bandTop: 1372,
-  bandHeight: 152,
-  firstBaseline: 1420,
-  serverLift: 70,
-});
+export const CAPTION = Object.freeze({ ...BRAND.captions, serverLift: 70 });
 
 export function wrapText(text: string, columns: number): string[] {
   const lines: string[] = [];

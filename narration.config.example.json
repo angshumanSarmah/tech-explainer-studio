@@ -8,14 +8,6 @@
   "voicesPath": "models/voices-v1.0.bin",
   "voicesId": "voices-v1.0",
   "voicesSha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d",
-  "settings": {
-    "version": "kokoro-http-v2",
-    "voiceId": "af_heart",
-    "language": "en-us",
-    "rate": 1,
-    "seed": 0,
-    "lexiconVersion": "tech-en-v1"
-  },
   "limits": {
     "timeoutMs": 120000,
     "cpuSeconds": 90,
@@ -24,5 +16,9 @@
     "maxProcessOutputBytes": 16384,
     "maxWavBytes": 8388608,
     "maxAudioSeconds": 90
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
   }
 }

@@ -13,6 +13,14 @@ Transform an approved technical topic or source URL into a **sourced, original, 
 5. **Storyboard**: *Which **registered** components express each transition?*
 6. **Technical review**: *Are claims, ordering, exceptions and metaphors accurate?*
 
+## Implemented Phase 06 workflow
+
+`director export/import/validate/review` provides a keyless manual external-AI workflow; `plan` optionally uses a local response mock or explicitly authorized DeepSeek. Both feed the same strict import/evidence/producer validator and saved unapproved draft. Schemas/catalog/examples/prompts are generated from runtime contracts. Automated planning requires the current approved multi-source bundle/ledger and sends only bounded reviewed reference data; no source fetch/research is performed here. Exact claim/source review decisions are preserved. Narration/storyboard and release review remain human tasks. The current visual vocabulary is HTTP-specific, including title-card decorations; unsupported topics must return limitations rather than unrelated diagrams.
+
+`src/llm/` owns provider/auth/timeout/retry/token/estimated-budget handling; the Producer never imports it. No key is needed for manual import, mock planning, dry-run or rendering. DeepSeek is implemented but live performance/billing is UNVERIFIED: ordinary tests mock HTTP, and no paid call was authorized. See README for real executable commands and the explicit paid gate. Claude/Ollama adapters remain planned.
+
+`src/branding/` consolidates existing styling/audio defaults; Director outputs meaning and registered semantic props rather than arbitrary CSS, fonts, colors or voices. Both origins resolve the same profile and Producer. The diagram below is the broader target and does not imply autonomous research is implemented.
+
 ## Planned internal steps
 
 ```mermaid
@@ -40,7 +48,7 @@ When sourced from [`build-your-own-x`](https://github.com/codecrafters-io/build-
 
 ## Implemented evidence foundation (Phase 05)
 
-The Director flow remains planned. Its local evidence foundation now exists in `src/sources/`, `src/claims/ledger.ts` and `source`/`claims` CLI commands. Explicitly confirmed public URLs produce bounded minimized snapshots; no crawling, repo execution or provider calls occur. All text stays untrusted; suspicious documents lose their excerpt. Human JSON decisions must quote exact clean snapshot evidence, and a separate ledger approval is required to export inert reference context. Missing sources and unresolved statuses block approval. License mentions are unverified signals, never reuse rights. See [contracts](03-contracts.md), [security limits](11-security-and-legal.md) and the README workflow. Source freshness and live HTTP compatibility remain unverified here because the user selected mock fixtures only. This phase does not connect evidence to the existing VideoScript fixture or automate factual review.
+The source foundation was implemented in Phase 05 and is now consumed by the bounded Director above. It exists in `src/sources/`, `src/claims/ledger.ts` and `source`/`claims` CLI commands. Explicitly confirmed public URLs produce bounded minimized snapshots; no crawling, repo execution or provider calls occur. All text stays untrusted; suspicious documents lose their excerpt. Human JSON decisions must quote exact clean snapshot evidence, and a separate ledger approval is required to export inert reference context. Missing sources and unresolved statuses block approval. License mentions are unverified signals, never reuse rights. See [contracts](03-contracts.md), [security limits](11-security-and-legal.md) and the README workflow. Source freshness and live HTTP compatibility remain unverified here because the user selected mock fixtures only. This phase does not connect evidence to the existing VideoScript fixture or automate factual review.
 
 The Phase 05 extension also implements `ResearchBundle` inputs for multiple public URLs/GitHub documents and pasted technical notes. Its separate validated brief stores topic/audience/emphasis/exclusions; every source has independent provenance and optional selected literal sections. Aggregate budgets, deduplication and the original per-source protections apply. `claims init --bundle` binds the bundle hash/brief into an unreviewed ledger; future Phase 06 can consume this versioned data without broad web research or exposing raw source instructions. Human semantic contradiction review remains necessary. See the README multi-source workflow and contract 1.1.0 extension.
 

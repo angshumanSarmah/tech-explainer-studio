@@ -200,6 +200,20 @@ Caption lines are limited to three lines of 34 characters, rendered at 42 px bol
 
 Final manifests include ordered starts/durations/samples/holds/cue frames, original script/source records (unknown revisions/hashes remain null), per-scene narration/runtime identity, hashes for the output artifacts and source/compiled implementation inventory. Exact code hashes record uncommitted changes; a Git revision alone would not. `--strict` rejects mocks and unreviewed timing before rendering. This is a media validation option, not Phase 08 human release approval; `approvedForRelease` is always false.
 
+## Phase 06 Director and VideoScript 1.1.0 contracts
+
+`VideoScriptV1Schema` and legacy fixtures remain unchanged. `VideoScriptV11Schema` uses the same scenes, claims, cues and metadata with two bounded additions: optional `brand: {id: "tech-explainer", version: "1.0.0"}`; and `sources[].url: null` only when `source_kind` is `pasted_text`. Remote sources retain HTTP(S) URLs. `VideoScriptSchema` accepts both; the general `VideoScript` TypeScript type is the accepted union and `VideoScriptV1` is the legacy shape. Producer parsing/rendering supports both without network/model calls.
+
+`director export` derives the actual schema with `z.toJSONSchema`, exports the real component/prop/cue schemas, an example and explicit producer capability restrictions. Zod refinements (unique IDs, scope/reference relationships and renderer capabilities) still run at import; they are not assumed to be expressed completely by JSON Schema. Tests compare exports to runtime conversion and exercise catalog bounds against producer preflight.
+
+`DirectorBriefSchema` extends ResearchBundle editorial inputs with audience knowledge, target seconds, depth, supported format/aspect and bounded additional instructions. `makeRequest` validates the exact approved bundle/ledger pair, uses the existing inert evidence export and caps relevant context at 96 KiB. Sources project to the VideoScript fields without losing actual IDs/hashes/timestamps/revisions or inventing a URL for notes. Source title/type/licensing status and exact reviewed claim text/status/source mappings must match. Imported scripts never update the ledger.
+
+`DirectorDraftSchema` is strict 1.0.0: origin, parsed script and canonical script hash, resolved brand identity/hash, nullable exact bundle/ledger hash binding, explicit review issues, `requiresHumanReview: true`, `requiresTimingReview: true`, `approvedForRelease: false`, prompt version/hash, optional bounded generation/model/usage/price-policy/request-hash metadata, and nullable local preview-review identity/time/hash. Only explicit `director review` writes a reviewer assertion; stale script/brand/evidence/flags fail. This is a narration/storyboard preview decision, not Phase 08 fact/media/rights/release approval. Unbound manual imports always retain missing-provenance findings regardless of script-declared statuses.
+
+Both manual and generated results use `importDraft`. Unsupported components/actions/phase targets, invalid props/geometry/layout, missing/ambiguous phrase anchors, unsafe content and source/claim mismatches fail with field paths. Import never repairs. Generation permits at most one bounded JSON/schema repair, without sending raw failed output; unsafe/evidence failures and explicit `needs_review`/`unsupported_visual` results stop. Actual WAV timings, phrase alignment and caption correctness remain Phase 04 responsibilities and cannot be asserted by generated estimates.
+
+`BrandProfileSchema` and its only approved reference are defined in `src/branding/profile.ts`; producer manifests include ID/version/SHA-256 and retain actual per-scene voice/model metadata. Explicit narration config settings override default brand voice settings. See document 26 for retained style/layout boundaries.
+
 ## Immutability and versioning
 
 - Editing a script creates revision `n+1`. Existing approvals invalidate whenever claims, narration, visual config, rights, output bytes or metadata requiring reapproval change.

@@ -1,4 +1,4 @@
-import type { SceneV1, VideoScriptV1 } from '../../domain/videoscript.ts';
+import type { SceneV1, VideoScript } from '../../domain/videoscript.ts';
 import { VIDEO, wrapText } from './theme.ts';
 
 export class RenderInputError extends Error {
@@ -19,7 +19,7 @@ export interface PlannedScene {
   durationFrames: number;
 }
 
-export function planSilentRender(script: VideoScriptV1) {
+export function planSilentRender(script: VideoScript) {
   if (
     script.profile !== 'technology-explainer' ||
     script.target.width !== VIDEO.width ||

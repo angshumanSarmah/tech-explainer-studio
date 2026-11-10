@@ -14,6 +14,8 @@ flowchart TB
     Topic[Topic, public GitHub, technical docs] --> Source[Source ingestion and claim ledger]
     Source --> Director[1. Content Director: DeepSeek or Ollama]
     Director --> Script[(Versioned VideoScript JSON)]
+    External[Manual external AI JSON] --> Import[Director validation and unapproved draft]
+    Import --> Script
     Script --> Factual{Human evidence review}
     Factual -->|revise| Director
     Factual -->|approve| Producer[2. Video Producer: deterministic]
@@ -21,6 +23,8 @@ flowchart TB
     Producer --> Voice[Local Kokoro TTS]
     Scene --> Assembly[Timeline + FFmpeg + captions]
     Voice --> Assembly
+    Brand[Versioned BrandProfile] --> Scene
+    Brand --> Voice
     Assembly --> Artifact[(MP4 + captions + manifest + hashes)]
     Artifact --> Media{Human media and rights review}
     Media -->|repair affected scenes| Producer
@@ -62,7 +66,11 @@ The **Content Director** is the only LLM-driven stage. Producer and Publisher ar
 
 **Phase 05 multi-source extension:** `src/sources/bundle.ts` validates a user-authored research brief and approved URL/pasted-text entries, then orchestrates the existing fetcher sequentially under aggregate count/byte/request/deadline limits. `research-source.ts` adds typed 1.1.0 provenance/selection contracts while legacy snapshots/digests remain unchanged. Every input maps to a deduplicated source ID; approval/policy differences never broaden redirect permissions. Manual text has no invented URL/revision and remains untrusted. Bundle-aware 1.1.0 claim ledgers bind the brief and bundle hash, support multiple claims/citations and block unresolved status/evidence issues. The inert context retains editorial instructions separately from evidence for the planned Director. No provider, crawler or dashboard is added. See README and the extended ADR-013 for limits and deduplication behavior.
 
-The active visual union is `title-card` or `tech-animation`/`BrowserRequestFlow`. Code trace, screen recording and other component IDs are unsupported until their contracts are implemented. No Director, automatic word aligner, durable job database or Publisher exists yet; the rest of the full-production pipeline above remains planned. Voice clarity and actual caption/phone playback acceptance remain human review items.
+**Implemented in Phase 06:** `src/director/` exports Zod-derived VideoScript schemas, the actual read-only catalog/producer constraints, prompts and approved brand; manual JSON import and optional model generation share one strict executable/evidence validator and unapproved draft persistence. Approved Phase 05 bundles/ledgers provide bounded inert evidence; exact source/claim bindings and existing human decisions are preserved. Manual legacy imports without provenance remain explicitly unapproved previews. A local hash-bound narration/storyboard review is distinct from future release approval. `src/llm/` supplies an interchangeable provider interface, explicit local mock and optional opt-in DeepSeek adapter with public pinned HTTPS, cancellation, byte/token/retry/repair limits and conservative estimated-spend reservation. No provider/key is loaded for normal rendering, import or export. DeepSeek was mock-tested only, not called live.
+
+`src/branding/` consolidates existing production tokens and narration defaults in the versioned `tech-explainer@1.0.0` profile; existing explicit voice settings win. Remotion/theme/captions and narration config consume this profile, and producer manifests record its ID/version/hash. VideoScript 1.0.0 remains unchanged;1.1.0 adds a validated brand reference and explicit null URLs for pasted notes. No fake remote provenance or arbitrary generated style/code is accepted. Manual and automated drafts feed the same measured Producer; no new renderer, aligner, publisher or Phase 07 persistence system is added. See ADR-014, contracts and the brand audit.
+
+The active visual union is `title-card` or `tech-animation`/`BrowserRequestFlow`. Code trace, screen recording and other component IDs are unsupported until their contracts are implemented. No autonomous research, automatic word aligner, durable job database or Publisher exists yet; the rest of the full-production pipeline above remains planned. Voice clarity and actual caption/phone playback acceptance remain human review items.
 
 - Execution process: **[EXECUTION_FLOW.md](EXECUTION_FLOW.md)**.
 - Current phase and tests: **[PROJECT_STATUS.md](PROJECT_STATUS.md)**. That file is updated at the end of *every* phase.

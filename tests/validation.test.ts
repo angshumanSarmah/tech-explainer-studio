@@ -6,7 +6,7 @@ import {
   ScriptValidationError,
 } from '../src/domain/validation.ts';
 import {
-  type VideoScriptV1,
+  type VideoScript,
   VideoScriptV1Schema,
 } from '../src/domain/videoscript.ts';
 import { animation, fixture, fixtureText, scene } from './helpers/fixture.ts';
@@ -24,7 +24,7 @@ test('HTTP fixture parses without changing any data or estimated timings', () =>
 
 interface InvalidCase {
   name: string;
-  mutate: (script: VideoScriptV1) => void;
+  mutate: (script: VideoScript) => void;
   path: string;
   exit?: 2 | 3;
 }
