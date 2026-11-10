@@ -327,9 +327,9 @@ export async function renderSilentPreview(
         durationFrames,
         visual: scene.visual.type,
         phase:
-          scene.visual.type === 'tech-animation'
-            ? scene.visual.props.visualPhase
-            : scene.visual.variant,
+          scene.visual.type === 'title-card'
+            ? scene.visual.variant
+            : scene.visual.props.visualPhase,
       })),
       tools: {
         remotion: VERSION,

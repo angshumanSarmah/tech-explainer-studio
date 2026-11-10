@@ -60,13 +60,19 @@ export function directorContract(example: unknown) {
       components: Object.fromEntries(
         Object.entries(componentRegistry).map(([id, entry]) => [
           id,
-          { version: entry.version, props: z.toJSONSchema(entry.schema) },
+          {
+            version: entry.version,
+            props: z.toJSONSchema(entry.schema),
+            ...('previewOnly' in entry
+              ? { previewOnly: entry.previewOnly }
+              : {}),
+          },
         ]),
       ),
       cueSchema: z.toJSONSchema(VisualCueSchema),
       execution: {
         scope:
-          'BrowserRequestFlow animates HTTP request/response only. VideoScript 1.1.0 title cards accept bounded authored labels, three text rows and a footnote for other topics; they are animated text cards, not a simulation of an unsupported mechanism. Other component mechanisms require unsupported_visual.',
+          'BrowserRequestFlow animates HTTP request/response only. VideoScript 1.1.0 title cards accept bounded authored labels, three text rows and a footnote for other topics; they are animated text cards, not a simulation of an unsupported mechanism. A preview-only cache-aside-proof/CacheAsideProof supports four fixed causal beats (lookup, miss, fill, hit); it is a visual-approval prototype, not the Phase 11 library. Other component mechanisms require unsupported_visual.',
         resolution: [1080, 1920],
         fps: 30,
         profile: 'technology-explainer',

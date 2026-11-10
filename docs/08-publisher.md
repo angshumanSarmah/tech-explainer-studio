@@ -71,3 +71,7 @@ interface UploadRequest {
 Collect permitted metrics using YouTube Studio or authorized Analytics API. Present available values with reporting window and freshness. Track: impressions, views, average percentage viewed (where reported), engaged views, subscriber change, clicks to companion repos, and effort/cost per episode. Show `unavailable` when not returned. Don't optimize solely for views at the cost of explanations.
 
 A performance analyst may recommend new topics, but cannot publish or change approved editorial constraints without user action.
+
+## Implemented Phase 08 boundary (offline only)
+
+`publishApproved` in `src/release/service.ts` is a default-deny application boundary with an injected **lazy** Publisher factory. It performs fresh eligibility checks before constructing the client; denied/stale cases make zero client/outbound calls. Exact hash-checked MP4 and cover bytes, validated metadata and an explicit literal `privacy: private` are passed to the adapter, avoiding reopening a mutable video path after approval. Approval IDs and any bound active job are rechecked immediately before adapter construction. Tests use only a fake adapter. No production YouTube adapter, OAuth, network upload, scheduling or public action exists yet; those flows above remain planned and need their own authorization and platform review. The local boundary is not cryptographic authentication against a malicious operator who can rewrite application code or SQLite.

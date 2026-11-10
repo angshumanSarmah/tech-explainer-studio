@@ -54,7 +54,7 @@ node dist/cli/index.js script validate --file examples/http-server.videoscript.j
 
 `npm run format` formats and applies safe Biome fixes to source, tests and configuration; it leaves the reference fixture untouched. No global CLI installation is needed. A successful validation emits JSON on stdout and exits `0`. Failures emit structured JSON on stderr: `2` for input/JSON/schema/file errors, `3` for unsupported visual types/components. Help exits `0`.
 
-Only `title-card` and `tech-animation` with `BrowserRequestFlow` are supported. Validation stays independent of the renderer. VideoScript 1.1.0 title cards can supply bounded authored label/three rows/footnote for topic-correct animated text episodes; BrowserRequestFlow remains HTTP-specific. Legacy 1.0.0 keeps its original defaults. Syntax/schema validity does not approve facts, rights, timing or a release.
+Stable visuals are `title-card` and `tech-animation` with `BrowserRequestFlow`. A bounded `cache-aside-proof` / `CacheAsideProof` prototype is available only for the requested prerequisite visual review; the full Phase 11 library remains unimplemented. Validation stays independent of the renderer. VideoScript 1.1.0 title cards can supply bounded authored label/three rows/footnote for topic-correct animated text episodes; BrowserRequestFlow remains HTTP-specific. Legacy 1.0.0 keeps its original defaults. Syntax/schema validity does not approve facts, rights, timing or a release.
 
 ## Render a silent preview
 
@@ -294,7 +294,7 @@ The [`docs/`](docs/) directory retains the complete product and engineering blue
 
 ## What is not included
 
-The package contains script validation, local previews, narration, measured captioned assembly, bounded source ingestion and JSON claim review. It does **not** contain an automatic aligner, autonomous researcher, database, dashboard, publisher, API credentials, model weights, third-party media, or authorized copies of workplace code. Those later application stages remain a design target; model files and generated media stay outside Git.
+The package contains script validation, local previews, narration, measured captioned assembly, bounded source ingestion and JSON claim review. It does **not** contain an automatic aligner, autonomous researcher, dashboard, network publisher, API credentials, model weights, third-party media, or authorized copies of workplace code. Those later application stages remain a design target; model files and generated media stay outside Git.
 
 
 ## Resumable local production (Phase 07)
@@ -312,3 +312,8 @@ npm run studio -- render --job <job-id> --scene scene-02-request
 Use `--config narration.config.example.json` instead of `--narration` to save offline Kokoro configuration; missing speech then needs explicit `jobs resume <job-id> --allow-local-synthesis`. Config is non-secret and does not download models. Saved WAVs/settings remain authoritative until explicitly revised. `jobs revise <job-id> --script edited.json` retains unchanged audio/clips; a narrator change needs a revised config or matching replacement WAVs. Bound drafts also require the exact saved `--bundle` and `--ledger`; changed evidence pauses review until a current reviewed draft is imported. `jobs pause` applies to idle jobs; running jobs reject competing mutation. `jobs continue` cannot clear an evidence-review gate.
 
 Default state is `data/studio.sqlite`, byte cache under `data/cache/sha256`, retained failed attempts under `data/work/<job-id>`, and previews under `output/jobs/<job-id>/revision-N/<hash>/`. Repeat custom `--data`/`--output-root` options on later commands. Scene-only output is a silent captioned clip and needs measured WAVs for the whole timeline. Do not edit cached bytes or the database in place. Use `jobs --help` and [storage/CLI details](docs/09-data-and-api.md) for revisions, optimistic versions, leases, retry bounds and artifact layout.
+
+
+## Exact-artifact human review (Phase 08)
+
+Use `npm run studio -- release --help` to create a rights inventory, prepare an immutable release candidate and export its reviewer package. Separate `review facts`, `review rights`, `review video` and `review publish` commands bind exact dependencies; `release check` fails closed on missing/stale approval, unknown rights, missing attribution or bad media. `--data` uses the same local SQLite store as jobs. Rendering never approves or uploads. Review identities are local assertions; actual human factual/rights/playback/metadata review remains required. See [commands, JSON fields and invalidation rules](docs/07-workflow.md#phase-08-implemented-release-reviews). No production Publisher or network upload command exists.

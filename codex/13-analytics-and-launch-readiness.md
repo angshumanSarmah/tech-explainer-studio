@@ -35,6 +35,13 @@ ADDITIONAL V4 REQUIREMENTS — INTEGRATE PHASE 05/06 CONTRACTS
   - Include launch readiness for both YouTube Shorts and manual Instagram Reels; all publishing remains opt-in and approval-bound.
   - Document when an autonomous Research Agent would provide measurable benefit; do not secretly implement one in the analytics phase.
 
+ADDITIONAL V5 REQUIREMENTS — VISUAL QUALITY AND RENDER PERFORMANCE
+  - Evaluate visual clarity at phone size, brand cohesion, narrative-vs-animation alignment, perceived polish, motion intensity, caption contrast and visual variety (not just the number of components).
+  - Record asset utilization and risk: missing file, wrong resolution, rights/attribution status, unreproducible render sources, unsafe remote resource attempt, and cache hits/misses.
+  - Measure real frame-render duration and memory/GPU pressure for complex layered or optional 3D/heatmap scenes; fall back to simpler registered scenes when feasible and explicitly mark degraded preview mode.
+  - Add release checklist for visual assets and scene readability with at least one cloud file-transfer or layered illustration example, one data structure example, and a heatmap/3D proof of concept only if Phase 11B was actually completed.
+  - Separate technical quality metrics from factual accuracy, views and engagement; never claim an automatically measured aesthetic score is objective proof of video quality.
+
 OUT OF SCOPE
   - No automated growth bots, spam, purchased views, 60-videos-per-month production target or opaque recommender.
   - No new agent frameworks without measured operational evidence.

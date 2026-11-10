@@ -82,8 +82,21 @@ export type BrowserRequestFlowProps = z.infer<
   typeof BrowserRequestFlowPropsSchema
 >;
 
+export const CacheAsideProofPropsSchema = z.strictObject({
+  visualPhase: z.enum(['lookup', 'miss', 'fill', 'hit']),
+  keyLabel: displayText(14),
+  valueLabel: displayText(14),
+  illustrative: z.literal(true),
+});
+export type CacheAsideProofProps = z.infer<typeof CacheAsideProofPropsSchema>;
+
 // Validation registry only. No rendering or dynamic module resolution exists here.
 export const componentRegistry = Object.freeze({
+  CacheAsideProof: Object.freeze({
+    version: '0.1.0',
+    previewOnly: true,
+    schema: CacheAsideProofPropsSchema,
+  }),
   BrowserRequestFlow: Object.freeze({
     version: '1.0.0',
     schema: BrowserRequestFlowPropsSchema,
@@ -139,6 +152,11 @@ export const VisualSpecSchema = z.discriminatedUnion('type', [
     component: z.literal('BrowserRequestFlow'),
     props: componentRegistry.BrowserRequestFlow.schema,
     cues: z.array(VisualCueSchema).max(100),
+  }),
+  z.strictObject({
+    type: z.literal('cache-aside-proof'),
+    component: z.literal('CacheAsideProof'),
+    props: CacheAsideProofPropsSchema,
   }),
 ]);
 

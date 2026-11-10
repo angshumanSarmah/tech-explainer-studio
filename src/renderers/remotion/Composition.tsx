@@ -14,6 +14,7 @@ import {
   type Presentation,
   resolvePresentation,
 } from '../../timing/timeline.ts';
+import { CACHE_PHASE_COPY } from '../../visuals/cache-aside-state.ts';
 import { PHASE_LABELS } from '../../visuals/flow-state.ts';
 import { SvgText } from '../../visuals/SvgText.tsx';
 import { titleCardCopy } from '../../visuals/title-card.ts';
@@ -90,9 +91,14 @@ export function ExplainerComposition({
   const scene = active.scene;
   const localFrame = frame - active.from;
   const visual = scene.visual;
-  const cardCopy = titleCardCopy(
-    visual.type === 'title-card' ? visual : undefined,
-  );
+  const cardCopy =
+    visual.type === 'cache-aside-proof'
+      ? {
+          rows: [],
+          label: 'CACHE-ASIDE / MOTION PROOF',
+          footnote: 'Illustrative read path / no benchmark claims',
+        }
+      : titleCardCopy(visual.type === 'title-card' ? visual : undefined);
   const ref = useRef<SVGSVGElement>(null);
   const [fontHandle] = useState(() => delayRender('Load bundled Inter font'));
   useEffect(() => {
@@ -113,15 +119,18 @@ export function ExplainerComposition({
       .catch(cancelRender);
   }, [frame, scene.scene_id]);
   const index = plan.scenes.indexOf(active);
-  const opacity = interpolate(
-    localFrame,
-    [0, MOTION.appearFrames],
-    [BRAND.motion.initialOpacity, 1],
-    {
-      extrapolateLeft: 'clamp',
-      extrapolateRight: 'clamp',
-    },
-  );
+  const opacity =
+    visual.type === 'cache-aside-proof'
+      ? 1
+      : interpolate(
+          localFrame,
+          [0, MOTION.appearFrames],
+          [BRAND.motion.initialOpacity, 1],
+          {
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
+          },
+        );
   return (
     <AbsoluteFill style={{ backgroundColor: THEME.bg }}>
       <svg
@@ -198,6 +207,30 @@ export function ExplainerComposition({
                     }
                   />
                 ))}
+              </g>
+            ) : visual.type === 'cache-aside-proof' ? (
+              <g>
+                <SvgText
+                  text={CACHE_PHASE_COPY[visual.props.visualPhase].title}
+                  x={96}
+                  y={338}
+                  size={BRAND.typography.sizes.s68}
+                  columns={20}
+                  weight={BRAND.typography.weights.heading}
+                />
+                <SvgText
+                  text={CACHE_PHASE_COPY[visual.props.visualPhase].description}
+                  x={96}
+                  y={419}
+                  size={BRAND.typography.sizes.s30}
+                  columns={48}
+                  color={THEME.muted}
+                />
+                <renderRegistry.CacheAsideProof.Component
+                  props={visual.props}
+                  frame={localFrame}
+                  durationFrames={active.durationFrames}
+                />
               </g>
             ) : (
               <g>

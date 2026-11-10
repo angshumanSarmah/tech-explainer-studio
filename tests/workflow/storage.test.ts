@@ -17,7 +17,7 @@ const code = (expected: string) => (error: unknown) =>
 test('first actual SQLite migration is atomic, repeatable, strict and rejects future schemas', () => {
   const path = join(root, 'migration.sqlite');
   let repo = new Repository(path);
-  assert.equal(repo.db.prepare('PRAGMA user_version').get()?.user_version, 1);
+  assert.equal(repo.db.prepare('PRAGMA user_version').get()?.user_version, 2);
   assert.equal(repo.db.prepare('PRAGMA foreign_keys').get()?.foreign_keys, 1);
   assert.throws(() =>
     repo.transaction(() => {
@@ -31,7 +31,7 @@ test('first actual SQLite migration is atomic, repeatable, strict and rejects fu
   assert.equal(repo.list().length, 0);
   repo.close();
   const db = new DatabaseSync(path);
-  db.exec('PRAGMA user_version=2');
+  db.exec('PRAGMA user_version=3');
   db.close();
   assert.throws(() => new Repository(path), code('SCHEMA_TOO_NEW'));
 });

@@ -53,6 +53,12 @@ export function planSilentRender(script: VideoScript) {
           'Title text exceeds the mobile-safe layout; shorten the display text',
           '["visual"]',
         );
+    } else if (visual.type === 'cache-aside-proof') {
+      if (scene.timing.preferred_seconds * VIDEO.fps < 30)
+        fail(
+          'Each cache proof beat needs at least one second for causal motion',
+          '["timing"]',
+        );
     } else {
       if (!visual.props.illustrative)
         fail(

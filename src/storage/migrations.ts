@@ -11,7 +11,7 @@ export function migrate(db: DatabaseSync) {
     const version = Number(
       db.prepare('PRAGMA user_version').get()?.user_version,
     );
-    if (version > 1)
+    if (version > 2)
       fail(
         'SCHEMA_TOO_NEW',
         'Database belongs to a newer studio; use the matching application',
@@ -62,6 +62,30 @@ export function migrate(db: DatabaseSync) {
       ) STRICT;
       PRAGMA user_version=1;
     `);
+    if (version < 2)
+      db.exec(`
+        CREATE TABLE releases (
+          id TEXT PRIMARY KEY, subject TEXT NOT NULL, manifest TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        ) STRICT;
+        CREATE TABLE release_reviews (
+          id INTEGER PRIMARY KEY, release_id TEXT NOT NULL REFERENCES releases(id),
+          subject TEXT NOT NULL, gate TEXT NOT NULL CHECK(gate IN ('facts','rights','video','publish')),
+          dependency TEXT NOT NULL, record TEXT NOT NULL
+        ) STRICT;
+        CREATE INDEX review_dependency ON release_reviews(subject,gate,dependency,id);
+        CREATE TABLE release_audit (
+          id INTEGER PRIMARY KEY, release_id TEXT NOT NULL REFERENCES releases(id),
+          event TEXT NOT NULL, record TEXT NOT NULL
+        ) STRICT;
+        CREATE TRIGGER immutable_release_update BEFORE UPDATE ON releases BEGIN SELECT RAISE(ABORT,'immutable release'); END;
+        CREATE TRIGGER immutable_release_delete BEFORE DELETE ON releases BEGIN SELECT RAISE(ABORT,'immutable release'); END;
+        CREATE TRIGGER immutable_review_update BEFORE UPDATE ON release_reviews BEGIN SELECT RAISE(ABORT,'append-only reviews'); END;
+        CREATE TRIGGER immutable_review_delete BEFORE DELETE ON release_reviews BEGIN SELECT RAISE(ABORT,'append-only reviews'); END;
+        CREATE TRIGGER immutable_audit_update BEFORE UPDATE ON release_audit BEGIN SELECT RAISE(ABORT,'append-only audit'); END;
+        CREATE TRIGGER immutable_audit_delete BEFORE DELETE ON release_audit BEGIN SELECT RAISE(ABORT,'append-only audit'); END;
+        PRAGMA user_version=2;
+      `);
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');

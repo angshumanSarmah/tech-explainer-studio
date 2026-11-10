@@ -28,3 +28,7 @@ This file breaks [docs/13-roadmap.md](13-roadmap.md) into smaller coding tasks. 
 - **11–13:** optional expansion once validated by actual channel needs.
 
 Each phase updates `PROJECT_STATUS.md` after verification. Architecture docs are only changed for substantive verified changes.
+
+## Current execution-order override
+
+The Phase 08 user request selects Phase 11 as the next planned implementation before dashboard/distribution. This changes execution order, not authorization: finish Phase 08 review and the existing focused cache-motion visual approval first. Do not automatically start Phase 11/11B, Phase 09/10, dashboard or publishing. Actual observed phase status remains in PROJECT_STATUS.md.

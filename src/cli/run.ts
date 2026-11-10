@@ -6,6 +6,8 @@ import {
 } from '../domain/validation.ts';
 
 export const HELP = `Usage:
+  studio release --help
+  studio review --help
   studio jobs --help
   studio render --job <job-id> --scene <scene-id>
   studio director --help
@@ -35,6 +37,10 @@ export async function runCli(
   args: string[],
   output: CliOutput,
 ): Promise<number> {
+  if (args[0] === 'release' || args[0] === 'review') {
+    const { runReleaseCli } = await import('./release-cli.ts');
+    return runReleaseCli(args[0], args.slice(1), output);
+  }
   if (
     args[0] === 'jobs' ||
     (args[0] === 'render' &&

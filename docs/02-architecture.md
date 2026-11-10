@@ -199,3 +199,14 @@ Narration cache keys include text, scene ID, saved WAV/metadata or configured mo
 ### Local episode copy within the existing title card
 
 Optional bounded `title-card.content` (VideoScript 1.1.0) carries label, three literal rows and footnote. `src/visuals/title-card.ts` supplies exact old HTTP defaults otherwise. This makes authored text-card episodes topic-correct without adding a caching simulator/component or changing source/provider/producer boundaries. The Director catalog exposes the distinction; legacy 1.0.0 rejects the new data and renders its existing defaults.
+
+
+### Focused cache motion prerequisite (visual approval pending)
+
+A preview-only static `CacheAsideProof` registry entry and `cache-aside-proof` visual variant (VideoScript 1.1.0 only) reuse the existing renderer and Producer. The pure frame state owns lookup, miss notification, app/database query, data return, cache population and second-read hit, with cache population following returned data and no second database query. Paths/packets are frame-evaluated using cubic geometry/easing; panels use SVG depth layers. Scene durations and subtitle spans still come from actual WAV measurements. No review/approval API is assumed: existing preview manifests remain false for release approval. This is one bounded prototype for user visual approval, not implementation of the Phase 11 library or later phases.
+
+## Implemented Phase 08 release boundary
+
+The existing JSON ClaimLedger and SQLite jobs are preserved. SQLite migration 2 adds `releases` (immutable manifest content/hash), `release_reviews` (append-only per-gate dependency decisions) and `release_audit` (append-only prepare/check/review/boundary events). `ReleaseService` binds existing local render/evidence files, optional imported asset references and current job revision without changing the Producer. Separate facts/rights/video/publish CLI actions and a reviewer package share these schemas. Matching dependency reviews can be reused; the exact candidate and prerequisite decision IDs must receive a new explicit publish decision.
+
+Eligibility freshly hashes all referenced files, checks Phase 05 evidence and independent identities, checks complete rights/required credits, recomputes timing/SRT from measured WAVs, validates resolved brand/narrator records and independently probes/decodes the final MP4. Playback acknowledgements retain fallback timing warnings. A lazy injected Publisher receives exact verified bytes and private-only metadata after all checks; only a fake exists. No new visual asset loader, network integration or authenticated reviewer service is implemented. See [ADR-016](15-adrs.md#adr-016--immutable-local-release-candidates-and-independent-gates) and [implemented workflow](07-workflow.md#phase-08-implemented-release-reviews).

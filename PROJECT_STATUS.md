@@ -1,7 +1,7 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phase 07 SQLite jobs, fenced recovery and dependency-aware scene caches implemented; 192/192 current regression tests pass (including 14 workflow tests). The real HTTP preview/cache reuse and a new 52.47-second caching explainer are verified. Live DeepSeek remains UNVERIFIED and was not called.
-> **Next phase:** Review Phase 07 interfaces, preview and caption/voice/factual/rights limitations. Phase 08 requires a new explicit request; all media remains unapproved for release.
+> **Status baseline:** Phases 01–07 remain working. Phase 08 local release gates are implemented and verified: 213/213 regression tests, including 16 network-denied release tests, pass. Real saved Kokoro media independently reprobes/decodes successfully. Live DeepSeek was not called.
+> **Current stop:** Phase 08 is **Needs review**. No real episode has received facts/rights/playback/publish approval. The focused cache-motion proof remains preview-only and awaiting the user's visual approval. Full Phases 11/11B/12 and network publishing have not started. Next planned implementation is Phase 11 only after review and explicit authorization.
 > **Last updated:** 2026-11-10 (Asia/Kolkata).
 
 ## Phase tracker
@@ -11,12 +11,12 @@
 | 00 | Repository orientation, rights and execution baseline | Done | Audit recorded below; user subsequently authorized Git setup and explicitly requested Phase 01 |
 | 01 | TypeScript foundation, schema, fixture and CLI validation | Done | Verified baseline committed/pushed as `0bafa13`; user explicitly requested Phase 02 |
 | 02 | Remotion vertical silent animation renderer | Done | 62/62 tests; two offline 55-second renders; 16 golden comparisons and all 1650 decoded frames match; ready for human playback/phone review |
-| 03 | Local Kokoro narration adapter and pronunciation | Needs review | 82/82 tests; source/compiled seeded real Kokoro WAVs match, 4.233333 seconds; human listening pending |
+| 03 | Local Kokoro narration adapter and pronunciation | Done | User confirmed Phases 01–07 complete; 82/82 tests; source/compiled seeded real Kokoro WAVs match, 4.233333 seconds; human listening pending |
 | 04 | Measured timeline, subtitles, assembly and media QC | Done | User confirmed phase complete and audible playback; latest caption-clearance revision passes 93/93 tests, 37.1s H.264/AAC, reserved 42px caption band; human release review remains pending |
-| 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Needs review | Extended for multi-source bundles; 55/55 source tests at Phase 05; approved MDN/Redis live ingestion later verified for the caching episode; human evidence review remains pending |
-| 06 | Manual/optional AI Director, sourced storyboard and BrandProfile | Needs review | 28/28 network-denied Director/brand tests; 176/176 full tests; manual Kokoro/Remotion/FFmpeg preview verified; live DeepSeek unverified |
-| 07 | SQLite job state, resumability and incremental rerendering | Needs review | 190/190 full tests; 14/14 network/provider-blocked workflow tests; real 37.1s HTTP preview, cached resume and scene-only export verified; manual playback/release review pending |
-| 08 | Human fact/media/video approval and immutable release manifest | Not started | — |
+| 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Done | User confirmed Phases 01–07 complete; Extended for multi-source bundles; 55/55 source tests at Phase 05; approved MDN/Redis live ingestion later verified for the caching episode; human evidence review remains pending |
+| 06 | Manual/optional AI Director, sourced storyboard and BrandProfile | Done | User confirmed Phases 01–07 complete; 28/28 network-denied Director/brand tests; 176/176 full tests; manual Kokoro/Remotion/FFmpeg preview verified; live DeepSeek unverified |
+| 07 | SQLite job state, resumability and incremental rerendering | Done | User confirmed Phases 01–07 complete; 190/190 full tests; 14/14 network/provider-blocked workflow tests; real 37.1s HTTP preview, cached resume and scene-only export verified; manual playback/release review pending |
+| 08 | Human fact/media/video approval and immutable release manifest | Needs review | Four hash-bound CLI gates, immutable SQLite candidates/audit, optional visual asset rights, fresh AAC/media checks; 213/213 full tests and 16/16 network-denied release tests; real artifact remains intentionally ineligible |
 | 09 | YouTube OAuth, private upload, retries and reconciliation | Not started | — |
 | 10 | Instagram Reels manual export bundle | Not started | — |
 | 11 | EventQueue, B-tree, Git object graph and code traces | Not started | — |
@@ -702,3 +702,115 @@ npm run studio -- render --script output/caching-explainer/draft/videoscript.jso
 ```
 
 **UNVERIFIED / pending:** human listening/naturalness, device playback and human factual/rights approval. Captions use the existing measured scene speech-span fallback (`requiresTimingReview:true`), not a forced word aligner. The coding-agent cross-check is not human fact or release approval; `approvedForRelease:false` remains throughout. Next manual action: play `final/video.mp4` with sound and review the source/claim sidecars. No new phase was started and nothing was published.
+
+
+## Focused visual prerequisite — Cache motion proof (2026-11-10)
+
+**Status: real MP4 rendered and verified; STOPPED for user visual approval.** The user explicitly requested a polished 10–15-second cache-aside motion proof **before** the full Phase 11 library, confirmed Phases 01–07 complete and Phase 08 unimplemented, and prohibited Phases 11/11B/12/publishing or paid APIs. This work is only that bounded prerequisite. No review API was assumed, created or bypassed. Existing `approvedForRelease:false`, fact-review separation and timing-review flags remain. The pre-existing phase-prompt edits under `codex/` were preserved. No commit/push, install, model download, external API spend, OAuth, upload or publication occurred.
+
+### Root cause observed in the old caching video
+
+The saved caching script contains **13 `title-card` scenes**. The prior change made their label/rows/footer configurable but did not create cache nodes, moving packets, paths or cache state transitions. Their arrows are literal characters rendered by `SvgText`. In the title-card branch, only the initial opacity and global progress bar depend on frame. The encoder faithfully rendered the authored cards. A control comparison of the old miss-scene body after its entrance, excluding headers/captions/progress, has **zero changed pixels**. This explains the slideshow appearance; stream/audio/timing validity alone did not establish object animation.
+
+### Bounded reusable proof components
+
+- `src/visuals/CacheAsideProof.tsx`: fixed-position app/cache/database diagram, lookup/miss/fill/hit status, populated-cache card, two-request indicator and database-read counter. A miss returns to the **app**, then the app queries the database; data returns to the app before a copy is written to the cache. The hit keeps the database idle and its cumulative read count at one. Surface extrusion layers, highlights, database cylinder and packet shadows provide SVG depth without a 3D dependency.
+- `src/visuals/cache-aside-state.ts`: pure deterministic frame evaluation, cubic Bezier positions and cubic easing. State is derived from each phase/frame, so concurrent/out-of-order Remotion frames cannot change the result. Request/data windows, population and causal dependencies are explicit; no timer, randomness or mutable render-time simulation is used.
+- `src/visuals/motion-primitives.tsx`: reusable **`DepthPanel`**, **`MotionPath`** (animated stroke), **`MovingPacket`** (moving/directional request glyph or stacked data card). Their paths and positions are real geometry, not text arrows. Nodes stay anchored across the four beats and the proof avoids restarting the whole-diagram entrance fade between them.
+- `CacheAsideProof@0.1.0` is explicitly `previewOnly:true` in the static validation/render registries and catalog. New **VideoScript 1.1.0 only** variant `cache-aside-proof` accepts four fixed phases, key/value text of at most 14 characters and `illustrative:true`; unknown props, arbitrary assets/code/custom routes and legacy 1.0.0 use fail. Each beat needs at least 30 frames. This is not the full Phase 11 taxonomy/library or a general caching simulator.
+- Narrow integration changes only: `src/domain/{visuals,videoscript}.ts`, existing static registry/composition/preflight, visual-phase manifest handling, and Director catalog metadata. Existing renderer entry, WAV timing, media assembly/QC, job storage and narration provider were reused. Updated actual contract/component/architecture docs; no agent-rule changes. Added `tests/visual/cache-aside-proof.test.ts` and updated the existing catalog parity assertion.
+
+### Narration, synchronization and actual output
+
+- Four newly synthesized original utterances use the unchanged saved **`af_heart`**, `kokoro-http-v2`, `en-us`, rate 1, seed 0, `tech-en-v1`, same installed model/voices hashes and BrandProfile. Original WAVs are retained in `narration-raw/`; per-episode rounded PCM-mean subtraction removes the existing model DC offset without changing gain, voice, sample count or detected speech bounds. Every corrected WAV retains its raw source hash and processing identity.
+- Measured WAV seconds: lookup **2.522**, miss **2.653333**, fill **2.528**, hit **3.538**. Total raw duration **11.241333 seconds**. Existing per-scene rounding yields **76 + 80 + 76 + 107 = 339 frames / 11.3 seconds**. Four SRT/overlay cues use those scenes' actual speech spans and exact narration; fixed artistic path windows are not claimed as word alignment.
+- Saved source/claim references reuse the already-approved MDN/Redis retrieval records from the caching episode. No new research fetch or paid Director call was needed. Manual `director import` passed and remains an unapproved preview with pending human evidence/script review; no human reviewer was impersonated.
+- First actual Remotion render passed; a small app-status baseline spacing adjustment was then rendered into a fresh final directory. Final encoded frames show packets in flight, data copied into the cache, cache hit and database idle. Mobile label/caption clearance checks ran on every frame.
+
+### Verification actually executed
+
+| Command/check | Outcome |
+|---|---|
+| `git status`, actual script/composition/registry diagnosis | Old caching script = 13 title cards; independent phase-prompt edits retained |
+| `node --test tests/visual/cache-aside-proof.test.ts tests/visual/animation.test.ts tests/director/director.test.ts` | **37/37 passed**; includes five new proof schema/motion/causality/hit-isolation/measured-caption tests |
+| `npm run typecheck` | Passed; final log `output/cache-motion-proof/checks/typecheck.log` |
+| `npm run lint` | Passed, 109 files; `checks/lint.log` |
+| `npm run build` | Passed; `checks/build.log` |
+| `npm test` | **197/197 passed**, zero failures/skips; `checks/test.log` |
+| `node output/cache-motion-proof/create-proof.mjs`, `director import` | Created validated four-beat script and diagnosis; manual preview import passed |
+| `audio narrate --config narration.config.example.json ... --allow-local-synthesis` | Four real local Kokoro WAVs; no downloads or remote provider |
+| `node output/cache-motion-proof/prepare-audio.mjs` | Verified constant-offset correction preserves samples/speech timing and voice; originals retained |
+| Existing `render --script ... --narration ... --allow-caption-fallback` | Both prototype and spacing-adjusted final render passed through existing Remotion/FFmpeg/QC; scoped installed-Chrome permission used |
+| `node output/cache-motion-proof/verify-motion.mjs` | Final independent ffprobe, caption/model/brand checks, decoded-audio checks and **cropped encoded-frame motion tests passed**; 20 encoded pose PNGs saved |
+| Motion in diagram-only regions | Changed pixels: app→cache **1,750**, app→database **2,258**, database→app **2,850**, cache-fill **2,124**, hit-return **1,845**. These crops exclude headings/captions/progress. Old card-body control: **0** changed pixels. Hit database-body crop: **0** pixels changed above threshold; mean RGB delta **0.0307** (encoding noise) |
+| Independent media/audio QC | **1080×1920, 30 FPS, 339 frames, 11.3 seconds, exactly two streams, H.264/yuv420p + AAC**. Four decoded scenes non-silent, zero clipped samples, DC flags cleared; normal A/V tolerance 0.076 s passes. Voice settings/model and brand match the previous episode |
+| Rendered/encoded visual inspection | Inspected all four initial scene PNGs and final encoded miss-query, fill-copy, hit-return and completed-hit frames; packets/paths/state are visible and captions unclipped |
+| `git diff --check` | Passed |
+
+Early validation found a noninteger synthetic sample count in a test fixture, corrected by integer rounding without weakening the real sample guard. The installed FFmpeg omits a rawvideo muxer; verification reused the repository's existing rawvideo-codec/image2pipe pattern. Crop sizes were made even for YUV420p; the final tests above passed. No media check or approval restriction was disabled.
+
+### Visual-approval handoff — stop here
+
+**Video:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/cache-motion-proof/final/video.mp4`
+
+**Video SHA-256:** `fe4c0b5bf82da165ee5747c53ef879bb3d6d3103a1744113eac1e8c76921d323`.
+
+Alongside: `captions.srt`, four scene WAVs/metadata in `narration/`, combined/decoded WAVs, exact timeline, `ffprobe.json`, `qc-report.json`, saved script, visual PNGs/manifest and full render manifest. Parent folder contains raw WAVs, audio receipts, `diagnosis.json`, `handoff.json`, authoring/verification helpers and `checks/{motion-qc.json,independent-ffprobe.json,...20 pose PNGs}`. Generated assets remain ignored by Git.
+
+Rerender this saved proof into a fresh folder:
+
+```bash
+npm run studio -- render --script output/cache-motion-proof/draft/videoscript.json --narration output/cache-motion-proof/narration --output output/cache-motion-proof/review-rerender --allow-caption-fallback
+```
+
+**Awaiting the user's visual approval of this proof only.** Human phone playback/listening, subjective polish, factual/rights/release approval and word-level caption alignment remain unverified/pending; the existing speech-span fallback retains `requiresTimingReview:true`. All artifacts remain `approvedForRelease:false`. Phase 08 remains unimplemented. Full Phases 11/11B/12 and publishing have not started. Do not continue into the library or later phases until separately instructed.
+
+
+## Phase 08 — Local review and release gates (2026-11-10)
+
+Observed status: **implementation verified; stopped for human review**. This work extends existing Phase 05/06/07 contracts and preserves the pre-existing motion proof and planning-prompt edits. No later phase, paid API, research fetch, installation, OAuth, upload, commit or push was performed.
+
+Implemented files/boundaries:
+
+- `src/release/{model,files,media,store,service}.ts`: strict release/rights/private-metadata/review schemas; content-addressed immutable candidate manifest; bounded complete render/reference inventory; screened evidence loading; dependency-specific review reuse and invalidation; readable package; append-only audit; fresh independent ffprobe/AAC checks; lazy default-deny Publisher factory with exact MP4/cover byte handoff. Only a fake Publisher exists.
+- `src/storage/migrations.ts`: migration 2 adds immutable `releases`, append-only `release_reviews` and `release_audit`, keeping existing jobs and the `renders.approved_for_release=0` constraint. New records use the existing repository/transactions; no replacement database framework or claim ledger was introduced.
+- `src/cli/release-cli.ts`, `src/cli/run.ts`: `release inventory/prepare/inspect/package/check/audit` and separate `review facts/rights/video/publish` commands. Facts require independent author/reviewer identities and current approved source/claim decisions; video requires explicit listening/playback/pronunciation/subtitle/pacing/timing acknowledgements; publish requires separate final metadata consent. Public privacy is rejected. No network upload CLI exists.
+- Rights inventory includes exact source IDs (even for identical content), original visual configuration, actual font, cover, recorded voice/model hashes and optional imported visual asset references. Every asset starts unknown/unreviewed. AI origin never auto-clears rights. Unknown/stale rights or missing credits block release. Asset swaps retain unrelated factual decisions; title/unrelated-description edits retain all three prerequisite gates; removing required attribution resets rights.
+- Release checks reject prototype `previewOnly` components. This preserves the cache proof's separate visual approval restriction; Phase 08 does not promote it or implement Phase 11.
+- `tests/release/{helpers,gates,media,storage}.ts`, `tests/workflow/storage.test.ts`, `package.json`: new tests and test discovery; schema expectations upgraded from 1 to 2.
+- Updated README, main/detailed architecture, contracts, workflow, publisher/security/quality/component references, build phase-map execution-order note and ADR-016 for implemented interfaces. AGENTS.md/CLAUDE.md remain unchanged.
+
+Final verification (actual outcomes):
+
+| Command/check | Outcome |
+|---|---|
+| `npm test` | **PASS**, 213/213; log `output/phase08/checks/npm-test.log` |
+| `node --import ./tests/helpers/no-network.ts --test tests/release/*.test.ts` | **PASS**, 16/16; no model files/downloads/network; log `output/phase08/checks/release-tests.log` |
+| `npm run typecheck` | **PASS**, strict TypeScript |
+| `npm run lint` | **PASS**, 119 source/test/config/script files, no warnings/fixes |
+| `npm run build` | **PASS**, emitted compiled CLI/audio worker |
+| `npm run studio -- script validate --file examples/http-server.videoscript.json` | **PASS**, unchanged six-scene v1.0 fixture |
+| `npm run studio -- release --help` | **PASS**, actual new commands/options |
+| `git diff --check` | **PASS** |
+| Real `release inventory` and `prepare` over the existing cache-motion artifact | **PASS**, no model/render regeneration or remote calls; all rights unknown and all human gates pending |
+| Source CLI `release check` for the real candidate | **Expected exit 4**, eligible false: unapproved/mismatched claim decisions, seven unknown rights entries, four preview-only scenes, four missing approvals |
+| `release package` / `release audit` | **PASS**, local reviewer package and audit JSON exported |
+| `inspectReleaseMedia` on real saved Kokoro MP4 | **PASS**, independent ffprobe and AAC per-scene decode; 1080×1920@30, 339 frames/11.3s, H.264/yuv420p plus mono 24kHz AAC, exactly two streams, duration tolerance 0.076s; all four scenes audible by signal analysis, zero full-scale clipped samples |
+| Encoded representative frame extraction at 3.8s and visual inspection | **PASS**, caption is inside its reserved band and clear of diagram; `output/phase08/checks/encoded-frame.png` |
+
+Authorization unit tests use explicit synthetic reviewers/media-inspector injection and a fake Publisher; these do not certify tones as speech or grant actual human approvals. Separate real FFmpeg integration rejects mock audio, a deliberately muted final AAC despite misleading provider metadata, absent audio, wrong resolution, changed captions and narrator/brand inconsistencies. Release subprocesses allow only file/pipe protocols; a malicious remote playlist is rejected before any request. Exported manifest JSON also hashes to its exact SQLite release ID. Tests also cover missing/contradicted sources, source decisions, metadata single-character changes, image/AI rights swaps, exact model identity changes, audit immutability, SQLite upgrade and job revision staleness.
+
+Artifacts (all ignored local output/data):
+
+- Current candidate ID: `406db54d31cfd170949c409762b2d89b6f92290b9c8c6477ac6ba271a9a2b762`; SQLite: `data/phase08/studio.sqlite` (earlier development candidates remain append-only, with no approvals).
+- Immutable manifest export: `output/phase08/candidate.json`; review package: `output/phase08/reviewer-package-final.md`; state: `output/phase08/eligibility.json`; audit: `output/phase08/audit.json`.
+- Unknown rights template: `output/phase08/rights.unknown.json`; proposed, **unapproved** private metadata: `output/phase08/metadata.proposed.json`. Audience/disclosure choices require creator confirmation.
+- Independent real-media report: `output/phase08/checks/independent-media-qc.json`; original media remains `output/cache-motion-proof/final/video.mp4`, SHA-256 `fe4c0b5bf82da165ee5747c53ef879bb3d6d3103a1744113eac1e8c76921d323`. SRT, scene WAVs and original preview manifests are untouched.
+- Compiled CLI eligibility output: `output/phase08/checks/compiled-eligibility.json`, also ineligible.
+
+Limitations / next manual review:
+
+- Local author/reviewer IDs are operator assertions, not authenticated accounts or cryptographic signatures. Hashes/SQL triggers catch accidental mutation; they do not resist a malicious owner rewriting code/database. Human semantic judgment and legal rights evidence remain necessary.
+- Actual full listening, pronunciation/naturalness, mobile playback, claim/evidence/rights decisions and metadata consent are **UNVERIFIED/pending**; audio signal measurements alone do not establish speech quality. No actual reviewer identity or approval was fabricated.
+- The existing cache-motion prototype is deliberately preview-only. Review this phase's code/package and separately give visual feedback on that proof. Before an eventual release, repair/review the bundle/claim bindings, complete rights evidence/credits and use an approved component; a playback checkbox cannot bypass the prototype restriction.
+- No OAuth, outbox, YouTube/Instagram adapter, public action, dashboard, general visual asset pipeline or new animation library was implemented. Next planned phase is 11, only after explicit review/authorization; stop here.

@@ -34,6 +34,14 @@ ADDITIONAL V4 REQUIREMENTS — INTEGRATE PHASE 05/06 CONTRACTS
   - Show only explicit publish eligibility, but do not build YouTube OAuth, API upload or Instagram automation here (those are Phases 09–10). Replace original 'manual publish confirmation' with an offline approval/release handoff until Phase 09.
   - A reasonable first dashboard can be compact and functional; do not invent extensive themes or multi-tenant features.
 
+ADDITIONAL V5 REQUIREMENTS — VISUAL WORKFLOW UI
+  - Build on the actual Phase 11 VisualAsset and scene contracts. Add a focused local asset library with safe manual image import, asset thumbnail/preview, resolution/mime/size, license evidence, provenance and approval status. Do not clone a full-featured asset editor or internet image browser.
+  - In the storyboard editor, show registered visual scene types and supported props, with validated asset pickers, fixed brand profiles, scene timeline/cue preview and safe-zone preview. Clearly label `scene_3d` and `map_heatmap` unavailable until Phase 11B implements them; never offer dead-end choices.
+  - Add a way to switch between technical diagram and layered illustration visual variants where the actual component registry supports it. Keep Director-owned semantic choices distinct from BrandProfile-owned styling.
+  - Offer preview of visual layers/crop and clear warnings for unsupported props, missing asset files, risky licenses, image stretching, insufficient resolution, missing fonts and expensive 3D renders. Use existing services rather than duplicating Zod/approval logic in Vue.
+  - Treat 3D/map playback as OPTIONAL: show a rendered frame/MP4 fallback when live WebGL or local browser performance is insufficient, without weakening approval gates.
+  - No in-dashboard AI image API calls unless separately approved and implemented; manual asset import is sufficient for this phase.
+
 OUT OF SCOPE
   - No multi-tenant SaaS, accounts, billing, cloud deployment or background uploads.
   - Do not duplicate workflow logic between CLI and UI.

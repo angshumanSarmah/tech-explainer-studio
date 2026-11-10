@@ -142,3 +142,18 @@ Never ask the LLM to fabricate React source code dynamically during video produc
 `director export` emits the registered props/cue schemas directly from Zod plus explicit current renderer restrictions and a valid example. Application preflight still enforces runtime-only bounds/action-phase rules; the broader cue schema is not a claim that every enum action is executable. Phrase cues need unique literal narration plus later reviewed word alignment. Legacy title cards retain exact authored HTTP decoration. The caching production request adds optional bounded `content` to existing title cards in VideoScript 1.1.0: literal label, exactly three text rows, and footnote. This replaces all HTTP-specific copy for that card and reuses the same branded layout/entrance animation. The Director catalog distinguishes generic animated text cards from the HTTP-only BrowserRequestFlow mechanism; new simulations still require an explicit supported component. VideoScript 1.0.0 rejects this new field.
 
 Existing SVG components consume the approved BrandProfile palette, font size/weight scale and captions; geometry, node routing and component causality remain local renderer concerns. See document 26 for the audit. No new component, arbitrary theme override, generated React execution or aesthetic redesign is introduced.
+
+
+## Prerequisite proof: `CacheAsideProof@0.1.0` (preview only)
+
+This user-requested proof does **not** start or complete the Phase 11 library. It is registered explicitly with `previewOnly:true`, not a new general asset/scene taxonomy. VideoScript 1.1.0 uses:
+
+```json
+{"type":"cache-aside-proof","component":"CacheAsideProof","props":{"visualPhase":"lookup","keyLabel":"product:42","valueLabel":"Product data","illustrative":true}}
+```
+
+`visualPhase` is exactly `lookup | miss | fill | hit`; key/value are literal strings of 1–14 characters; `illustrative` must be true. Unknown fields, asset URLs, custom paths/code and legacy 1.0.0 use are rejected. Each beat requires at least 30 measured/rendered frames. The four-beat story is manually authored for visual review; no paid Director integration or new review API is introduced.
+
+Reusable parts: `DepthPanel` (layered SVG surfaces), `MotionPath` (base path and animated stroke), `MovingPacket` (frame-based position, directional request glyph or stacked data card), and `cacheAsideState` (pure out-of-order-safe frame evaluation/eased cubic positions). Fixed ports keep scene boundaries continuous. The miss returns to the app **before** the app queries the database; returned data reaches the app **before** a copy populates the cache. The hit starts with that populated cache, returns its result and keeps the database-read counter at one. Narration/subtitles use measured existing Producer timing; the fixed artistic path windows do not claim word alignment. Existing mobile label/caption checks remain active on every frame. Human visual approval and release approval remain separate; neither is granted by rendering this proof.
+
+Phase 08 now enforces the prototype's existing `previewOnly` restriction at the release video gate. Independent media QC can pass while playback/release approval remains blocked on `PREVIEW_ONLY_COMPONENT:<scene-id>`. This does not promote or implement Phase 11.
