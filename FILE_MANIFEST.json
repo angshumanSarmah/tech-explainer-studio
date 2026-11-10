@@ -1,0 +1,62 @@
+{
+  "package": "Tech_Explainer_Studio_Roadmap_Update_v4",
+  "basis": "Tech_Explainer_Studio_Complete_Codex_Starter_v3.zip",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "3920a4328f92bf10c850643bd495b8d2f6188a54bba7c0d9f0f7ade9c98476f7"
+    },
+    {
+      "path": "docs-amendments/13-roadmap-v4-addendum.md",
+      "sha256": "98a10278e3841d826c72c501720e5bcf268fa7c0935d7a2b907c5aa58db3cc81"
+    },
+    {
+      "path": "docs-amendments/25-build-phase-map-v4-addendum.md",
+      "sha256": "351e2f21bc54b11dca678a6ce56f41102e47aa2555c0828f48a16c125f31592f"
+    },
+    {
+      "path": "docs-amendments/CODEX_MERGE_ROADMAP_PROMPT.md",
+      "sha256": "ca99c805582e57a32aaab0d0b388fe165574e633340272dc4105b57ee9f2cab3"
+    },
+    {
+      "path": "overrides/codex/06-deepseek-content-director.md",
+      "sha256": "0454779d7fe52be7aa238d0ea37e047f6526fefd0955914be6c8e7d04649d558"
+    },
+    {
+      "path": "overrides/codex/07-sqlite-jobs-and-recovery.md",
+      "sha256": "32e9f10d62ce0da0f8ed2c6ebd4c168b984ef1552951e82ec9e2c258102f50de"
+    },
+    {
+      "path": "overrides/codex/08-review-and-release-gates.md",
+      "sha256": "c8f86b2208a5e93039cc39c72e3207672e95a7cb0e8f4de4b561f97942ee727a"
+    },
+    {
+      "path": "overrides/codex/09-youtube-private-publishing.md",
+      "sha256": "4c5761a72664c9dda4004b38e3b017e76d3329d35b04bc4229357950c8f06097"
+    },
+    {
+      "path": "overrides/codex/10-instagram-export.md",
+      "sha256": "c98919c04c2a6247f63e855c01ff575ba07fcd791dd6df7144975f23eee7400f"
+    },
+    {
+      "path": "overrides/codex/11-animation-component-library.md",
+      "sha256": "f52ed928cdc0e1f7f6f5940140a3f6ee16c1ce0e6eb45cfd3d82e72467682109"
+    },
+    {
+      "path": "overrides/codex/12-local-creator-dashboard.md",
+      "sha256": "3ff5504480929bc73dcc3f9bce2ed8e0ae3617d3e2ee0046febce66c8b776840"
+    },
+    {
+      "path": "overrides/codex/13-analytics-and-launch-readiness.md",
+      "sha256": "f0412aaba201708a78af437f3b382bdae295e3930686346e34cf51af493dea3f"
+    },
+    {
+      "path": "overrides/codex/14-autonomous-research-agent.md",
+      "sha256": "b1a7bb78a21e16e655308620342f2c4a0ea3d80af232c1df5e3ae4a646fc1543"
+    },
+    {
+      "path": "tools/apply-phase-prompts.sh",
+      "sha256": "e56c00ef71a4a25375c9c26eb08a07df6d8e1fb49e75494195e8a37439170bb1"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# Phase 09 — YouTube OAuth, private upload, retries and reconciliation
+# Phase 09 — Private YouTube publishing from approved branded release
 
 **Goal:** Upload one explicitly approved release privately to YouTube, reliably recording API status and avoiding accidental duplicate uploads.    
 **Stage:** First safe distribution    
@@ -7,7 +7,7 @@
 
 ## Run this phase in Codex
 
-Copy this entire prompt into Codex after the preceding phase is checked off in `PROJECT_STATUS.md`.
+Copy this entire prompt only after **Phase 12 (and phases 07–08)** has been verified in `PROJECT_STATUS.md` (and required prior phases remain complete). Revised next phase: **Phase 10**.
 
 ```text
 You are implementing Phase 09 of Tech Explainer Studio, a new independently owned project. Do not copy proprietary phi-video-gen code. Read AGENTS.md, CLAUDE.md (if present), ARCHITECTURE.md, PROJECT_STATUS.md, docs/13-roadmap.md, docs/25-build-phase-map.md, and these phase-specific references:
@@ -27,6 +27,13 @@ IMPLEMENTATION WORK
   - Implement `publish youtube --job ... --privacy private` with dry-run and explicit confirmation.
   - Derive metadata from approved script/release, using measured chapter timestamps where applicable, no workplace PHI/Jira tags.
 
+ADDITIONAL V4 REQUIREMENTS — INTEGRATE PHASE 05/06 CONTRACTS
+  - Read current approved ReleaseManifest and Phase 06 BrandProfile identity; publish the approved final media artifact only, with exact asset hash, matching reviewed metadata and source attribution notes.
+  - Use reviewer-approved title/description/tags/thumbnail. AI may suggest metadata, but generated suggestions cannot bypass approval or be uploaded without explicit review.
+  - Validate audio/video streams and safe-zone/caption QC for the release target; preserve publishing audit with job, brand, media hash, destination, idempotency key and remote video ID.
+  - Bind the publish request to approved target account/channel and exact private visibility. Never infer approval from a dashboard button press alone; recheck the service gate server-side.
+  - This phase follows Phase 12 in the revised execution order; avoid depending on a future Phase 13 collector.
+
 OUT OF SCOPE
   - No automatic public uploads, scheduled campaigns, artificial views or paid ad tools.
   - No real network upload in automated tests.
@@ -36,9 +43,13 @@ ACCEPTANCE CRITERIA
   - AC-02: OAuth errors, retryable failures and uncertain upload outcomes are differentiated.
   - AC-03: A manually approved private upload can be verified from the returned video ID and remote status.
 
+  - AC-04: No upload when approved brand, narration, MP4, thumbnail or metadata hashes differ; the dashboard and CLI both hit the same eligibility gate.
+
 VERIFICATION
   - Fake API integration with success, 401, 429, timeouts and duplicate uncertainty.
   - Optional user-authorized real private upload smoke test.
+
+  - Test private-only uploads for imported and automated script origins, hash mismatches, stale thumbnails and missing audio, all with mocked API.
 
 LIKELY AREAS (inspect current repository before creating them)
   - src/publisher/youtube/
@@ -57,7 +68,7 @@ AFTER THE PHASE
 2. Update the MAIN ARCHITECTURE.md only if implemented components, interfaces, boundaries or decisions truly changed. Clearly distinguish planned from implemented. Keep docs/02-architecture.md consistent when technical detail changes.
 3. Update contract/component/reference docs only when their real behavior changed. Record significant architecture decisions in docs/15-adrs.md.
 4. Update AGENTS.md or CLAUDE.md ONLY when a new durable project-wide coding rule is necessary. Avoid accumulating phase logs in agent instructions.
-5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 09.
+5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 09. The next planned phase is Phase 10; do not implement it now.
 ```
 
 ## Human completion check

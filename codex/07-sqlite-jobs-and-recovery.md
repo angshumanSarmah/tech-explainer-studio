@@ -1,4 +1,4 @@
-# Phase 07 — SQLite job state, resumability and incremental rerendering
+# Phase 07 — SQLite jobs, provenance and incremental recovery
 
 **Goal:** Persist production jobs and recover from interruption while invalidating only changed scenes or dependencies.    
 **Stage:** Production resilience    
@@ -7,7 +7,7 @@
 
 ## Run this phase in Codex
 
-Copy this entire prompt into Codex after the preceding phase is checked off in `PROJECT_STATUS.md`.
+Copy this entire prompt only after **Phase 06** has been verified in `PROJECT_STATUS.md` (and required prior phases remain complete). Revised next phase: **Phase 08**.
 
 ```text
 You are implementing Phase 07 of Tech Explainer Studio, a new independently owned project. Do not copy proprietary phi-video-gen code. Read AGENTS.md, CLAUDE.md (if present), ARCHITECTURE.md, PROJECT_STATUS.md, docs/13-roadmap.md, docs/25-build-phase-map.md, and these phase-specific references:
@@ -27,6 +27,14 @@ IMPLEMENTATION WORK
   - Add per-job lock/lease and bounded retries; avoid duplicated jobs or races.
   - Record provider token spend and suppress paid provider construction in render-only resume.
 
+ADDITIONAL V4 REQUIREMENTS — INTEGRATE PHASE 05/06 CONTRACTS
+  - Persist content origin (`manual_import`, `deepseek`, later provider), validated VideoScript revision, Phase 05 ResearchBundle identity/revision and source/claim review references without persisting secrets or unbounded raw prompts.
+  - Persist BrandProfile ID/version/resolved config fingerprint and Kokoro narrator/model/speed identity, linked to each render/job manifest. Keep user-provided brand assets and content provenance separate.
+  - Define dependency-aware invalidation rather than rerendering everything: brand colors/fonts -> affected frames/captions/final assembly, not unchanged speech; narrator/lexicon -> affected audio/timeline/mux, not Director; scene edits -> changed scene outputs; source/claim changes -> evidence/review invalidation and Director draft status, not automatic paid regeneration.
+  - Cache keys must include the actual implementation's relevant scene, renderer, font, brand, narration, timing, input and tool versions. Be conservative where dependencies are unknown; avoid incorrect reuse.
+  - Resume and render-only retry must never silently re-call DeepSeek or regenerate source research; preserve paused review/approval state and invalidate stale release approvals after any artifact change.
+  - Handle legacy Phase 01–06 fixtures/jobs without assumed brand fields through tested migration/default handling; use actual state schema first.
+
 OUT OF SCOPE
   - No Temporal, LangGraph, Redis, distributed queue or cloud hosting.
   - No automatic rerun of the whole script or publisher after a scene render failure.
@@ -37,8 +45,14 @@ ACCEPTANCE CRITERIA
   - AC-03: Invalid transitions and concurrent conflicting mutations are rejected.
   - AC-04: CLI exposes stage-scoped errors and uses atomic asset writes.
 
+  - AC-05: Changing only theme colors leaves existing narration WAV checksums intact, while regenerating only visually dependent outputs.
+  - AC-06: Changing only the narrator invalidates audio/timeline/mux but preserves script and unrelated visual work; resume never makes an unapproved paid call.
+  - AC-07: Manual/LLM origin and source/brand revisions round-trip through SQLite and manifests; stale approval states are not reused.
+
 VERIFICATION
   - SQLite migration tests, crash/restart integration, cache invalidation graph tests and lease conflict.
+
+  - Add cache dependency matrix tests (script-only, source-review, brand tokens, caption style, narrator, output dimensions), migration/backcompat and cost/no-provider-construction checks.
 
 LIKELY AREAS (inspect current repository before creating them)
   - src/storage/
@@ -58,7 +72,7 @@ AFTER THE PHASE
 2. Update the MAIN ARCHITECTURE.md only if implemented components, interfaces, boundaries or decisions truly changed. Clearly distinguish planned from implemented. Keep docs/02-architecture.md consistent when technical detail changes.
 3. Update contract/component/reference docs only when their real behavior changed. Record significant architecture decisions in docs/15-adrs.md.
 4. Update AGENTS.md or CLAUDE.md ONLY when a new durable project-wide coding rule is necessary. Avoid accumulating phase logs in agent instructions.
-5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 07.
+5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 07. The next planned phase is Phase 08; do not implement it now.
 ```
 
 ## Human completion check

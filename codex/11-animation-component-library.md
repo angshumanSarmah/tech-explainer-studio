@@ -1,4 +1,4 @@
-# Phase 11 — EventQueue, B-tree, Git object graph and code traces
+# Phase 11 — Brand-consistent reusable animation library
 
 **Goal:** Prove the engine generalizes beyond HTTP with visually distinct, technically correct reusable animations.    
 **Stage:** Visual reuse and topical breadth    
@@ -7,7 +7,7 @@
 
 ## Run this phase in Codex
 
-Copy this entire prompt into Codex after the preceding phase is checked off in `PROJECT_STATUS.md`.
+Copy this entire prompt only after **Phase 08** has been verified in `PROJECT_STATUS.md` (and required prior phases remain complete). Revised next phase: **Phase 12**.
 
 ```text
 You are implementing Phase 11 of Tech Explainer Studio, a new independently owned project. Do not copy proprietary phi-video-gen code. Read AGENTS.md, CLAUDE.md (if present), ARCHITECTURE.md, PROJECT_STATUS.md, docs/13-roadmap.md, docs/25-build-phase-map.md, and these phase-specific references:
@@ -26,6 +26,14 @@ IMPLEMENTATION WORK
   - Implement CodeTrace with bounded reviewed inputs and zero execution of supplied code in render process.
   - Add one fixture/test per component, updated component registry, mobile golden frames and a small set of complete 30–60-second examples.
 
+ADDITIONAL V4 REQUIREMENTS — INTEGRATE PHASE 05/06 CONTRACTS
+  - Preserve original EventQueue, BTreeLookup, HashObjectGraph and CodeTrace scope, but prioritize visual storytelling quality, mobile readability and technically meaningful motion, not component count for its own sake.
+  - Every component must use the Phase 06 BrandProfile and the same validated scene/cue contracts used by manual ChatGPT and optional DeepSeek Director outputs; no arbitrary inline styling or executable LLM code.
+  - Maintain one live authoritative component registry; update Phase 06 animation catalog exports and current external-AI prompt package automatically when components or allowed props are added. Test export/runtime registry parity to avoid schema drift.
+  - Provide clear public component descriptions, prop schemas, supported cue anchors and an example VideoScript for each reusable component. Include failure/empty-state examples and visual-safe-zone rules.
+  - Build at least three visibly distinct complete 30–60-second demos (HTTP/server, queue/event loop, B-tree or Git graph where relevant), with Kokoro narration, captions and real mobile frame review. Use source-backed accurate behavior and illustrative labeling.
+  - Do not implement open-ended AI code generation, arbitrary JS execution, unrestricted 3D or a proprietary competitor's signature layouts.
+
 OUT OF SCOPE
   - No indiscriminate 3D, arbitrary dynamic JSX, unrestricted code execution or clone of competitor layouts.
   - No daily autonomous content production.
@@ -35,8 +43,13 @@ ACCEPTANCE CRITERIA
   - AC-02: All props validated and golden visuals reviewed at mobile size.
   - AC-03: Technical invariants tested: queue capacity, B-tree path, Git graph edge validity and code trace bounds.
 
+  - AC-04: Director contract export auto-reflects all registered components/props/cues; unknown names remain rejected.
+  - AC-05: Three different explainer demos demonstrate consistent brand identity, readable captions and measurable narration timing, with any timing warnings retained.
+
 VERIFICATION
   - Component schema negative tests, frame snapshot tests and visual sign-off.
+
+  - Add component-contract parity tests, branded golden frames and actual varied topic MP4 reviews where environment permits.
 
 LIKELY AREAS (inspect current repository before creating them)
   - src/visuals/
@@ -56,7 +69,7 @@ AFTER THE PHASE
 2. Update the MAIN ARCHITECTURE.md only if implemented components, interfaces, boundaries or decisions truly changed. Clearly distinguish planned from implemented. Keep docs/02-architecture.md consistent when technical detail changes.
 3. Update contract/component/reference docs only when their real behavior changed. Record significant architecture decisions in docs/15-adrs.md.
 4. Update AGENTS.md or CLAUDE.md ONLY when a new durable project-wide coding rule is necessary. Avoid accumulating phase logs in agent instructions.
-5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 11.
+5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 11. The next planned phase is Phase 12; do not implement it now.
 ```
 
 ## Human completion check

@@ -1,4 +1,4 @@
-# Phase 13 — Optional analytics feedback, hardening and controlled launch
+# Phase 13 — Quality metrics, analytics and controlled launch
 
 **Goal:** Measure real production quality, repeatability and channel results before scaling cadence or complexity.    
 **Stage:** Optional iteration after first videos    
@@ -7,7 +7,7 @@
 
 ## Run this phase in Codex
 
-Copy this entire prompt into Codex after the preceding phase is checked off in `PROJECT_STATUS.md`.
+Copy this entire prompt only after **Phase 10** has been verified in `PROJECT_STATUS.md` (and required prior phases remain complete). Revised next phase: **Phase 14 (optional)**.
 
 ```text
 You are implementing Phase 13 of Tech Explainer Studio, a new independently owned project. Do not copy proprietary phi-video-gen code. Read AGENTS.md, CLAUDE.md (if present), ARCHITECTURE.md, PROJECT_STATUS.md, docs/13-roadmap.md, docs/25-build-phase-map.md, and these phase-specific references:
@@ -26,6 +26,15 @@ IMPLEMENTATION WORK
   - Run full smoke suite and reproducibility/security/license audit; document backup/restore procedures and capacity limits.
   - Record honest launch retrospective and first 5-video improvement plan.
 
+ADDITIONAL V4 REQUIREMENTS — INTEGRATE PHASE 05/06 CONTRACTS
+  - Measure actual end-to-end quality and editorial effort: unsupported claims corrected, sources per video, time researching, per-scene repair counts, pronunciation corrections, missing-audio failures, timing-review rates, readability issues and visual component reuse.
+  - Track AI usage separately by origin: manually generated ChatGPT/Codex scripts versus optional provider API tokens/cost; do not fabricate zero-cost accounting or infer precise model costs where unavailable.
+  - Track BrandProfile version, cross-video consistency and deviations; assess visual identity and narration consistency before scaling.
+  - Support honest optional YouTube analytics only with authorized credentials; allow manual CSV/notes when APIs are unavailable, never infer subscriber/view metrics.
+  - Validate three different technical videos, fact/source approval quality, captions, voice, variety and mobile readability before considering production cadence increases.
+  - Include launch readiness for both YouTube Shorts and manual Instagram Reels; all publishing remains opt-in and approval-bound.
+  - Document when an autonomous Research Agent would provide measurable benefit; do not secretly implement one in the analytics phase.
+
 OUT OF SCOPE
   - No automated growth bots, spam, purchased views, 60-videos-per-month production target or opaque recommender.
   - No new agent frameworks without measured operational evidence.
@@ -35,9 +44,14 @@ ACCEPTANCE CRITERIA
   - AC-02: Five varied video topic plans can be reviewed; three distinct videos reuse registered components.
   - AC-03: Release checklist, rollback/backup procedure and operator runbook validated.
 
+  - AC-04: A production dashboard/review report distinguishes actual measurements, estimates, missing data and manual time for at least three different demos.
+  - AC-05: Human QC covers real audio, brand consistency, caption/readability and fact accuracy, with explicit remaining defects.
+
 VERIFICATION
   - Read-only mock analytics and incomplete-data reporting tests.
   - Full validation suite, security and recovery tabletop tests.
+
+  - Add small fixture-driven analytics tests for sparse data, mixed manual/provider origins and unreconciled approval states.
 
 LIKELY AREAS (inspect current repository before creating them)
   - src/analytics/
@@ -57,7 +71,7 @@ AFTER THE PHASE
 2. Update the MAIN ARCHITECTURE.md only if implemented components, interfaces, boundaries or decisions truly changed. Clearly distinguish planned from implemented. Keep docs/02-architecture.md consistent when technical detail changes.
 3. Update contract/component/reference docs only when their real behavior changed. Record significant architecture decisions in docs/15-adrs.md.
 4. Update AGENTS.md or CLAUDE.md ONLY when a new durable project-wide coding rule is necessary. Avoid accumulating phase logs in agent instructions.
-5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 13.
+5. Summarize files changed, verification results, risks and the next manual review action. STOP after Phase 13. The next planned phase is Phase 14 (optional); do not implement it now.
 ```
 
 ## Human completion check
