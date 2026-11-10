@@ -4,6 +4,12 @@
 
 Keep prompts **small, versioned, and task-specific**. Move hard constraints (schema, allowed components, licenses, approval transitions) into code. Do not copy internal company product/storytelling prompts from `phi-video-gen` into a public system.
 
+## Implemented defensive evaluation (Phase 05)
+
+`tests/sources/` uses original local documents, mocked DNS/HTTP and fake native response streams. Run `node --import ./tests/helpers/no-network.ts --test tests/sources/*.test.ts` to deny real network connections. Tests cover SSRF and redirects, streaming/declared limits, DNS/body timeout, encoded malicious instructions, shell commands, synthetic credential patterns, quarantine without text leakage, strict draft schemas, missing evidence, manual review and stale approval/context blocking. The bundle extension additionally tests mixed source types, policy-aware duplicate URLs, literal sections, aggregate streamed bytes/requests/deadlines, multiple conflicting claims, missing-source flags, brief integrity and legacy digest compatibility. These are deterministic application-boundary tests, **not** an LLM jailbreak evaluation or proof that screening detects every injection.
+
+Approved context is exported only as inert `untrusted_reference_data` with `commandsAllowed: false` and exact reviewed quotes/provenance. Raw sources cannot become a system prompt, tool call or schema override through these commands. A future provider must preserve this boundary; no prompts/provider integration or automatic factual approval is implemented in Phase 05. The packages and prompts below remain proposals.
+
 ## Prompt packages
 
 ```text

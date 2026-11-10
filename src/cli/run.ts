@@ -7,6 +7,9 @@ import {
 
 export const HELP = `Usage:
   studio script validate --file <videoscript.json>
+  studio source ingest --url <public-url> --confirm-public --output <new-directory>
+  studio research ingest --file <bundle-input.json> --output <new-directory>
+  studio claims --help
   studio render --script <videoscript.json> [--output <new-directory>] [--browser <executable>] [--guides]
   studio render --script <videoscript.json> --narration <saved-audio-directory> --output <new-directory> [--alignment <reviewed-words.json> | --allow-caption-fallback] [--strict]
   studio audio doctor --config <narration-config.json>
@@ -14,9 +17,9 @@ export const HELP = `Usage:
   studio audio narrate --config <config.json> --script <script.json> --output <new-directory> --allow-local-synthesis
   studio --help
 
-Validate VideoScript v1, render a silent preview or generate local narration. No API keys or LLM clients.
+Validate saved scripts, render local media, or ingest explicitly confirmed public evidence. No API keys or LLM clients.
 Render uses local Chrome and fonts; it never executes scene data as code.
-Exit codes: 0 success/help; 2 input/JSON/schema/file error; 3 unsupported visual/component or audio not ready; 5 render/synthesis/QC failure; 6 local synthesis not opted in.
+Exit codes: 0 success/help; 2 input/JSON/schema/file error; 3 unsupported visual/component or audio not ready; 4 source/fetch/fact review blocked; 5 render/synthesis/QC failure; 6 local synthesis not opted in.
 `;
 
 export interface CliOutput {
@@ -28,6 +31,10 @@ export async function runCli(
   args: string[],
   output: CliOutput,
 ): Promise<number> {
+  if (args[0] === 'source' || args[0] === 'claims' || args[0] === 'research') {
+    const { runEvidenceCli } = await import('./evidence-cli.ts');
+    return runEvidenceCli(args[0], args.slice(1), output);
+  }
   if (args[0] === 'audio') {
     const { runAudioCli } = await import('./audio-cli.ts');
     return runAudioCli(args.slice(1), output);

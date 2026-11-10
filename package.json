@@ -15,9 +15,10 @@
   },
   "scripts": {
     "studio": "node src/cli/index.ts",
+    "render:http": "node scripts/render-http-fixture.mjs",
     "build": "tsc -p tsconfig.build.json && node scripts/copy-audio-worker.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/*.test.ts tests/visual/*.test.ts tests/audio/*.test.ts tests/integration/*.test.ts",
+    "test": "node --test tests/*.test.ts tests/visual/*.test.ts tests/audio/*.test.ts tests/integration/*.test.ts tests/sources/*.test.ts",
     "test:visual": "node tests/visual/verify.ts",
     "lint": "biome check src tests scripts package.json narration.config.example.json narration.mock.example.json tsconfig.json tsconfig.build.json biome.json",
     "format": "biome check --write src tests scripts package.json narration.config.example.json narration.mock.example.json tsconfig.json tsconfig.build.json biome.json"

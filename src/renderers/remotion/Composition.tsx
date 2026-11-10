@@ -17,7 +17,7 @@ import { PHASE_LABELS } from '../../visuals/flow-state.ts';
 import { SvgText } from '../../visuals/SvgText.tsx';
 import { planSilentRender, sceneAtFrame } from './plan.ts';
 import { renderRegistry } from './registry.tsx';
-import { CAPTION, MOTION, SAFE, THEME, VIDEO } from './theme.ts';
+import { CAPTION, MOTION, SAFE, THEME, VIDEO, wrapText } from './theme.ts';
 
 export type CompositionProps = {
   script?: VideoScriptV1;
@@ -26,6 +26,16 @@ export type CompositionProps = {
 };
 
 function assertLabels(svg: SVGSVGElement, sceneId: string) {
+  const content = svg
+    .querySelector('[data-scene-content]')
+    ?.getBoundingClientRect();
+  const band = svg
+    .querySelector('[data-caption-band]')
+    ?.getBoundingClientRect();
+  if (content && band && content.bottom + 48 > band.top)
+    throw new Error(
+      `${sceneId}: scene graphics need at least 48px clearance above captions`,
+    );
   const labels = Array.from(
     svg.querySelectorAll<SVGTextElement>('[data-label]'),
   ).map((element) => ({ element, rect: element.getBoundingClientRect() }));
@@ -130,98 +140,100 @@ export function ExplainerComposition({
             color={THEME.muted}
             weight={650}
           />
-          {visual.type === 'title-card' ? (
-            <g>
-              <SvgText
-                text={visual.heading}
-                x={96}
-                y={380}
-                size={76}
-                columns={19}
-                gap={90}
-                weight={700}
-              />
-              {visual.subheading && (
+          <g data-scene-content={presentation ? 'true' : undefined}>
+            {visual.type === 'title-card' ? (
+              <g>
                 <SvgText
-                  text={visual.subheading}
+                  text={visual.heading}
                   x={96}
-                  y={860}
-                  size={42}
-                  columns={30}
-                  gap={52}
+                  y={380}
+                  size={76}
+                  columns={19}
+                  gap={90}
+                  weight={700}
+                />
+                {visual.subheading && (
+                  <SvgText
+                    text={visual.subheading}
+                    x={96}
+                    y={860}
+                    size={42}
+                    columns={30}
+                    gap={52}
+                    color={THEME.muted}
+                  />
+                )}
+                <rect
+                  x={96}
+                  y={presentation ? 1000 : 1060}
+                  width={824}
+                  height={presentation ? 260 : 320}
+                  rx={28}
+                  fill={THEME.surface}
+                />
+                {(visual.variant === 'hook'
+                  ? [
+                      '01   A browser asks',
+                      '02   A server processes',
+                      '03   A response returns',
+                    ]
+                  : [
+                      'Request: what do you want?',
+                      'Process: choose what to return',
+                      'Response: send the result',
+                    ]
+                ).map((line, i) => (
+                  <SvgText
+                    key={line}
+                    text={line}
+                    x={132}
+                    y={presentation ? 1060 + i * 70 : 1140 + i * 82}
+                    size={36}
+                    columns={38}
+                    color={
+                      i === 1
+                        ? THEME.highlight
+                        : i === 2
+                          ? THEME.success
+                          : THEME.flow
+                    }
+                  />
+                ))}
+              </g>
+            ) : (
+              <g>
+                <SvgText
+                  text={PHASE_LABELS[visual.props.visualPhase][0]}
+                  x={96}
+                  y={330}
+                  size={68}
+                  columns={20}
+                  gap={78}
+                  weight={700}
+                />
+                <SvgText
+                  text={PHASE_LABELS[visual.props.visualPhase][1]}
+                  x={96}
+                  y={490}
+                  size={34}
+                  columns={40}
+                  gap={42}
                   color={THEME.muted}
                 />
-              )}
-              <rect
-                x={96}
-                y={1060}
-                width={824}
-                height={320}
-                rx={28}
-                fill={THEME.surface}
-              />
-              {(visual.variant === 'hook'
-                ? [
-                    '01   A browser asks',
-                    '02   A server processes',
-                    '03   A response returns',
-                  ]
-                : [
-                    'Request: what do you want?',
-                    'Process: choose what to return',
-                    'Response: send the result',
-                  ]
-              ).map((line, i) => (
-                <SvgText
-                  key={line}
-                  text={line}
-                  x={132}
-                  y={1140 + i * 82}
-                  size={36}
-                  columns={38}
-                  color={
-                    i === 1
-                      ? THEME.highlight
-                      : i === 2
-                        ? THEME.success
-                        : THEME.flow
-                  }
+                <renderRegistry.BrowserRequestFlow.Component
+                  props={visual.props}
+                  cues={visual.cues}
+                  frame={localFrame}
+                  durationFrames={active.durationFrames}
+                  captionSpace={Boolean(presentation)}
                 />
-              ))}
-            </g>
-          ) : (
-            <g>
-              <SvgText
-                text={PHASE_LABELS[visual.props.visualPhase][0]}
-                x={96}
-                y={330}
-                size={68}
-                columns={20}
-                gap={78}
-                weight={700}
-              />
-              <SvgText
-                text={PHASE_LABELS[visual.props.visualPhase][1]}
-                x={96}
-                y={490}
-                size={34}
-                columns={40}
-                gap={42}
-                color={THEME.muted}
-              />
-              <renderRegistry.BrowserRequestFlow.Component
-                props={visual.props}
-                cues={visual.cues}
-                frame={localFrame}
-                durationFrames={active.durationFrames}
-                captionSpace={Boolean(presentation)}
-              />
-            </g>
-          )}
+              </g>
+            )}
+          </g>
           <SvgText
             text="Illustrative HTTP flow / transport and security omitted"
             x={96}
-            y={1530}
+            y={presentation ? 1324 : 1530}
             size={24}
             columns={70}
             color={THEME.muted}
@@ -246,19 +258,24 @@ export function ExplainerComposition({
         {caption && (
           <g>
             <rect
+              data-caption-band="true"
               x={96}
-              y={1372}
+              y={CAPTION.bandTop}
               width={824}
-              height={126}
+              height={CAPTION.bandHeight}
               rx={18}
               fill={THEME.bg}
-              stroke={THEME.grid}
-              strokeWidth={2}
             />
             <SvgText
               text={caption.text}
               x={508}
-              y={1404}
+              y={
+                CAPTION.firstBaseline +
+                ((CAPTION.maxLines -
+                  wrapText(caption.text, CAPTION.columns).length) *
+                  CAPTION.lineGap) /
+                  2
+              }
               size={CAPTION.fontSize}
               columns={CAPTION.columns}
               gap={CAPTION.lineGap}

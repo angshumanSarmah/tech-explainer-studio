@@ -27,7 +27,7 @@ import {
 import type { CompositionProps } from './Composition.tsx';
 import { executeFile, executeMedia, probeSilentVideo } from './media-tools.ts';
 import { planSilentRender } from './plan.ts';
-import { THEME, VIDEO } from './theme.ts';
+import { CAPTION, THEME, VIDEO } from './theme.ts';
 
 export const sha256 = (bytes: string | Uint8Array) =>
   createHash('sha256').update(bytes).digest('hex');
@@ -312,6 +312,7 @@ export async function renderSilentPreview(
         arch: process.arch,
       },
       theme: THEME.version,
+      captionLayout: options.presentation ? CAPTION.layoutVersion : null,
       guides: options.guides ?? false,
       encoder: {
         codec: 'h264',

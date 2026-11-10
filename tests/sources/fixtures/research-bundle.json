@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "instructions": {
+    "topic": "How an HTTP server handles a request",
+    "targetAudience": "Beginning web developers",
+    "emphasize": ["Request-response model", "Status codes"],
+    "exclude": ["TLS internals", "Framework benchmarks"]
+  },
+  "sources": [
+    {
+      "inputId": "http-docs",
+      "kind": "url",
+      "url": "https://docs.example.org/http",
+      "publicConfirmed": true,
+      "title": "Original synthetic HTTP documentation",
+      "sections": [
+        "HTTP uses a request-response model.",
+        "A response includes a status code."
+      ]
+    },
+    {
+      "inputId": "tutorial-readme",
+      "kind": "url",
+      "url": "https://github.com/synthetic-fixture/http-tutorial/blob/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/README.md",
+      "publicConfirmed": true,
+      "title": "Original synthetic tutorial README"
+    },
+    {
+      "inputId": "author-notes",
+      "kind": "pasted_text",
+      "text": "A request identifies a resource. The server returns a response. This is an original explanatory note, not independent protocol verification.",
+      "publicConfirmed": true,
+      "title": "Author's original technical notes",
+      "licenseNote": "Author-supplied notes; rights still need review",
+      "sections": ["A request identifies a resource."]
+    }
+  ]
+}

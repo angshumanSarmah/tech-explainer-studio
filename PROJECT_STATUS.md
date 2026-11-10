@@ -1,7 +1,7 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phases 01–04 implemented; narrated HTTP preview and automated media checks verified. Voice quality, coarse caption timing and human phone/playback acceptance remain pending.
-> **Next phase:** Review the Phase 04 milestone, including the outstanding voice-quality feedback; Phase 05 source/claim ingestion requires a new explicit request. Phase 05 has not started.
+> **Status baseline:** Phase 05 multi-source research bundles, source snapshots and JSON claim review are implemented and mock-verified (148/148 regression tests). Live ingestion was skipped at the user's explicit request; human phase review remains pending. Phase 04 media and default narrator are preserved.
+> **Next phase:** Review Phase 05 below. Phase 06 requires a new explicit request after acceptance; no Director or later-phase work has begun. Current deliverables remain unapproved for release/publication.
 > **Last updated:** 2026-11-10 (Asia/Kolkata).
 
 ## Phase tracker
@@ -12,8 +12,8 @@
 | 01 | TypeScript foundation, schema, fixture and CLI validation | Done | Verified baseline committed/pushed as `0bafa13`; user explicitly requested Phase 02 |
 | 02 | Remotion vertical silent animation renderer | Done | 62/62 tests; two offline 55-second renders; 16 golden comparisons and all 1650 decoded frames match; ready for human playback/phone review |
 | 03 | Local Kokoro narration adapter and pronunciation | Needs review | 82/82 tests; source/compiled seeded real Kokoro WAVs match, 4.233333 seconds; human listening pending |
-| 04 | Measured timeline, subtitles, assembly and media QC | Needs review | 92/92 tests; actual 37.1s H.264/AAC preview; six measured scenes; 42px captions; offline replay matches; voice/caption/phone review pending |
-| 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Not started | — |
+| 04 | Measured timeline, subtitles, assembly and media QC | Done | User confirmed phase complete and audible playback; latest caption-clearance revision passes 93/93 tests, 37.1s H.264/AAC, reserved 42px caption band; human release review remains pending |
+| 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Needs review | Extended for multi-source bundles; 55/55 network-denied source tests, 148/148 full tests, typecheck/lint/build pass; live ingestion UNVERIFIED by user choice |
 | 06 | DeepSeek Director: sourced script and animation storyboard | Not started | — |
 | 07 | SQLite job state, resumability and incremental rerendering | Not started | — |
 | 08 | Human fact/media/video approval and immutable release manifest | Not started | — |
@@ -361,9 +361,145 @@ Measured narration totals **26.333292s**; padding/holds total **10.766708s**, ex
 - Docs updated only for actual behavior/interfaces: README/execution flow, main/detailed architecture, contracts, video engine, workflow, testing, operations, HTTP example and **ADR-012**. AGENTS/CLAUDE unchanged.
 - **Next human action:** play the delivery MP4 with its QC checklist on a phone; review pronunciation/noise, caption onset/offset, minimum holds and visual direction. The phase is **Needs review**, and the default voice stays unchanged. Address that review before explicitly requesting **Phase 05** (safe source ingestion/claims). Stop here; no later phase has begun.
 
+## Phase 04 — Fresh full-pipeline fixture run and single rerun command (2026-11-10)
+
+- User confirmed Phase 04 complete and requested a new complete local run from the existing HTTP fixture. Inspected actual package scripts, CLI parsers, narration config, producer, FFmpeg/QC and repository state. Baseline was clean at committed/pushed **b32efce**. The pipeline already supported every media stage but required separate narration/render commands; added only `scripts/render-http-fixture.mjs`, the **`npm run render:http`** package script and README instructions to provide one repeatable command. No renderer, timing policy, fixture, default narrator, model or architecture boundary changed.
+- The runner invokes the existing `audio narrate` command with explicit local synthesis and then `render --narration ... --allow-caption-fallback`. Each call creates a new ignored `output/http-full-<suffix>/` containing original per-scene WAVs in `narration/` and complete movie/SRT/QC artifacts in `render/`. `full-run.json` records exact commands, exits, fixture/config/runner SHA-256s and paths; errors retain partial outputs. Child environments contain PATH only. This is an offline local render operation, with no model/package download, paid API, OAuth or publishing. The runner selects the existing flagged scene speech-span fallback; it does not fabricate word alignment or grant release approval.
+- **Actual full command:** `npm run render:http`, executed under the prior OS policy denying outbound networking except localhost, with the existing Chrome launched through the execution tool's reviewed sandbox escalation. **Exit 0**; both recorded child stages exit 0. Kokoro freshly synthesized all six scenes; Remotion rendered **1113 frames**, FFmpeg assembled H.264/AAC and existing QC independently decoded/checked each scene. No old narration was substituted. Default settings are unchanged: **af_heart / kokoro-http-v2 / en-us / rate 1 / seed 0 / tech-en-v1**. Config hash remains identical before/after the run.
+- **Fresh run directory:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/http-full-YVbn8d/`.
+- **MP4:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/http-full-YVbn8d/render/video.mp4`. SHA-256 **fd4cc3e18a1aca0345fcf763d48aff975b50f3f8b8e3511f7b2089d3bb8b35bc**, matching the earlier seeded 42px preview.
+- **SRT:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/http-full-YVbn8d/render/captions.srt`.
+- **Original six scene WAVs:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/http-full-YVbn8d/narration/<scene-id>/<scene-id>.wav`, with metadata and a narration manifest. The producer also preserves its copied WAVs under `render/narration/` plus padded `render/narration.wav` and independently decoded `render/decoded-audio.wav`.
+- Independently re-probed the **final MP4 path** with ffprobe `-v error -count_frames -show_streams -show_format -of json`: exactly **one H.264/yuv420p video and one AAC audio stream**, **1080×1920, 30/1 FPS, 1113 video frames, 37.1s**; audio is **mono 24kHz AAC**. Video and audio **start_time=0.000000**; both stream durations are **37.100000s**, so start and end differences are **0 seconds**. Raw results: `independent-ffprobe.json` in the run root; pipeline QC/manifest remain in `render/`.
+- Additional content synchronization check: `verify-sync.py` in the ignored run root compares every freshly synthesized scene WAV against the corresponding decoded AAC segment, searching ±100ms using FFT cross-correlation. **All six peak lags are 0 samples / 0ms**; normalized correlations **0.999911–0.999954**. Verified all six SRT texts/intervals against the actual overlay timeline and video duration. Caption onset/end difference against detected decoded speech activity is at most **46.667ms** (within one frame plus the 20ms detection window). Report: `synchronization-report.json`. This verifies scene-level placement/encoding; it does **not** establish word-level phonetic accuracy or perceived voice quality.
+- Created **six previews extracted from the combined encoded MP4**, not only browser source stills: `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/http-full-YVbn8d/previews/`. `frames.json` records their exact frame numbers/times. Inspected hook, request, parse, route, response and wrap previews: full 42px caption text is visible without clipping/diagram overlap. Existing browser checks also verified all rendered frame label bounds/collisions. No physical phone or human listening acceptance is inferred.
+- Verification after the small runner addition: **`npm run format` exit 0**, **`npm run typecheck` exit 0**, **`npm run lint` exit 0 (53 files clean)**, **`npm test` 92/92 pass**, **`npm run build` exit 0**. The full real-media run exercises the orchestration directly; no implementation-mirroring unit test was added. No dependencies were installed. Default config and original fixture remain unchanged.
+- **UNVERIFIED / unchanged limitations:** human intelligibility/noise and physical playback review; word-level subtitle/phrase alignment. The saved output clearly retains `requiresTimingReview=true` and `approvedForRelease=false`. Earlier reported INT8 voice clarity/DC issues were not silently filtered, resolved or replaced. No Phase 05 work, Git commit or push was performed in this run. This log records technical phase completion per the user's instruction, separately from human release/publication approval.
+
+## Phase 04 — Caption clearance and non-obstructing layout (2026-11-10)
+
+- User confirmed audio is audible in the browser/chat preview and requested captions that do not obstruct the animation. Preserved the existing full-run helper/documentation work and original `http-full-7WfO93` artifacts. No audio codec/volume/voice change was made, and no new synthesis, download, provider call or publishing ran.
+- Updated narrated layout to **separate-caption-band-v2**. The 42px caption text retains its size but is vertically centered in a padded, borderless lower band at **y=1372–1524**. Narrated title-card summaries reflow upward; the server group lifts **70px**, its packet/arrow endpoints follow, and compact details/disclaimer sit above the captions. Diagram text is not scaled down. Silent rendering retains its original geometry.
+- Added a browser check on full scene graphics bounds, requiring **at least 48px** above the caption band whenever a caption is active, alongside the existing per-frame label bounds/collision checks. Added a meaningful motion regression covering request/response direction and clearance from the raised server over all 301 test frames. The caption layout version is recorded in the visual manifest.
+- Changed `src/renderers/remotion/{Composition,theme,render}.tsx/.ts`, `src/visuals/{BrowserRequestFlow,flow-state}.tsx/.ts`, `tests/visual/animation.test.ts`, README caption guidance and the layout detail in `docs/03-contracts.md`. No VideoScript/domain contract or main architecture boundary changed. Existing fixture/default config stay unchanged. Future `npm run render:http` runs automatically use this layout.
+- Verification: `npm run format`, `npm run typecheck`, `npm run lint`, `npm test`, `npm run build` all exit **0**; final suite **93/93 tests pass**, zero fail/skip; lint **53 files**, clean. Reused the user's saved WAVs with compiled `render --script examples/http-server.videoscript.json --narration output/http-full-7WfO93/narration --output output/captions-clear-pjqbbfuq/render --allow-caption-fallback`, under the existing outbound-network-denial policy/installed Chrome. Exit **0**; all frame clearance checks passed.
+- **Revised complete MP4:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/captions-clear-pjqbbfuq/render/video.mp4`. SHA-256 **d96fd5da2e467c4b39060054a875bd107a79273f5101050eac29c48d9261eea0**. Independent ffprobe confirms **1080×1920@30, H.264/yuv420p + mono 24kHz AAC, 2 streams, 1113 frames, 37.1 seconds**; final decoded per-scene audio QC passes. SRT, padded narration WAV and decoded AAC WAV are each **byte-identical** to the user's original run, so this is a visual layout change only.
+- Created six encoded MP4 frame previews in `output/captions-clear-pjqbbfuq/previews/`, with exact frame/time mapping. Inspected request/wrap source stills plus hook/parse/response encoded previews: caption text has visible padding and no diagram/card obstruction or clipping. `verification.json`, independent probe JSON, original-style QC report and versioned render manifest are preserved in the new directory. A full silent golden-video rerender was not repeated for this conditional narrated layout; existing silent behavior tests pass.
+- Original movie/SRT/WAVs remain intact. Human phone/platform-overlay and final release approval remain separate; caption timing retains the existing explicit scene-span review flag. No later phase, commit or push was started.
+
 ## Documentation update policy
 
 - Update **this file after every phase**.
 - Update `ARCHITECTURE.md` and the detailed design docs **only when the actual architecture changes**.
 - Update `AGENTS.md` or `CLAUDE.md` only when there is a durable rule that future agents need to follow.
 - Do not overwrite proposed diagrams with implementation claims until they have been tested.
+
+
+## Phase 05 — Bounded public sources and manual claim review (2026-11-10)
+
+### Observed scope and result
+
+Implemented and verified against original synthetic local fixtures. **Needs review**, with live public HTTP retrieval **UNVERIFIED**: the user explicitly selected “Use mock fixtures only; skip the live fetch.” No live document, linked tutorial, private repository, Jira, token, paid model, OAuth flow or publisher was accessed. No global install, model download, commit or push ran. Phase 06 is not started. The pre-existing Phase 04 caption-layout/full-runner changes were preserved; no audio/default-voice settings or fixture content changed in this phase.
+
+### Files and behavior
+
+- New `src/sources/policy.ts`, `transport.ts`, `safety.ts`, `snapshot.ts`, `ingest.ts`: one explicitly confirmed public URL; strict HTTP(S)/default-port/credential-and-query-free policy; conservative private/special IP and hostname filtering; all-answer DNS validation, pinned lookup/peer check, fresh unauthenticated connections, native TLS verification; bounded approved-host redirects with no downgrade; total deadline and streaming/declared byte bounds; identity-encoded UTF-8 text only.
+- Minimal strict snapshots: canonical/requested URL, origin/retrieval date, raw-body SHA-256/bytes/type, public IP, redirect trail, exact URL commit where available, hashed ETag/valid Last-Modified, unverified license mentions and ≤1200-character excerpt. No raw page/archive stored. Known injection/command/secret/hidden-control patterns quarantine the entire document with no excerpt. Every snapshot stays untrusted/context-blocked; reuse permission is never inferred.
+- New `src/claims/ledger.ts`: strict drafts start `needs_review`; all five statuses supported. Missing sources remain flagged. Supported reviews require exact quoted evidence from every cited clean snapshot; illustrative claims require explicit reviewer action. A separate local fact approval binds ledger revision, snapshots and review/approval metadata. Stale/unresolved claims block context export. Context is inert reference JSON with no tool permissions; no model consumes it here.
+- New `src/cli/evidence-cli.ts`, updated lazy dispatch/help in `src/cli/run.ts`, source-test glob in `package.json`: explicit ingestion plus JSON init/review/approve/check/context workflow, bounded JSON inputs, new-file-only writes and safe errors. Source commands do not run during script validation or rendering. Existing VideoScript v1 is unchanged.
+- New `tests/sources/{helpers,ingest.test,transport.test,claims.test,cli.test}.ts` and three authored fixture documents. No downloaded documents/code/media were incorporated.
+- Updated README, both architecture entry points, contracts, Director/security/evaluation references and ADR-013 to distinguish implemented behavior, limitations and planned provider/release integration. AGENTS.md and CLAUDE.md were not changed.
+
+### Commands executed and actual results
+
+| Command/check | Observed outcome |
+|---|---|
+| `git status --short`, inspected current diff/phase/docs/CLI | Existing Phase 04 dirty work identified and preserved; no Git mutations |
+| `npm run format` | Initial fixture HTML language attribute/style issues corrected; final pass checks 68 files with no outstanding changes/errors |
+| `npm run typecheck` | Initial test Buffer generic annotation corrected; final PASS |
+| `npm run lint` | PASS; 68 files checked |
+| `node --import ./tests/helpers/no-network.ts --test tests/sources/*.test.ts` | Initial 26/28 pass exposed a schema key-order/hash mismatch; fixed canonical evidence hashing and bound approval metadata. Final **32/32 pass**, 0 skipped, with real network denied |
+| `npm test` | **125/125 pass**, 0 skipped, including all 93 pre-existing tests and the FFmpeg/mock-narration integration |
+| `npm run build` | PASS; compiled CLI and packaged audio worker produced locally |
+| `node --import ./tests/helpers/no-network.ts dist/cli/index.js script validate --file examples/http-server.videoscript.json` | PASS; valid six-scene original fixture |
+| `node --import ./tests/helpers/no-network.ts dist/cli/index.js source --help` | PASS; compiled evidence CLI help |
+| `node --import ./tests/helpers/no-network.ts output/phase05/create-fixture-evidence.mjs` | PASS; mock clean/quarantine snapshots and unreviewed JSON ledger persisted, no real network permitted |
+| Compiled `claims check --ledger output/phase05/fixture-Wby1k5/ledger-unreviewed.json` under network denial | Expected `needs_review` / exit 4; no fact approval |
+| Local evidence-report hash audit; `git diff --check` | All six artifact SHA-256 values match; diff whitespace check PASS |
+
+The tests exercise obfuscated/local IP URLs, private/special IPv4/IPv6, mixed DNS answers, address pinning/peer mismatch, redirects including approved-host private DNS, streamed/declared size, truncation/compression/UTF-8/MIME errors, stalled DNS/body deadline, encoded/Unicode injection, synthetic secrets, schema overrides, exact quote/missing-source failures, manual statuses, stale hashes, CLI protected revisions and network-independent validation. This is application-boundary verification, not an LLM jailbreak or complete secret-detection proof.
+
+### Local artifacts and manual review
+
+Ignored evidence root: `output/phase05/`. Logs: `source-tests.log`, `tests.log`, `typecheck.log`, `lint.log`, `build.log`, `fixture-run.log`. The local fixture driver is `create-fixture-evidence.mjs` (run under the network-denying preload; each invocation creates a new directory).
+
+Observed fixture bundle: `output/phase05/fixture-Wby1k5/`:
+
+- `clean/snapshot.json`: clean minimized original test reference.
+- `quarantine/snapshot.json`: malicious fixture hash/provenance only; no unsafe excerpt or synthetic credential retained.
+- `draft.json`, `ledger-unreviewed.json`, `decision-template.json`: manual-review starter; deliberately **needs_review**, not human fact approval.
+- `README.txt`, `evidence-report.json`: synthetic-only labeling, derived gate state and exact file SHA-256 values.
+
+No new media render is needed for this source-only phase; media regression tests pass, and prior narrated MP4/WAV/SRT artifacts remain unchanged.
+
+### Limits, blockers and recommendation
+
+- Live HTTP/DNS/TLS/site compatibility is **UNVERIFIED** by user choice. Mock native streams verify transport limits without opening sockets. A future explicit live request may encounter unsupported compression, login/anti-bot responses or conservative URL/address rejection; never silently bypass these policies.
+- Pattern screening is heuristic and can both miss novel attacks/secrets and quarantine legitimate code examples. All text remains untrusted. Human review must check context, technical scope and freshness; excerpt matching alone does not prove a claim.
+- Hashes are integrity/staleness checks, not authenticated signatures; local reviewer names are assertions. License mentions do not establish reuse rights. Phase 08 release/rights approval remains separate. No source/claim linkage is yet enforced by VideoScript rendering; that integration belongs to later approved work.
+- The OS DNS operation may outlive the deadline, but cannot trigger a later request. No network sandbox, broad crawler, model adapter, job database or publishing work was added.
+- Next human action: inspect the Phase 05 diff, clean/quarantined snapshots and unreviewed ledger; use README's explicit JSON review workflow if desired. Accept the mock-only evidence scope or separately authorize a live public-document check. Recommend Phase 06 only after review and a new request. **Stop after Phase 05.**
+
+
+### Phase 05 extension — Multiple research sources per video (2026-11-10)
+
+**Observed status: Needs review.** Extended the existing Phase 05 implementation after inspecting the working tree, CLI, source/claim contracts and current tests. No fetcher rewrite, later phase, dependency installation or live source request. The user's mock-only verification preference still applies. All pre-existing Phase 04/05 working changes remain intact.
+
+**Implemented changes:**
+
+- New `src/sources/bundle.ts`: strict research input/output contracts; separate `instructions` for topic, target audience, emphasized/excluded concepts; individually confirmed URL/GitHub/pasted-text inputs; optional literal selected sections and unverified per-input license notes. All declared approvals/URL policies validate before I/O.
+- New `src/sources/research-source.ts`: typed 1.1.0 sources with explicit source kind, independent content hash/timestamp, original/canonical URL when applicable, selected sections and provenance. Original request URLs omit fragments; pasted notes have null URL/IP/revision rather than fabricated remote provenance. Existing GitHub exact URL commits, hashed HTTP validators and unverified license signals are retained. Pasted text receives the same screening/quarantine/minimization policy; quarantined sources retain neither excerpt nor selected-section text.
+- Updated `src/sources/ingest.ts` only to accept literal section lists, share license-signal extraction and honor an outer abort signal. Updated `transport.ts` with bounded streamed-byte accounting callback; all earlier SSRF/DNS/IP/TLS/redirect controls remain in force.
+- Bundle limits: default 20 input entries / 4 MiB consumed document and pasted UTF-8 bytes / 30-second total ingestion deadline / 60 HTTP requests including redirects; hard ceilings 50 / 8 MiB / 120 seconds / 300 requests. Existing per-source 512 KiB / 10-second / three-redirect defaults remain; per-entry limits can only narrow bundle per-source caps. Any source/budget failure stops later work; no completed bundle is persisted. Errors identify the safe input ID for source policy failures.
+- Deduplication uses canonical URL or exact pasted-byte hash plus selections, redirect approvals and effective limits; it never merges allowlists or broadens permissions. Different sections/policies may fetch separately. Redirect-convergent snapshots share a source ID while every original input mapping/title/license note remains in `assignments`; actual consumed bytes/requests remain charged. Matching content at unrelated URLs is not treated as interchangeable provenance.
+- Updated `src/claims/ledger.ts`: existing multiple-claim/multiple-source support reused, with `createLedgerFromBundle`; new 1.1.0 ledger/context binds bundle ID/hash and the editorial brief. Original 1.0.0 snapshot schemas/digests and ledger approval behavior remain compatible. Explicit `CLAIM_CONTRADICTED`, `CLAIM_INSUFFICIENT`, `CLAIM_UNSUPPORTED` and missing-source issues block approval. Semantic contradiction discovery remains human review; no text pattern is treated as a factual decision.
+- Updated CLI dispatch/evidence CLI: `research ingest --file <input.json> --output <new-directory>` writes `research-bundle.json`; `claims init --bundle <bundle.json> --claims <draft.json> --output <new-ledger.json>` initializes all claims unreviewed. It cannot combine `--bundle` with independent `--source` files. Existing single-URL/repeated-source commands and protected revision writes are preserved. The JSON input cap remains 2 MiB.
+- New `tests/sources/bundle.test.ts` and authored `fixtures/research-bundle.json`; extended native stream tests. README, both architecture references, contracts, Director/security/evaluation references and ADR-013 updated for actual interface changes. No AGENTS.md/CLAUDE.md changes. No DeepSeek, autonomous research, dashboard, recursive repository traversal or publisher.
+
+**Commands and actual outcomes:**
+
+| Verification | Observed result |
+|---|---|
+| `npm run format` | PASS; 72 files checked |
+| `npm run typecheck` / `npm run lint` | PASS |
+| `node --import ./tests/helpers/no-network.ts --test tests/sources/*.test.ts` | **50/50 PASS**, zero skipped, no live network |
+| `npm test` | **143/143 PASS**, zero skipped, including existing media integration and all earlier phase tests |
+| `npm run build` | PASS |
+| `node --import ./tests/helpers/no-network.ts dist/cli/index.js research --help` | PASS; compiled command dispatch/help |
+| `node --import ./tests/helpers/no-network.ts output/phase05/create-bundle-evidence.mjs` | PASS; mixed URL/GitHub/paste fixture bundle and unreviewed multi-claim ledger, HTTP fully mocked |
+| Compiled CLI `research ingest --file <local-paste-input> --output <new-directory>` under network-denying preload | PASS; two pasted sources, 66 bytes, **zero HTTP requests** |
+| Compiled original fixture validation / original 1.0.0 ledger check under network denial | PASS valid six-scene script / expected `needs_review` exit 4 |
+| Mixed-bundle artifact hash audit / `git diff --check` | All five artifact hashes match; whitespace check PASS |
+
+The initial mixed-claim test correctly rejected a quote from an uncited source (48/49 tests passed). The fixture was corrected to cite both conflicting references; the evidence guard was preserved. Final tests additionally cover duplicate URLs/notes, independent section selections, aggregate count/byte/stream/request/deadline limits, cancellation before DNS, redirect/private-host rejection, dedup policy isolation, conflicting/insufficient/missing-source claims, multi-source reviewed context, brief/hash staleness, source metadata integrity, legacy digests and CLI writes. No human fact approval was manufactured for the delivered evidence.
+
+**Artifacts (ignored):**
+
+- `output/phase05/bundle-3jmm6o/research/research-bundle.json`: three independent synthetic sources, two mocked HTTP requests, 795 consumed bytes, exact bundle/source provenance hashes.
+- `output/phase05/bundle-3jmm6o/{input.json,draft.json,ledger-unreviewed.json,README.txt,evidence-report.json}`: multi-source review starter; three claims, including one deliberately missing source. State remains **needs_review** and export/approval is blocked.
+- `output/phase05/compiled-paste-ZEoNEi/`: compiled CLI two-note input/output smoke, network denied.
+- `output/phase05/bundle-{format,typecheck,lint,build,tests,regression-tests}.log`, `bundle-fixture-run.log`, `bundle-audit.json`, fixture driver `create-bundle-evidence.mjs`.
+
+**Limits and next review:** Live public-site compatibility is still **UNVERIFIED**, explicitly skipped. Quarantine remains heuristic; pasted notes are references, not independent fact proof; license notes/signals confer no reuse permission. Local JSON reviewers are unauthenticated assertions. Multi-source disagreements require a human decision and exact evidence; no automatic semantic conflict resolution or fact approval exists. The bundle/brief contract is ready for planned Phase 06 consumption, but provider and VideoScript integration are not started. Review the mixed bundle's provenance/mappings/brief and unreviewed claims using README's workflow. **Stop after Phase 05; await review.**
+
+
+### Phase 05 review fixes — URL credentials and partial limits (2026-11-10)
+
+Both review findings are fixed within Phase 05:
+
+- `src/sources/safety.ts` now shares one normalized credential pattern with URL screening in `policy.ts`. Decoded URL paths containing known Bearer/authorization/client-secret/key patterns fail with safe `URL_SECRET` errors before DNS or requests. Existing conservative URL guards are retained. Redirect targets and persisted snapshot URLs use the same policy, and errors do not echo synthetic credential text.
+- `policy.ts` adds a strict, bounded `FetchLimitOverridesSchema` with defaults removed from optional fields. `bundle.ts` uses it for per-entry overrides. A byte-only override inherits configured timeout/redirect values; empty/equivalent overrides preserve deduplication. Supplied values still clamp to bundle caps, and invalid/unknown limit fields fail validation.
+- Five regressions added across `tests/sources/{ingest,bundle,cli}.test.ts`: normalized/encoded credential rejection before I/O; redirect/saved-snapshot rejection; safe CLI errors; four-redirect success with a byte-only override; inherited limits/deduplication and invalid-bound checks. All five failed before the fixes (50/55 source tests passed), then passed afterward.
+- README, contract and security references clarify actual behavior. No architectural boundary, saved contract version, default narrator, media layout or agent instructions changed in this fix.
+
+Actual verification: `npm run format`, `npm run typecheck`, `npm run lint`, `npm run build` all PASS; network-denied source tests **55/55 PASS**, full `npm test` **148/148 PASS**, zero skipped. Logs: ignored `output/phase05/review-fixes-before.log`, `review-fixes-source-tests.log`, `review-fixes-tests.log`. Live fetching remains UNVERIFIED/skipped by the user's mock-only instruction. Phase 05 remains ready for human review; no later phase was started.

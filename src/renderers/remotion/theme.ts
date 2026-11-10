@@ -23,10 +23,15 @@ export const MOTION = Object.freeze({
   travelTo: 0.8,
 });
 export const CAPTION = Object.freeze({
+  layoutVersion: 'separate-caption-band-v2',
   columns: 34,
   maxLines: 3,
   fontSize: 42,
   lineGap: 42,
+  bandTop: 1372,
+  bandHeight: 152,
+  firstBaseline: 1420,
+  serverLift: 70,
 });
 
 export function wrapText(text: string, columns: number): string[] {

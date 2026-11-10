@@ -5,7 +5,7 @@ import {
   RenderInputError,
   sceneAtFrame,
 } from '../../src/renderers/remotion/plan.ts';
-import { SAFE, wrapText } from '../../src/renderers/remotion/theme.ts';
+import { CAPTION, SAFE, wrapText } from '../../src/renderers/remotion/theme.ts';
 import { flowState, PHASE_LABELS } from '../../src/visuals/flow-state.ts';
 import { animation, fixture, scene } from '../helpers/fixture.ts';
 
@@ -65,6 +65,26 @@ test('response travels up to the browser, never down the request lane', () => {
   assert.equal(start.responseY, 1040);
   assert.equal(end.responseY, 870);
   assert.equal(start.requestVisible, false);
+});
+
+test('narrated packets retain direction and stay clear of the raised server', () => {
+  const request = animation(fixture());
+  const response = animation(fixture(), 4);
+  const serverTop = 1120 - CAPTION.serverLift;
+  let previousRequest = 870;
+  let previousResponse = 1040 - CAPTION.serverLift;
+  for (let frame = 0; frame <= 300; frame++) {
+    const down = flowState(request.props, request.cues, frame, 301, true);
+    const up = flowState(response.props, response.cues, frame, 301, true);
+    assert.ok(down.requestY >= previousRequest);
+    assert.ok(up.responseY <= previousResponse);
+    assert.ok(down.requestY + 62 < serverTop);
+    assert.ok(up.responseY + 62 < serverTop);
+    previousRequest = down.requestY;
+    previousResponse = up.responseY;
+  }
+  assert.equal(previousRequest, 1040 - CAPTION.serverLift);
+  assert.equal(previousResponse, 870);
 });
 
 for (const phase of Object.keys(

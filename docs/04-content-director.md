@@ -38,6 +38,12 @@ flowchart TB
 
 When sourced from [`build-your-own-x`](https://github.com/codecrafters-io/build-your-own-x), remember it is an **index** with links to third-party tutorials; inspect every linked work's own license and claims separately. Prefer to build an original demonstration rather than copy a code walkthrough.
 
+## Implemented evidence foundation (Phase 05)
+
+The Director flow remains planned. Its local evidence foundation now exists in `src/sources/`, `src/claims/ledger.ts` and `source`/`claims` CLI commands. Explicitly confirmed public URLs produce bounded minimized snapshots; no crawling, repo execution or provider calls occur. All text stays untrusted; suspicious documents lose their excerpt. Human JSON decisions must quote exact clean snapshot evidence, and a separate ledger approval is required to export inert reference context. Missing sources and unresolved statuses block approval. License mentions are unverified signals, never reuse rights. See [contracts](03-contracts.md), [security limits](11-security-and-legal.md) and the README workflow. Source freshness and live HTTP compatibility remain unverified here because the user selected mock fixtures only. This phase does not connect evidence to the existing VideoScript fixture or automate factual review.
+
+The Phase 05 extension also implements `ResearchBundle` inputs for multiple public URLs/GitHub documents and pasted technical notes. Its separate validated brief stores topic/audience/emphasis/exclusions; every source has independent provenance and optional selected literal sections. Aggregate budgets, deduplication and the original per-source protections apply. `claims init --bundle` binds the bundle hash/brief into an unreviewed ledger; future Phase 06 can consume this versioned data without broad web research or exposing raw source instructions. Human semantic contradiction review remains necessary. See the README multi-source workflow and contract 1.1.0 extension.
+
 ## DeepSeek provider rules
 
 - Use configured model ID from env (e.g. `deepseek-flash`); verify currently available IDs against official API docs.

@@ -1,6 +1,6 @@
 import { interpolate } from 'remotion';
 import type { BrowserRequestFlowProps, VisualSpec } from '../domain/visuals.ts';
-import { MOTION } from '../renderers/remotion/theme.ts';
+import { CAPTION, MOTION } from '../renderers/remotion/theme.ts';
 
 type Cues = Extract<VisualSpec, { type: 'tech-animation' }>['cues'];
 export const PHASE_LABELS = Object.freeze({
@@ -31,6 +31,7 @@ export function flowState(
   cues: Cues,
   frame: number,
   durationFrames: number,
+  captionSpace = false,
 ) {
   if (
     !Number.isInteger(frame) ||
@@ -47,6 +48,7 @@ export function flowState(
     return [MOTION.travelFrom, MOTION.travelTo] as const;
   };
   const phase = props.visualPhase;
+  const serverArrivalY = 1040 - (captionSpace ? CAPTION.serverLift : 0);
   const requestProgress =
     phase === 'overview'
       ? progress(t, 0.1, 0.4)
@@ -60,8 +62,8 @@ export function flowState(
     progress: t,
     requestVisible: phase === 'request' || (phase === 'overview' && t < 0.45),
     responseVisible: phase === 'response' || (phase === 'overview' && t >= 0.6),
-    requestY: interpolate(requestProgress, [0, 1], [870, 1040]),
-    responseY: interpolate(responseProgress, [0, 1], [1040, 870]),
+    requestY: interpolate(requestProgress, [0, 1], [870, serverArrivalY]),
+    responseY: interpolate(responseProgress, [0, 1], [serverArrivalY, 870]),
     parserActive:
       phase === 'parse' || (phase === 'overview' && t >= 0.4 && t < 0.5),
     handlerActive:

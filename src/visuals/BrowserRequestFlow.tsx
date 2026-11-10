@@ -1,18 +1,28 @@
 import type { BrowserRequestFlowProps, VisualSpec } from '../domain/visuals.ts';
-import { THEME } from '../renderers/remotion/theme.ts';
+import { CAPTION, THEME } from '../renderers/remotion/theme.ts';
 import { flowState } from './flow-state.ts';
 import { SvgText } from './SvgText.tsx';
 
-function Arrow({ x, up, active }: { x: number; up: boolean; active: boolean }) {
+function Arrow({
+  x,
+  up,
+  active,
+  lift = 0,
+}: {
+  x: number;
+  up: boolean;
+  active: boolean;
+  lift?: number;
+}) {
   const color = active ? (up ? THEME.success : THEME.flow) : THEME.grid;
   return (
     <g stroke={color} strokeWidth={6} fill="none">
-      <path d={`M${x} 835 L${x} 1090`} />
+      <path d={`M${x} 835 L${x} ${1090 - lift}`} />
       <path
         d={
           up
             ? `M${x - 14} 855 L${x} 835 L${x + 14} 855`
-            : `M${x - 14} 1070 L${x} 1090 L${x + 14} 1070`
+            : `M${x - 14} ${1070 - lift} L${x} ${1090 - lift} L${x + 14} ${1070 - lift}`
         }
       />
     </g>
@@ -82,7 +92,8 @@ export function BrowserRequestFlow({
   durationFrames: number;
   captionSpace?: boolean;
 }) {
-  const state = flowState(props, cues, frame, durationFrames);
+  const state = flowState(props, cues, frame, durationFrames, captionSpace);
+  const lift = captionSpace ? CAPTION.serverLift : 0;
   const response = props.response;
   const detail =
     state.phase === 'parse'
@@ -152,12 +163,12 @@ export function BrowserRequestFlow({
             anchor="middle"
             color={THEME.success}
           />
-          <Arrow x={280} up={false} active={state.requestVisible} />
-          <Arrow x={740} up active={state.responseVisible} />
+          <Arrow x={280} up={false} active={state.requestVisible} lift={lift} />
+          <Arrow x={740} up active={state.responseVisible} lift={lift} />
         </g>
       )}
       {props.show.server && (
-        <g>
+        <g transform={lift ? `translate(0 -${lift})` : undefined}>
           <rect
             x={96}
             y={1120}
@@ -242,7 +253,7 @@ export function BrowserRequestFlow({
         <SvgText
           text={detail}
           x={96}
-          y={1352}
+          y={1352 - lift}
           size={24}
           columns={70}
           color={THEME.muted}
