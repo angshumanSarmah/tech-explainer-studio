@@ -120,12 +120,19 @@ export const VisualCueSchema = z.strictObject({
   }),
 });
 
+export const TitleCardContentSchema = z.strictObject({
+  label: displayText(36),
+  rows: z.tuple([displayText(38), displayText(38), displayText(38)]),
+  footnote: displayText(64),
+});
+
 export const VisualSpecSchema = z.discriminatedUnion('type', [
   z.strictObject({
     type: z.literal('title-card'),
     heading: displayText(90),
     subheading: displayText(160).optional(),
     variant: z.enum(['hook', 'summary']),
+    content: TitleCardContentSchema.optional(),
   }),
   z.strictObject({
     type: z.literal('tech-animation'),

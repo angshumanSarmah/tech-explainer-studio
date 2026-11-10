@@ -114,6 +114,12 @@ interface TitleCardProps {
   heading: string; // max 90 chars
   subheading?: string; // max 160 chars
   variant: 'hook' | 'summary';
+  // VideoScript 1.1.0 only; omit to preserve exact legacy HTTP decoration.
+  content?: {
+    label: string; // 1–36 characters
+    rows: [string, string, string]; // each 1–38 characters
+    footnote: string; // 1–64 characters
+  };
 }
 ```
 
@@ -133,6 +139,6 @@ Never ask the LLM to fabricate React source code dynamically during video produc
 
 ## Phase 06 Director export and brand consumption
 
-`director export` emits the registered props/cue schemas directly from Zod plus explicit current renderer restrictions and a valid example. Application preflight still enforces runtime-only bounds/action-phase rules; the broader cue schema is not a claim that every enum action is executable. Phrase cues need unique literal narration plus later reviewed word alignment. Title cards retain authored HTTP decorations; the catalog explicitly scopes this renderer to HTTP stories and requires unsupported-visual diagnostics for other mechanisms.
+`director export` emits the registered props/cue schemas directly from Zod plus explicit current renderer restrictions and a valid example. Application preflight still enforces runtime-only bounds/action-phase rules; the broader cue schema is not a claim that every enum action is executable. Phrase cues need unique literal narration plus later reviewed word alignment. Legacy title cards retain exact authored HTTP decoration. The caching production request adds optional bounded `content` to existing title cards in VideoScript 1.1.0: literal label, exactly three text rows, and footnote. This replaces all HTTP-specific copy for that card and reuses the same branded layout/entrance animation. The Director catalog distinguishes generic animated text cards from the HTTP-only BrowserRequestFlow mechanism; new simulations still require an explicit supported component. VideoScript 1.0.0 rejects this new field.
 
 Existing SVG components consume the approved BrandProfile palette, font size/weight scale and captions; geometry, node routing and component causality remain local renderer concerns. See document 26 for the audit. No new component, arbitrary theme override, generated React execution or aesthetic redesign is introduced.

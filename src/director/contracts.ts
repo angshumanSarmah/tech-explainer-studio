@@ -66,7 +66,7 @@ export function directorContract(example: unknown) {
       cueSchema: z.toJSONSchema(VisualCueSchema),
       execution: {
         scope:
-          'HTTP request/response only; title-card decorations also show authored HTTP steps. Other mechanisms require an explicit unsupported_visual result.',
+          'BrowserRequestFlow animates HTTP request/response only. VideoScript 1.1.0 title cards accept bounded authored labels, three text rows and a footnote for other topics; they are animated text cards, not a simulation of an unsupported mechanism. Other component mechanisms require unsupported_visual.',
         resolution: [1080, 1920],
         fps: 30,
         profile: 'technology-explainer',
@@ -83,6 +83,9 @@ export function directorContract(example: unknown) {
           maxHeadingLines: 5,
           subheadingColumns: 30,
           maxSubheadingLines: 3,
+          authoredContentVersion: '1.1.0',
+          authoredRows: 3,
+          maxRowCharacters: 38,
         },
         maxNarrationCharacters: 2000,
         captionTiming: 'Measured WAV; fallback is explicitly review-only',

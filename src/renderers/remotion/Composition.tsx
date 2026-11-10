@@ -16,6 +16,7 @@ import {
 } from '../../timing/timeline.ts';
 import { PHASE_LABELS } from '../../visuals/flow-state.ts';
 import { SvgText } from '../../visuals/SvgText.tsx';
+import { titleCardCopy } from '../../visuals/title-card.ts';
 import { planSilentRender, sceneAtFrame } from './plan.ts';
 import { renderRegistry } from './registry.tsx';
 import { CAPTION, MOTION, SAFE, THEME, VIDEO, wrapText } from './theme.ts';
@@ -89,6 +90,9 @@ export function ExplainerComposition({
   const scene = active.scene;
   const localFrame = frame - active.from;
   const visual = scene.visual;
+  const cardCopy = titleCardCopy(
+    visual.type === 'title-card' ? visual : undefined,
+  );
   const ref = useRef<SVGSVGElement>(null);
   const [fontHandle] = useState(() => delayRender('Load bundled Inter font'));
   useEffect(() => {
@@ -138,7 +142,7 @@ export function ExplainerComposition({
         />
         <g opacity={opacity}>
           <SvgText
-            text={`HTTP / ONE REQUEST     ${String(index + 1).padStart(2, '0')} / ${String(plan.scenes.length).padStart(2, '0')}`}
+            text={`${cardCopy.label}     ${String(index + 1).padStart(2, '0')} / ${String(plan.scenes.length).padStart(2, '0')}`}
             x={96}
             y={220}
             size={BRAND.typography.sizes.s28}
@@ -177,18 +181,7 @@ export function ExplainerComposition({
                   rx={28}
                   fill={THEME.surface}
                 />
-                {(visual.variant === 'hook'
-                  ? [
-                      '01   A browser asks',
-                      '02   A server processes',
-                      '03   A response returns',
-                    ]
-                  : [
-                      'Request: what do you want?',
-                      'Process: choose what to return',
-                      'Response: send the result',
-                    ]
-                ).map((line, i) => (
+                {cardCopy.rows.map((line, i) => (
                   <SvgText
                     key={line}
                     text={line}
@@ -237,7 +230,7 @@ export function ExplainerComposition({
             )}
           </g>
           <SvgText
-            text="Illustrative HTTP flow / transport and security omitted"
+            text={cardCopy.footnote}
             x={96}
             y={presentation ? 1324 : 1530}
             size={BRAND.typography.sizes.s24}

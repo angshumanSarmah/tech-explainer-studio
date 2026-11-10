@@ -200,8 +200,19 @@ function validateReferences(
     });
   });
 }
-export const VideoScriptV1Schema =
-  VideoScriptV1Base.superRefine(validateReferences);
+export const VideoScriptV1Schema = VideoScriptV1Base.superRefine(
+  (script, ctx) => {
+    validateReferences(script, ctx);
+    script.scenes.forEach((scene, index) => {
+      if (scene.visual.type === 'title-card' && scene.visual.content)
+        ctx.addIssue({
+          code: 'custom',
+          path: ['scenes', index, 'visual', 'content'],
+          message: 'Authored title-card content requires VideoScript 1.1.0',
+        });
+    });
+  },
+);
 const DirectorSourceSchema = SourceSnapshotSchema.extend({
   url: z.url({ protocol: /^https?$/ }).nullable(),
 }).superRefine((source, ctx) => {

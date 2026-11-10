@@ -1,6 +1,6 @@
 # Tech Explainer Studio
 
-> **Phases 01–07 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, and SQLite jobs with fenced recovery and scene caches. Director/provider tests are mocked; live provider and ingestion checks remain unverified. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+> **Phases 01–07 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, and SQLite jobs with fenced recovery and scene caches. Director/provider tests are mocked; live DeepSeek remains unverified. Approved MDN/Redis source ingestion was verified for the caching episode. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 >
 > **Read [EXECUTION_FLOW.md](EXECUTION_FLOW.md) first for the exact Codex build process.**
 
@@ -54,7 +54,7 @@ node dist/cli/index.js script validate --file examples/http-server.videoscript.j
 
 `npm run format` formats and applies safe Biome fixes to source, tests and configuration; it leaves the reference fixture untouched. No global CLI installation is needed. A successful validation emits JSON on stdout and exits `0`. Failures emit structured JSON on stderr: `2` for input/JSON/schema/file errors, `3` for unsupported visual types/components. Help exits `0`.
 
-Only `title-card` and `tech-animation` with `BrowserRequestFlow` are supported. Validation stays independent of the renderer. Syntax/schema validity does not approve facts, rights, timing or a release.
+Only `title-card` and `tech-animation` with `BrowserRequestFlow` are supported. Validation stays independent of the renderer. VideoScript 1.1.0 title cards can supply bounded authored label/three rows/footnote for topic-correct animated text episodes; BrowserRequestFlow remains HTTP-specific. Legacy 1.0.0 keeps its original defaults. Syntax/schema validity does not approve facts, rights, timing or a release.
 
 ## Render a silent preview
 

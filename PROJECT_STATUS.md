@@ -1,6 +1,6 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phase 07 SQLite jobs, fenced recovery and dependency-aware scene caches implemented; 190/190 regression tests and 14/14 network/provider-blocked workflow tests pass. The real 37.1-second narrated HTTP preview and all-13-step cache reuse are verified. Live DeepSeek remains UNVERIFIED and was not called.
+> **Status baseline:** Phase 07 SQLite jobs, fenced recovery and dependency-aware scene caches implemented; 192/192 current regression tests pass (including 14 workflow tests). The real HTTP preview/cache reuse and a new 52.47-second caching explainer are verified. Live DeepSeek remains UNVERIFIED and was not called.
 > **Next phase:** Review Phase 07 interfaces, preview and caption/voice/factual/rights limitations. Phase 08 requires a new explicit request; all media remains unapproved for release.
 > **Last updated:** 2026-11-10 (Asia/Kolkata).
 
@@ -13,7 +13,7 @@
 | 02 | Remotion vertical silent animation renderer | Done | 62/62 tests; two offline 55-second renders; 16 golden comparisons and all 1650 decoded frames match; ready for human playback/phone review |
 | 03 | Local Kokoro narration adapter and pronunciation | Needs review | 82/82 tests; source/compiled seeded real Kokoro WAVs match, 4.233333 seconds; human listening pending |
 | 04 | Measured timeline, subtitles, assembly and media QC | Done | User confirmed phase complete and audible playback; latest caption-clearance revision passes 93/93 tests, 37.1s H.264/AAC, reserved 42px caption band; human release review remains pending |
-| 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Needs review | Extended for multi-source bundles; 55/55 network-denied source tests, 148/148 full tests, typecheck/lint/build pass; live ingestion UNVERIFIED by user choice |
+| 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Needs review | Extended for multi-source bundles; 55/55 source tests at Phase 05; approved MDN/Redis live ingestion later verified for the caching episode; human evidence review remains pending |
 | 06 | Manual/optional AI Director, sourced storyboard and BrandProfile | Needs review | 28/28 network-denied Director/brand tests; 176/176 full tests; manual Kokoro/Remotion/FFmpeg preview verified; live DeepSeek unverified |
 | 07 | SQLite job state, resumability and incremental rerendering | Needs review | 190/190 full tests; 14/14 network/provider-blocked workflow tests; real 37.1s HTTP preview, cached resume and scene-only export verified; manual playback/release review pending |
 | 08 | Human fact/media/video approval and immutable release manifest | Not started | — |
@@ -643,3 +643,62 @@ npm run studio -- jobs resume 41ef5b7b-e37b-4da5-93a5-892fdcb1c91f --data data/p
 No implementation blocker remains for the exercised Phase 07 scope. **UNVERIFIED:** human listening/naturalness, word-level caption accuracy, phone playback and release/factual/rights review; live providers/source fetching remain unverified as previously requested. Production still uses the current single approved brand and 1080×1920 format; alternate color/font/dimension invalidation is tested at dependency boundaries, not claimed as a separately rendered profile. Global-progress timing coupling can rerender additional clips. Imported usage is an estimate/receipt, not external billing proof; identical exported receipts cannot distinguish separate real requests without a future provider request ID. Crash orphans/older exports are retained; automatic cache garbage collection is not implemented. An unchanged failed/interrupted input has a two-attempt per-job budget; after repairing an unchanged environment, an explicit new request key can start a new budget while sharing valid scene caches.
 
 Next manual action: watch the final preview, inspect captions against speech and rerun the saved job after restarting a terminal. Review the new job/storage interfaces and dependency policy. Stop here for Phase 07 review; recommend Phase 08 only after the user requests it. No later-phase approval or publisher was implemented.
+
+
+## Local production — “How Does Caching Make Applications Faster?” (2026-11-10)
+
+**Completed as an episode-production request, not a new phase.** The user requested a complete 45–60-second video through the existing source/Director/brand/Remotion/Kokoro/FFmpeg pipeline, with no paid API, publishing or next-phase implementation. Git initially matched committed/pushed `c575487`. At continuation, unrelated phase-prompt edits, a new `codex/11b-...` prompt and a prompt-backup directory were already present; those were preserved and not implemented. No commit/push, installation, model download, paid provider, OAuth or upload ran.
+
+### Actual content and small compatibility fix
+
+- Wrote an original **135-word, 13-scene** application cache-aside explanation: repeated product read → lookup → miss → primary read → fill → subsequent hit → avoided repeated work → staleness/freshness → lookup overhead → measure benefits. No benchmark number, universal speedup, disk-read-per-query or immediate-consistency guarantee is asserted. HTTP/CPU/distributed cache mechanisms are not conflated.
+- The existing title cards hardcoded HTTP text even for non-HTTP headings. Added optional bounded, literal `title-card.content` (`label`, exactly three `rows`, `footnote`) for VideoScript **1.1.0** only; 1.0.0 rejects it, and omission preserves exact legacy copy. Existing branded text-card geometry, fade and progress animation are reused. **No caching simulation/component library or new phase was added.** BrowserRequestFlow remains HTTP-specific.
+- Changed `src/domain/{visuals,videoscript}.ts`, `src/director/contracts.ts`, `src/renderers/remotion/Composition.tsx`; added `src/visuals/title-card.ts`, `tests/visual/title-card.test.ts`. Updated README, architecture summaries and actual contract/component docs. Agent rules, voice/model config, worker/provider and default narrator are unchanged.
+
+### Sources and Director path
+
+The user explicitly approved ingestion of **MDN HTTP caching** (`https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching`) and **Redis cache-aside** (`https://redis.io/docs/latest/develop/use-cases/cache-aside/`). The actual existing bounded SSRF-protected pipeline fetched these two pages only, first as normal snapshots and again with minimal literal selections. Each bundle used two requests and 267,709 aggregate bytes; no links were crawled, source commands executed, auth headers supplied or license reuse grant inferred. Both selected snapshots have no quarantine findings and retain exact source IDs/body hashes/timestamps/URLs.
+
+Selected bundle: `research-fcc6c6b4b638facc22dfb00d`, saved in `output/caching-explainer/research-selected/research-bundle.json`. Six claim records and an explicit coding-agent technical cross-check are saved as `claims-ledger.json` and `technical-review.json`. The ledger retains `needs_review`/null human approval. Manual Director export/import/validate passes, with real source IDs/hashes and claims in the script. Its unbound preview retains missing-*approved*-research-binding findings; no human identity/review was fabricated to clear a gate. No DeepSeek provider call or external API spend occurred.
+
+### Measured production and audio repair
+
+- `audio doctor` confirmed installed/hash-matching Kokoro assets and `af_heart`, `kokoro-http-v2`, rate 1, `en-us`, seed 0, `tech-en-v1`. The unchanged provider synthesized 13 separate original WAVs: **52.267916 seconds** total.
+- The actual per-scene ceiling-to-frame policy yields **1,574 frames / 52.466667 seconds**, with contiguous measured scenes and 13 caption cues covering their own detected speech ranges. No guessed equal scene duration or word-alignment claim is used. Caption text matches each narration exactly; bounds are validated at every rendered frame.
+- Initial full Remotion/FFmpeg render passed stream/layout/decoded-audio checks, but source WAVs showed approximately 0.018–0.021 constant DC offset. Preserved them in `narration/`, then subtracted the rounded per-scene PCM mean for this episode only. No gain, waveform timing, model, voice settings or default narrator changed. Corrected WAVs/metadata in `narration-clean/` retain the original WAV hash, postprocess ID and exact removed integer offset.
+- Assertions confirmed unchanged sample counts, speech boundaries and timeline/caption presentation. The final assembly safely reused the exact checked Remotion visuals; all **1,574 encoded video packet hashes/timestamps** match the first assembly after audio remux. No scene was substituted or omitted.
+- Final independent ffprobe: **1080×1920, 30 FPS, 1,574 frames, 52.467 seconds, two streams, H.264/yuv420p + AAC**; existing A/V duration tolerance 0.076 seconds passes. All 13 source/final decoded scene checks are non-silent and unclipped; all source DC flags clear, maximum absolute decoded DC offset approximately **0.000034**.
+- Inspected rendered miss/hit/staleness/summary PNGs and final encoded miss/hit frames: labels/captions are legible, unclipped and separated. Additional encoded hook/stale/summary previews are preserved. These are animated text-flow cards, not a live cache-system trace.
+
+### Commands actually executed
+
+| Command/check | Outcome |
+|---|---|
+| Existing `research ingest --file ... --output ...` | First restricted-network attempt failed safely; scoped public fetch succeeded. An extra selection-fetch approval initially failed because the review service hit a usage limit (not a safety finding); retry through the same approval mechanism succeeded. No check was bypassed. |
+| `node output/caching-explainer/create-episode.mjs` | Created validated script, pending-human claim ledger and technical cross-check from the selected source bundle |
+| `director export`, `director import`, `director validate` | Passed; local manual path, no provider calls; saved `director-contract/`, `draft/` |
+| `audio doctor`, `audio narrate --allow-local-synthesis` | Passed with installed assets; 13 original real WAVs |
+| `render --script ... --narration ... --allow-caption-fallback` | Passed using scoped permission for existing local Chrome; 1,574 frames; initial output `render/` retained |
+| `node output/caching-explainer/finalize-audio.mjs` | Passed constant-offset correction and timing/source-byte checks, then normal final Producer mux/independent QC into `final/` |
+| `node output/caching-explainer/verify-episode.mjs` | Passed independent media/caption/source/model checks, original/corrected settings equality, all encoded video packet identities, and final frame extraction; generated `handoff.json` and `checks/verification.log` |
+| First proposed FFmpeg hash-muxer comparison | Installed reduced binary lacks `-hash`; this check failed visibly. Replaced by supported **ffprobe packet `data_hash` + timestamps**, which passed for all frames; no codec/tool download or disabled QC |
+| `npm run typecheck`, `npm run lint`, `npm run build` | Passed; local logs in episode root |
+| Targeted visual/Director tests | **36/36 passed** |
+| `npm test` | **192/192 passed**, zero failures/skips; includes two new title-card compatibility/contract tests |
+| `git diff --check` | Passed |
+
+### Final handoff and remaining human checks
+
+**Playable video:** `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2/output/caching-explainer/final/video.mp4`
+
+**SHA-256:** `0d74523dc9154c9567769b33ab90084e55dc8e4369d3de0ec41575c24e69627e`.
+
+Alongside it: `captions.srt`, `narration/` (13 corrected per-scene WAVs/metadata), combined/decoded WAVs, script, exact timeline, source-version manifest, ffprobe and QC report, and original scene PNGs/visual manifest. Parent episode folder preserves raw WAVs, source snapshots, Director draft/contract, pending claim ledger, technical review, audio-processing receipts, and hash-bound `handoff.json`. All media/episode artifacts remain ignored by Git.
+
+To rerender from saved corrected audio into a fresh directory, with no research or paid provider call:
+
+```bash
+npm run studio -- render --script output/caching-explainer/draft/videoscript.json --narration output/caching-explainer/narration-clean --output output/caching-explainer/review-rerender --allow-caption-fallback
+```
+
+**UNVERIFIED / pending:** human listening/naturalness, device playback and human factual/rights approval. Captions use the existing measured scene speech-span fallback (`requiresTimingReview:true`), not a forced word aligner. The coding-agent cross-check is not human fact or release approval; `approvedForRelease:false` remains throughout. Next manual action: play `final/video.mp4` with sound and review the source/claim sidecars. No new phase was started and nothing was published.

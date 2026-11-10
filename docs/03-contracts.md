@@ -229,3 +229,8 @@ If authorized `phi-video-gen` code is reused, write an **import adapter** mappin
 ## Valid sample
 
 See [`../examples/http-server.videoscript.json`](../examples/http-server.videoscript.json). Use this fixture to test the JSON parser and scene registry before wiring an LLM.
+
+
+## Authored title-card copy for local episode production
+
+VideoScript 1.1.0 `title-card` optionally accepts `content: {label, rows, footnote}`: label 1–36 characters, exactly three rows of 1–38 characters, footnote 1–64 characters. All fields are escaped literal text; there is no generated SVG/HTML/code evaluation, asset URL or dynamic component selection. Existing heading/subheading bounds and actual browser safe-area/collision checks still apply. Supplying the complete object replaces the card's HTTP-only header/rows/footer; omitting it preserves legacy pixels. VideoScript 1.0.0 rejects the additional field. Exported Director schemas/catalog include these limits and explicitly describe the output as animated text cards, not a new mechanism simulator.
