@@ -34,6 +34,18 @@ The system can produce a technically valid MP4 and still teach the wrong concept
 - A deliberately invalid animation configuration fails fast with actionable error.
 - One **manual private** YouTube upload with explicit confirmation and recorded remote ID.
 
+## Implemented Phase 03 audio checks
+
+`node --test tests/audio/*.test.ts` runs without model files, Python or downloads. Injected worker responses and a deterministic mock tone cover missing assets, hash/voice mismatch, subprocess start/nonzero/timeout/output failures, JSON stdin escaping, invalid worker protocol, text/path limits, empty/silent/truncated/malformed WAVs, invalid ffprobe duration/sample counts, changed assets and preservation of earlier scenes. Audio CLI tests exercise health, all-scene mock artifacts, strict flags/config, output protection and real-synthesis opt-in. Tests use the pinned npm ffprobe binary to measure real PCM files.
+
+An opt-in real `audio smoke` uses installed assets and records the actual outcome separately in PROJECT_STATUS. The seed is versioned with voice settings and sent to the worker; compare fresh source/compiled runs for local repeatability. Human listening for HTTP/URL and ordinary technical terms remains a separate review. Phase 03 does not assert caption, video timing, phone playback or release approval checks.
+
+## Implemented Phase 04 media checks
+
+`node --test tests/integration/*.test.ts` includes real FFmpeg H.264/AAC assembly from mock WAVs, independent ffprobe/decoded-audio checks, saved text/WAV identity, frame rounding/holds, caption bounds, exact phrase anchors and reviewed alignment identity. The integration renderer is explicitly synthetic and test-only; the actual HTTP Remotion movie is separately rendered and inspected. Run these tests with `node --import ./tests/helpers/no-network.ts --test tests/integration/*.test.ts` to block Node network access; no weights/Python/browser are needed for the automated integration tests.
+
+Negative cases reject silent/DC-only/clipped source signals, deliberately muted final AAC, invalid/overlapping captions, missing audio/streams, wrong dimensions/frame counts/duration, stale word alignment, missing/ambiguous phrase anchors and failed FFmpeg/ffprobe. Strict mode rejects mock/fallback timing before rendering, and failed runs never finalize `video.mp4`. A manual playback checklist is included in `qc-report.json`; human voice clarity, exact caption alignment, phone overlays, facts/rights and approval remain independent of automated media validity.
+
 ## Golden visual tests
 
 Generate fixed frames at `0%`, `25%`, `50%`, `75%`, `100%` per component; compare to reviewed golden images at known frame size/fps. Use perceptual thresholds (minor anti-aliasing differences are acceptable), plus deterministic seed fixture. Inspect label overlap and screenshot-safe zones at representative phone dimensions.

@@ -129,6 +129,49 @@ function parseVisual(input: unknown): ParsedVisual {
 
 Malformed JSON uses `MALFORMED_JSON`, path `$`, exit `2`, and a generic reason without reflecting input text. Invalid schemas use `SCRIPT_VALIDATION_FAILED` with issue codes `INVALID_INPUT` (exit `2`), `UNKNOWN_VISUAL_COMPONENT` or `UNSUPPORTED_VISUAL_TYPE` (exit `3`). If a script contains both kinds of issue, exit `3` takes precedence. Validation does not approve claims, licenses or publication.
 
+## Phase 04 measured presentation and alignment contracts
+
+The saved VideoScript v1 contract/fixture is unchanged. `render --narration <directory>` reads each `<scene_id>/<scene_id>.wav` and `narration.json`, validates its strict Phase 03 metadata, verifies the original narration and WAV hashes, then measures the copied WAV again with ffprobe. The producer never trusts saved duration alone and never executes source URLs or provider code.
+
+At 24 kHz and 30 fps, one frame is **800 audio samples**. The only scene-duration rounding boundary is:
+
+```text
+durationFrames = max(2, ceil(max(audioSamples / 800, scene.timing.min_seconds * 30)))
+from = sum(previous durationFrames)
+audioFrames = ceil(audioSamples / 800)
+holdFrames = durationFrames - audioFrames
+endPaddingSamples = durationFrames * 800 - audioSamples
+```
+
+The authored `min_seconds` is the permitted minimum hold policy, not a new guessed chapter duration. `preferred_seconds` is ignored for narrated rendering; exceeding `floor(max_seconds * 30)` fails with a scene ID. There is no speech trimming/speedup. Original estimates remain saved unchanged; an internal render copy carries resolved timing/cues. Manifests distinguish full hold frames from fractional-frame sample padding. A one-hour total bound remains enforced.
+
+Reviewed alignment input has the following strict shape (a type reference, not fabricated sample timings):
+
+```ts
+type ReviewedAlignment = {
+  schemaVersion: '1.0.0';
+  method: 'human-word-alignment' | 'local-forced-alignment';
+  reviewed: true;
+  reviewer: string;
+  scenes: {
+    sceneId: string;
+    wavSha256: string;  // 64 lowercase hex characters
+    textSha256: string; // exact original narration, before lexicon substitution
+    words: { word: string; startSample: number; endSample: number }[];
+  }[];
+};
+```
+
+Each scene appears exactly once. Tokens are the original narration's non-whitespace words, with exact punctuation/case/order; every token needs an ordered nonoverlapping positive interval within its measured WAV. A token such as `HTTP` spans the spoken letters after pronunciation expansion. The producer does not invent these sample positions. Operators/aligners must listen/check alignment before recording reviewer identity. The hashes invalidate old timings after a voice, model, text or WAV change.
+
+Phrase cues locate an exact, unique original-text occurrence and take the intersecting timed words' sample bounds. Missing/ambiguous anchors or absent reviewed word timings fail by scene/cue. Movement windows use integer local frames: floor the start, ceil the end, clamp at the final scene frame, then express those exact frames as normalized progress for the existing renderer. Authored progress cues retain their scene-relative meaning, snapped to integer frames; holds can therefore leave a visual movement after the speech, which needs editorial review. `cueWindows` records the resolved frame intervals.
+
+Without reviewed word timings, `--allow-caption-fallback` explicitly opts into `scene-speech-span-v1` for preview. DC-insensitive RMS activity detection in 20 ms windows determines the scene speech interval; the full original narration is shown across it. No word/phrase location or equal-duration chapter inference is claimed. The output always requires timing review. Captions use global `[startFrame, endFrame)` intervals, floor/ceil display boundaries and shared boundaries between adjacent reviewed groups to avoid rounding overlap. SRT milliseconds are rounded from these same frames; this cannot create cumulative scene drift. Overrides remain scene-local integer milliseconds and are checked against actual WAV duration, not only the estimated maximum; overrides always require review.
+
+Caption lines are limited to three lines of 34 characters, rendered at 42 px bold in the portrait composition's caption band. Browser text bounds/collision checks include them. Missing, overlapping, out-of-scene or out-of-video intervals fail. Human phone/overlay and speech sync review remain necessary. The caption band replaces the old bottom detail panel with a compact detail line only in narrated mode; silent rendering retains its layout.
+
+Final manifests include ordered starts/durations/samples/holds/cue frames, original script/source records (unknown revisions/hashes remain null), per-scene narration/runtime identity, hashes for the output artifacts and source/compiled implementation inventory. Exact code hashes record uncommitted changes; a Git revision alone would not. `--strict` rejects mocks and unreviewed timing before rendering. This is a media validation option, not Phase 08 human release approval; `approvedForRelease` is always false.
+
 ## Immutability and versioning
 
 - Editing a script creates revision `n+1`. Existing approvals invalidate whenever claims, narration, visual config, rights, output bytes or metadata requiring reapproval change.

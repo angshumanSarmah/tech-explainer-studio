@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "provider": "mock",
+  "settings": {
+    "version": "mock-tone-v1",
+    "voiceId": "mock-tone",
+    "language": "en-us",
+    "rate": 1,
+    "seed": 0,
+    "lexiconVersion": "tech-en-v1"
+  },
+  "limits": {
+    "timeoutMs": 5000,
+    "cpuSeconds": 5,
+    "threads": 1,
+    "maxTextChars": 2000,
+    "maxProcessOutputBytes": 16384,
+    "maxWavBytes": 8388608,
+    "maxAudioSeconds": 90
+  }
+}

@@ -65,3 +65,25 @@ Each ADR records a **proposed settled decision** as of 2026-11-06. Revise by add
 **Status:** Accepted.  
 **Decision:** First prove schema → local TTS + animation → playable MP4 → approval. UI is P2.  
 **Consequence:** Less early demo polish but faster validation of core value.
+
+## ADR-011 — Local Kokoro ONNX worker and seeded narration
+
+**Status:** Implemented in Phase 03, 2026-11-10; refines ADR-006 within the approved local-audio boundary.
+
+**Decision:** Keep one TypeScript package and use `kokoro-onnx==0.6.1` in a local Python 3.12 environment, with a hash-pinned dependency lock and explicit local model/voice hashes. A fixed packaged Python worker takes bounded JSON stdin; no source text enters a shell or command arguments. CPU-only inference has explicit wall/CPU/thread/file/output bounds. TypeScript validates PCM and ffprobe duration before accepting per-scene WAV/metadata. The explicit mock emits labeled tones, never replacement speech.
+
+**Reproducibility:** An unseeded rerun changed duration despite identical recorded settings. Record a seed in versioned voice settings and seed ONNX Runtime/NumPy before constructing the inference session. Fresh source and compiled runs are compared locally; no cross-platform byte identity is promised.
+
+**Trade-offs:** Python plus local weights are optional setup requirements for real speech; POSIX resource limits and pinned macOS arm64/Python 3.12 dependencies need verification elsewhere. The selected int8 graph rejects fractional rates instead of silently rounding. Health verifies files/imports/voice, while a real smoke validates graph compatibility. Hard RAM/network isolation, persistent recovery, word alignment and narrated assembly are outside this slice. No remote/paid provider or model download is added to runtime/tests.
+
+## ADR-012 — Measured scene timelines and review-only caption fallback
+
+**Status:** Implemented in Phase 04, 2026-11-10, within the requested producer boundary.
+
+**Decision:** Keep 24 kHz PCM narration as the saved input to render-only execution. Revalidate its WAV/text identity and ffprobe duration. At 30 fps, scene frames are `ceil(max(samples / 800, authored_min_seconds * 30))`; starts are cumulative integers, and exact sample padding contains only fractional-frame slack and authored minimum holds. Reject speech exceeding the authored maximum rather than truncating or retiming it. Preserve the original script and silent renderer.
+
+**Alignment:** Consume explicit reviewed word/sample timings bound to the exact WAV and original text hashes. Phrase cues require these timings and unique anchors. No new aligner/model is installed. A CLI opt-in scene speech-span fallback can produce an unapproved preview by displaying the complete scene narration across measured activity; it invents no word positions and blocks strict timing checks. Caption overrides also require review. Both SRT and the browser-safe overlay use the same global frame intervals; source narration/visual text remains literal data.
+
+**QC and evidence:** Use the existing local Remotion/bundled FFmpeg tools, a reserved caption band with collision/bounds checks, and independent final stream/frame/duration inspection plus AAC decoding and per-scene signal checks. Tests deliberately mute the assembled AAC and reject it by scene. Output is finalized only after checks, and manifests record artifact/model/tool/source-code hashes, starts, holds, cue frames, missing source provenance and human review limitations. Constant DC and clipping are checked/reported separately from audible activity; no automatic cleanup conceals the user's outstanding voice-quality feedback.
+
+**Trade-offs:** Full-scene fallback captions are coarse and need listening/phone review; progress cues retain their authored scene-relative meaning even during holds. No claim of forced alignment, perfect intelligibility, automatic approval or cross-platform byte identity is made. `--strict` is a media check, not a release/publication gate. Source collection, durable jobs/cache, approvals and publishing remain later phases. No new paid/remote service, model download or major architecture change is introduced.

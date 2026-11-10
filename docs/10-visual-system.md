@@ -44,6 +44,8 @@ Cues describe cause and effect, not just decoration. Avoid camera movement while
 
 ## Mobile-safe layout
 
+**Implemented Phase 02 guide:** labels are bounded by x=80–920, y=180–1540 in the 1080×1920 composition. This leaves top, right-control and bottom reserves. A small progress indicator sits below the label area at y=1570; the bottom 260 pixels are empty. `--guides` overlays the guide rectangle; normal output hides that overlay. The quiet background grid is decorative. Browser and server retain fixed positions, with cyan request movement downward and green response movement upward in separate lanes. Original SVG nodes, text labels and arrowheads use the tokens above; no outside footage/screens are used. Inter is bundled locally. These coordinates are a tested local layout baseline, not guaranteed platform UI standards.
+
 ```text
 ┌──────────────────────── 9:16 ────────────────────────┐
 │ Top reserve: title/channel/platform UI may overlap │

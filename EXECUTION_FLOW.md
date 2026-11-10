@@ -1,6 +1,6 @@
 # Execution README — Building Tech Explainer Studio with Codex
 
-> **Canonical execution workflow.** Start here every time. Phase 01 now supplies the offline script validator; follow [PROJECT_STATUS.md](PROJECT_STATUS.md) for verified progress and [README.md](README.md) for local commands. Codex builds the remaining application phase by phase.
+> **Canonical execution workflow.** Start here every time. Phases 01–04 supply the offline script validator, silent renderer, local narration and measured captioned preview assembly; follow [PROJECT_STATUS.md](PROJECT_STATUS.md) for verified progress and [README.md](README.md) for local commands. Codex builds the remaining application phase by phase.
 
 ## 1. Which files matter?
 

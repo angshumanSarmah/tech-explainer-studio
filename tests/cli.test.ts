@@ -152,3 +152,63 @@ test('network guard blocks fetch before a connection is attempted', () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Network is disabled in this test/);
 });
+
+test('script validation stays independent of Remotion and render CLI modules', () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      '--import',
+      fileURLToPath(new URL('./helpers/no-renderer.ts', import.meta.url)),
+      fileURLToPath(new URL('../src/cli/index.ts', import.meta.url)),
+      'script',
+      'validate',
+      '--file',
+      fileURLToPath(fixturePath),
+    ],
+    { encoding: 'utf8', env: {}, timeout: 10000 },
+  );
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).valid, true);
+});
+
+test('render CLI reports unsupported cues, missing browser and blocked output before launching rendering', async () => {
+  const input = fixture();
+  const cue = animation(input).cues[0];
+  assert.ok(cue);
+  cue.trigger = { kind: 'phrase', text: 'GET slash' };
+  const file = join(temp, 'unresolved-phrase.json');
+  await writeFile(file, JSON.stringify(input));
+  const unsupported = offlineProcess(['render', '--script', file]);
+  assert.equal(unsupported.status, 3, unsupported.stderr);
+  const error = JSON.parse(unsupported.stderr).error;
+  assert.equal(error.code, 'UNSUPPORTED_RENDER_INPUT');
+  assert.equal(error.scene_id, 'scene-02-request');
+  assert.match(error.path, /cues/);
+  const missing = offlineProcess([
+    'render',
+    '--script',
+    fileURLToPath(fixturePath),
+    '--browser',
+    join(temp, 'missing-chrome'),
+    '--output',
+    join(temp, 'not-rendered'),
+  ]);
+  assert.equal(missing.status, 5, missing.stderr);
+  assert.equal(JSON.parse(missing.stderr).error.stage, 'browser');
+  const parentFile = join(temp, 'parent-file');
+  await writeFile(
+    parentFile,
+    'This is a regular file, not an output directory.',
+  );
+  const blocked = offlineProcess([
+    'render',
+    '--script',
+    fileURLToPath(fixturePath),
+    '--browser',
+    process.execPath,
+    '--output',
+    join(parentFile, 'child'),
+  ]);
+  assert.equal(blocked.status, 5, blocked.stderr);
+  assert.equal(JSON.parse(blocked.stderr).error.stage, 'output');
+});

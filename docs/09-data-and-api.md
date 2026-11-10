@@ -116,11 +116,13 @@ Add foreign keys, migrations, indexes for `(job_id,status)`, and transaction bou
 
 Atomic writes: write `.tmp`, flush where appropriate, rename. SQLite in WAL mode can help local concurrent readers; still use application-level job leasing.
 
-## CLI spec (script validation implemented; remaining commands proposed)
+## CLI spec (script validation and silent rendering implemented)
 
 Phase 01 implements `studio script validate --file <path>` and help only. Run locally with `npm run studio -- script validate --file examples/http-server.videoscript.json`, or after `npm run build` use `node dist/cli/index.js script validate --file <path>`. Success emits `{ "valid": true, "script_id": "...", "schema_version": "1.0.0", "scene_count": 6 }` on stdout. Validation errors emit `{ "error": { "code": "...", "message": "...", "issues": [{ "code": "...", "scene_id": "...", "path": "...", "reason": "..." }] } }` on stderr. Help exits `0`; usage, unreadable files, malformed JSON and schema failures exit `2`; unsupported visual/component failures exit `3`. There are no external calls or credential requirements. These commands do not create a database or output media.
 
-All other commands below are **proposals**, not executable capabilities:
+Phase 02 additionally implements `studio render --script <path> [--output <new-directory>] [--browser <executable>] [--guides]`. It lazy-loads the silent renderer, checks media output, emits result JSON with output path/frame count/video hash on stdout and progress on stderr. Schema-valid unsupported rendering features exit `3`; browser/output/render/QC failures exit `5` with stage/scene/reason. Output must be a new directory; there is no overwrite or publishing side effect. Local Chrome and npm-installed fonts/platform binaries are prerequisites, not fetched at render time. Saved preferred durations are preview estimates, not narrated timings.
+
+In the command list below, **only script validation and `render --script` are implemented**; all remaining commands/flags are proposals:
 
 ```bash
 studio init

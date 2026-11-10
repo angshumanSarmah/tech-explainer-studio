@@ -1,6 +1,6 @@
 # Contributing to Tech Explainer Studio
 
-This package implements offline VideoScript validation. Rendering, narration, external integrations and the rest of the proposed application remain future phases; see `PROJECT_STATUS.md` for verified progress.
+This package implements offline VideoScript validation, silent Remotion previews, local narration and measured captioned preview assembly. Voice quality, caption timing and human playback acceptance remain under review; external integrations remain future phases. See `PROJECT_STATUS.md` for verified progress. Generated media/golden files stay in ignored output directories; review them before accepting new baselines.
 
 ## Contribution workflow
 

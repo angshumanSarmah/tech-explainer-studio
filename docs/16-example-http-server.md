@@ -45,13 +45,21 @@ sequenceDiagram
 
 ## Scene registry mapping
 
-- Scene 1: `title-card` (`How a server responds`).
-- Scenes 2–5: `BrowserRequestFlow` with cue order `send_request`, `parse_request`, `route_request`, `send_response`.
-- Scene 6: `BrowserRequestFlow` summarized with `focus = overview`.
+- Scene 1: fixture `title-card` (`What happens inside an HTTP server?`, hook variant).
+- Scenes 2–5: `BrowserRequestFlow` request, parse, route, response phases. The fixture's explicit progress/move cues are `send-request` and `return-response`; parse and route use their authored phase states.
+- Scene 6: fixture `title-card` (`Request → Process → Response`, summary variant). The source fixture is preserved; overview is exercised in a separate validated gallery input, not substituted for its final scene.
 
 A single Remotion component reused with **different `props`** demonstrates the intended animation engine. Later topic-specific components add queues, B-trees and Git graphs.
 
 ## Example local planning invocation
+
+Phase 02 implements the offline silent path:
+
+```bash
+npm run studio -- render --script examples/http-server.videoscript.json --output output/http-server-review
+```
+
+This produces a 55-second/1650-frame silent preview from the saved preferred durations. It does not narrate, verify external sources, align captions or approve a release. The following planning/review/job commands remain future behavior:
 
 ```bash
 studio plan --topic "How does an HTTP server handle a request?" --provider deepseek --max-api-usd 0.50
@@ -61,6 +69,24 @@ studio review video --job <job-id>
 ```
 
 These commands are target behavior for the app to implement, not commands already executable from this documentation package.
+
+Phase 03 also implements separate local narration:
+
+```bash
+npm run studio -- audio doctor --config narration.config.example.json
+npm run studio -- audio smoke --config narration.config.example.json --script examples/http-server.videoscript.json --scene scene-02-request --output output/http-request-voice --allow-local-synthesis
+```
+
+With the identified local runtime/assets installed, this produces speech for the fixture's request scene. `HTTP` becomes `H T T P` and `URL` becomes `U R L` through the `tech-en-v1` lexicon; server/request/response use their ordinary pronunciations. These substitutions affect spoken text only. Saved draft durations and the original fixture remain unchanged. Use the mock config for model-free test tones; it does not test pronunciation. Voice quality remains under human review.
+
+Phase 04 implements the saved-audio narrated preview:
+
+```bash
+npm run studio -- audio narrate --config narration.config.example.json --script examples/http-server.videoscript.json --output output/http-audio --allow-local-synthesis
+npm run studio -- render --script examples/http-server.videoscript.json --narration output/http-audio --output output/http-preview --allow-caption-fallback
+```
+
+The current installed voice resolves to **1113 frames / 37.1 seconds**, including the fixture's authored minimum holds. Preferred estimates no longer determine narrated duration. Each scene has its own measured WAV; no equal scene/word timing is inferred. The explicit fallback shows the whole scene narration during detected speech and marks captions for review. Exact phrase cues require reviewed word timings; the unchanged fixture uses progress cues. Outputs include AAC speech, burned captions, SRT, measured timeline, artifact/implementation hashes and independent media QC. Play the complete video and check captions/voice clarity before accepting it; no release approval or publisher is included.
 
 ## Technical reviewer questions
 

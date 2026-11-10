@@ -6,6 +6,8 @@ Use a small TypeScript job runner backed by SQLite for P0. Do **not** introduce 
 
 ## Job steps
 
+**Phase 04 implemented scope:** an exclusive-directory local render-only pipeline consumes saved narration, renders captioned visuals, muxes and writes a QC/review manifest. It does not implement the SQLite job runner/state transitions below (Phase 07), approvals (Phase 08) or publishing. Failed output retains scene/stage diagnostics and successful narration copies; automatic resume/retry is not yet implemented. All preview manifests remain explicitly unapproved, including those passing strict media checks.
+
 `queued → sources_fetched → research_done → script_draft → facts_approved → narration_ready → scenes_rendered → assembled → review_ready → approved → upload_requested → uploaded_private`
 
 Each step has `input_hash`, `output_hash`, `status`, attempt count, timestamps, error code, and `worker_version`. Failures persist state and can resume from the last valid artifact.

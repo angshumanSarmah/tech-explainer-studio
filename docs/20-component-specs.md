@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document makes the first reusable visual vocabulary concrete enough for a coding agent to build **without inventing scene contracts**. Phase 01 implements strict Zod validation for `BrowserRequestFlow`, `title-card` and cues in `src/domain/visuals.ts`. Rendering and all P2 components remain planned. Every future animation must run on a deterministic frame timeline.
+This document makes the first reusable visual vocabulary concrete enough for a coding agent to build **without inventing scene contracts**. Phase 01 implements strict Zod validation for `BrowserRequestFlow`, `title-card` and cues in `src/domain/visuals.ts`. Phase 02 supplies original SVG/React title cards and all six BrowserRequestFlow states. P2 components remain planned. Animation runs on a deterministic frame timeline.
 
 ## Canonical cue model
 
@@ -46,6 +46,10 @@ interface BrowserRequestFlowProps {
 **Implemented validation limits:** `request.path` is 1–200 characters, begins with a single slash, and contains ASCII alphanumerics or `/._~%!&'()*+,;=:@?-`; it is a display label, not a URL or shell argument. `protocolLabel` is one of `HTTP/1.0`, `HTTP/1.1`, `HTTP/2`, `HTTP/3`. Response status is an integer 100–599, status text is 1–80 characters, and optional body preview is 1–500 characters. A provided body preview is rejected for status 204. All nested objects are strict. These bounds preserve the HTTP fixture unchanged; protocol labels do not imply complete protocol simulations. Text, including the fixture's literal `<html>...</html>`, remains inert data; future renderers must escape it.
 
 **Required visual states:**
+
+The silent renderer requires `illustrative: true`; it cannot validate a real system trace. This is a renderer limitation, not a change to the shared v1 schema.
+
+**Phase 02 renderer bounds (schema unchanged):** request path and response status text are limited to 18 display characters; body preview to 50. Longer schema-valid values fail render preflight rather than being truncated. Non-idle flow states need visible browser/server/network endpoints; route needs a visible handler. `show` flags and node/packet focus affect authored visuals. Request and response progress/move cues are applied to their named lanes; other cue actions/phrase triggers are rejected by the silent renderer. Overview has a fixed causal schedule (request 10–40%, parser 40–50%, handler 50–60%, response 60–90%); custom overview cues are unsupported. No runtime data string is executed or inserted as HTML. Normal title-card limits and safe-area/collision checks apply as well.
 
 | Phase | Visible | Animation invariant |
 |---|---|---|
