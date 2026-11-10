@@ -1,7 +1,7 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phase 06 manual/automated Director and brand consolidation implemented; 176/176 regression tests pass, with a real 37.1-second narrated HTTP preview and six-frame/six-WAV baseline comparisons. Live DeepSeek is UNVERIFIED and was not authorized/called.
-> **Next phase:** Review Phase 06 artifacts and narration/caption/fact/rights limitations. Phase 07 requires a new explicit request; no later phase is started and all media remains unapproved for release.
+> **Status baseline:** Phase 07 SQLite jobs, fenced recovery and dependency-aware scene caches implemented; 190/190 regression tests and 14/14 network/provider-blocked workflow tests pass. The real 37.1-second narrated HTTP preview and all-13-step cache reuse are verified. Live DeepSeek remains UNVERIFIED and was not called.
+> **Next phase:** Review Phase 07 interfaces, preview and caption/voice/factual/rights limitations. Phase 08 requires a new explicit request; all media remains unapproved for release.
 > **Last updated:** 2026-11-10 (Asia/Kolkata).
 
 ## Phase tracker
@@ -15,7 +15,7 @@
 | 04 | Measured timeline, subtitles, assembly and media QC | Done | User confirmed phase complete and audible playback; latest caption-clearance revision passes 93/93 tests, 37.1s H.264/AAC, reserved 42px caption band; human release review remains pending |
 | 05 | Safe GitHub/docs ingestion, source snapshots and claim ledger | Needs review | Extended for multi-source bundles; 55/55 network-denied source tests, 148/148 full tests, typecheck/lint/build pass; live ingestion UNVERIFIED by user choice |
 | 06 | Manual/optional AI Director, sourced storyboard and BrandProfile | Needs review | 28/28 network-denied Director/brand tests; 176/176 full tests; manual Kokoro/Remotion/FFmpeg preview verified; live DeepSeek unverified |
-| 07 | SQLite job state, resumability and incremental rerendering | Not started | — |
+| 07 | SQLite job state, resumability and incremental rerendering | Needs review | 190/190 full tests; 14/14 network/provider-blocked workflow tests; real 37.1s HTTP preview, cached resume and scene-only export verified; manual playback/release review pending |
 | 08 | Human fact/media/video approval and immutable release manifest | Not started | — |
 | 09 | YouTube OAuth, private upload, retries and reconciliation | Not started | — |
 | 10 | Instagram Reels manual export bundle | Not started | — |
@@ -577,3 +577,69 @@ The user ran the illustrative `external.videoscript.json` commands before creati
 - `scripts/manual-http-preview.mjs`: validate input before making output directories/exporting contracts or invoking Kokoro/Remotion. Expected stage failures now end with a concise message rather than an uncaught child-process stack trace.
 - `tests/director/director.test.ts`: regressions verify specific missing-file diagnostics, no draft creation, and early demo exit before exports/narration/rendering. README now leads with `npm run demo:manual-http` and explicitly labels external filenames as user-created placeholders.
 - Actual final checks: format, typecheck, lint, build PASS; **28/28** network-denied Director/brand tests and **176/176** full tests PASS. Included-fixture import and validation PASS under network denial. Existing media remains unchanged; no new media render is needed for these input/preflight changes. No paid API, publishing, commit/push or later-phase work occurred.
+
+
+## Phase 07 — Durable local jobs and scene recovery (2026-11-10)
+
+**Observed status: implemented, verified locally, needs human review.** Started from clean `main...origin/main` at `c7d9ad2`; no previous SQLite implementation or uncommitted changes existed. Node 24.15.0 native SQLite 3.51.3 was available. Only Phase 07 was implemented. No paid API, live research-source ingestion, OAuth, model download, global install, upload, commit or push ran; the selected default narrator remains unchanged. Phase 08 is not started.
+
+### Implemented changes
+
+- `src/storage/migrations.ts`, `repository.ts`, `cache.ts`: first actual SQLite schema, WAL/FULL synchronization, foreign keys, immutable script revisions, job/step/render/asset/cache records, imported usage receipts, idempotent request keys, strict typed reads and revision-integrity hashes. Explicit transitions, optimistic versions, transactional step input/output hashes, stage/scene diagnostics and bounded attempts. One 120-second job lease plus one producer lease, 15-second heartbeat and generation/token fencing; abandoned running attempts recover after expiry. Only an active owner can publish mappings or exports.
+- `src/workflow/model.ts`, `import.ts`, `dependencies.ts`, `runner.ts`: bounded validated Phase 01–06 imports/default brand; frozen saved WAVs or explicit offline synthesis; exact narration/model/settings, source/claim/draft review references and imported cost estimates. No raw prompt/brief or API key is stored. Source/claim/research changes persist a review gate, including through pause/continue; no automatic Director or research execution. Current reviewed bound drafts are required to clear changed evidence.
+- Dependency-aware caches separate text/settings/audio implementation from visual brand, font, captions, measured timing and waveform bytes. Visual-only edits reuse speech and unaffected clips. Narrator changes preserve scripts and clips with unchanged measured pixels. Waveform hashes enter assembly. Palette/font/caption/dimension/implementation/evidence behavior has matrix tests. The current global chapter/progress display deliberately makes start/total timing a visual dependency; timing shifts can invalidate additional clips. Audio identity excludes the general UI/font package-lock fingerprint while retaining actual native tool/runtime, Zod, audio source and pinned Python requirements identity.
+- `src/renderers/remotion/render.ts`: narrow inclusive `frameRange` option to render captioned scene clips with complete composition context. Existing full render behavior remains. `src/media/narration-input.ts` shares saved-audio identity/ffprobe/PCM checks, bounds metadata, rejects known unsafe/credential-like metadata and ignores stale metadata paths. `src/media/pipeline.ts` retains existing timing, mux and independent QC, consumes the same validated WAV bytes and optionally emits portable relative artifact paths for job exports.
+- `src/cli/jobs-cli.ts`, lazy routing/help in `src/cli/run.ts`: `jobs create/list/inspect/revise/pause/continue/resume` and `render --job --scene`. Scene-only rendering requires all measured audio context and never automatically rerenders other scenes. Running jobs reject competing mutation; idle pause persists. `jobs inspect` includes retained diagnostic directory, revisions/provenance, steps, last render and imported usage. Release approval is always false, constrained in SQLite and manifests.
+- `tests/workflow/`: 14 meaningful tests with explicit mock speech/renderer and real FFmpeg; package test glob updated. README, main/detailed architecture, workflow/storage/quality docs and ADR-015 reflect actual interfaces. AGENTS.md/CLAUDE.md, fixture, voice defaults, model assets and package lock are unchanged.
+
+### Commands actually executed and outcomes
+
+| Command/check | Observed result |
+|---|---|
+| Initial `git status --short --branch`, code/docs/diff inspection | Clean baseline at `c7d9ad2`; no existing job database code |
+| Initial `npm test` before new workflow tests | 176/176 passed; existing media checks preserved |
+| `npm run typecheck` | Passed after implementation; final log `output/phase07/checks/typecheck.log` |
+| `npm run lint` | Passed, 103 files checked; final log `checks/lint.log` |
+| `npm run build` | Passed, including local worker copy; final log `checks/build.log` |
+| `npm test` | **190/190 passed**, zero skipped/failures; `checks/test.log` |
+| `node --import ./tests/helpers/no-network.ts --import ./tests/workflow/no-director.ts --test tests/workflow/*.test.ts` | **14/14 passed**; no network/model files/paid or research modules; `checks/workflow-offline.log` |
+| `npm run studio -- script validate --file examples/http-server.videoscript.json` | Valid legacy 1.0.0 fixture, six scenes |
+| `jobs create --script examples/http-server.videoscript.json --narration output/phase06/manual-http-OLvVjn/narration --allow-caption-fallback --key phase07-http-preview --data data/phase07 --output-root output/phase07/jobs` | Imported six previously measured real Kokoro WAVs; created job `41ef5b7b-e37b-4da5-93a5-892fdcb1c91f` |
+| First sandboxed `jobs resume` | Failed visibly at browser/scene-01-hook; all six successful audio steps retained. Existing Chrome launch was blocked by the filesystem sandbox; renderer diagnostics retained under `data/phase07/work/<job-id>/` |
+| Same resume with scoped permission for installed local Chrome outside sandbox | Succeeded; all six Remotion clips and narrated assembly independently verified. No security flags weakened and no browser download performed; `output/phase07-real-resume.log` |
+| Source-only final `jobs resume` with network and paid/research-module preloads | Passed, using verified local caches and existing FFmpeg; final result `output/phase07/checks/final-resume.log` |
+| Same guarded `render --job <id> --scene scene-02-request` | Passed; exported only the selected silent captioned clip; `checks/scene-only.log` |
+| Guarded `output/phase07/verify.mjs` | Reopened SQLite, reused **all 13 current steps**, no new attempts, synthesis or rendering; independent ffprobe, unchanged six Phase 06 WAV hashes and exact Producer manifest hash checked; `checks/reuse-and-media.json`, `checks/verify.log` |
+| Repeated guarded `jobs create` with the same key and `jobs list` | Returned the same job ID; one job remains in this database, no duplicate creation; `checks/idempotent-create.json`, `checks/jobs-list.json` |
+| Guarded compiled `node dist/cli/index.js jobs inspect <id> --data data/phase07` | Passed; source/compiled job revision/provenance round-trip; `checks/compiled-inspect.json` |
+| Representative scene-02/05 PNGs and extracted encoded MP4 frames | Inspected; captions remain inside the reserved lower band with clear space below graphics. Encoded PNG evidence under `checks/scene-{02-request,05-response}-encoded.png` |
+| `git diff --check` | Passed after implementation/documentation |
+
+Early test iterations exposed incorrect mock-voice/shared-black-frame/stale-version expectations in test fixtures; those were corrected, and the final tests above all passed. Final checks also reject inherited object-property names as CLI actions or fake saved audio. No test failure was bypassed or safety gate weakened.
+
+### Actual media and artifact handoff
+
+Repository root: `/Users/angshumansarmah/Projects/Brainstorming/tech-explainer-video-generator/tech-explainer-studio 2`.
+
+Final export directory (relative to that root):
+
+`output/phase07/jobs/41ef5b7b-e37b-4da5-93a5-892fdcb1c91f/revision-1/44269d0a7959b46c34f9726f430434c9fef2e05ec77bd22421a2f2e80e4c2092/`
+
+Contains `video.mp4`, `captions.srt`, all six `narration/<scene-id>/{<scene-id>.wav,narration.json}`, combined/decoded WAVs, `videoscript.json`, `timeline.json`, `ffprobe.json`, `qc-report.json`, `render-manifest.json`, `job-manifest.json` and `visuals/<scene-id>/` clips/PNGs/manifests. SQLite and SHA-256 blobs are under `data/phase07/`. All generated assets/database/logs remain ignored by Git.
+
+- Independent ffprobe: **1080×1920, 30 FPS, 1,113 frames, 37.1 seconds, exactly two streams, H.264/yuv420p video and AAC audio**. Existing A/V duration tolerance is 0.076 seconds; decode QC verifies every scene is non-silent and not truncated. Final video SHA-256: `36e8bc9d89e3ad36d042584c524d6ef097f27b8336c6b256c8943af98b1b2b7a`.
+- Voice preserved: `af_heart`, `kokoro-http-v2`, `en-us`, rate 1, seed 0, `tech-en-v1`; saved `kokoro-v1.0-int8`/voices-v1.0 identities retained. No new real TTS was required. Every scene WAV checksum equals its Phase 06 original.
+- Brand `tech-explainer@1.0.0`, resolved SHA-256 `8403ee5e251a953ad270c75426cc2a1ac00a288539cf7ccec75737f0492ab7a1`. Legacy authored script revision 1 remains distinct from SQLite revision 1.
+- Caption method remains the existing explicitly opted-in scene speech-span fallback: `requiresTimingReview:true`, `approvedForRelease:false`. Frame inspection is not a claim of word alignment, phone playback or human voice/factual/rights approval.
+
+Rerun this exact saved job from the repository root:
+
+```bash
+npm run studio -- jobs resume 41ef5b7b-e37b-4da5-93a5-892fdcb1c91f --data data/phase07 --output-root output/phase07/jobs
+```
+
+### Limits and next human review
+
+No implementation blocker remains for the exercised Phase 07 scope. **UNVERIFIED:** human listening/naturalness, word-level caption accuracy, phone playback and release/factual/rights review; live providers/source fetching remain unverified as previously requested. Production still uses the current single approved brand and 1080×1920 format; alternate color/font/dimension invalidation is tested at dependency boundaries, not claimed as a separately rendered profile. Global-progress timing coupling can rerender additional clips. Imported usage is an estimate/receipt, not external billing proof; identical exported receipts cannot distinguish separate real requests without a future provider request ID. Crash orphans/older exports are retained; automatic cache garbage collection is not implemented. An unchanged failed/interrupted input has a two-attempt per-job budget; after repairing an unchanged environment, an explicit new request key can start a new budget while sharing valid scene caches.
+
+Next manual action: watch the final preview, inspect captions against speech and rerun the saved job after restarting a terminal. Review the new job/storage interfaces and dependency policy. Stop here for Phase 07 review; recommend Phase 08 only after the user requests it. No later-phase approval or publisher was implemented.

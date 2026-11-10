@@ -6,6 +6,8 @@ import {
 } from '../domain/validation.ts';
 
 export const HELP = `Usage:
+  studio jobs --help
+  studio render --job <job-id> --scene <scene-id>
   studio director --help
   studio plan --help
   studio script validate --file <videoscript.json>
@@ -33,6 +35,14 @@ export async function runCli(
   args: string[],
   output: CliOutput,
 ): Promise<number> {
+  if (
+    args[0] === 'jobs' ||
+    (args[0] === 'render' &&
+      args.some((arg) => arg === '--job' || arg.startsWith('--job=')))
+  ) {
+    const { runJobsCli } = await import('./jobs-cli.ts');
+    return runJobsCli(args.slice(1), output, args[0] === 'render');
+  }
   if (args[0] === 'director' || args[0] === 'plan') {
     const { runDirectorCli } = await import('./director-cli.ts');
     return runDirectorCli(args[0], args.slice(1), output);

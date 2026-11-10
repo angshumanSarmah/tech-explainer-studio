@@ -6,7 +6,7 @@ Use a small TypeScript job runner backed by SQLite for P0. Do **not** introduce 
 
 ## Job steps
 
-**Phase 04 implemented scope:** an exclusive-directory local render-only pipeline consumes saved narration, renders captioned visuals, muxes and writes a QC/review manifest. It does not implement the SQLite job runner/state transitions below (Phase 07), approvals (Phase 08) or publishing. Failed output retains scene/stage diagnostics and successful narration copies; automatic resume/retry is not yet implemented. All preview manifests remain explicitly unapproved, including those passing strict media checks.
+**Phase 04 implemented scope:** an exclusive-directory local render-only pipeline consumes saved narration, renders captioned visuals, muxes and writes a QC/review manifest. Phase 07 now wraps it with the local SQLite runner described below. Approval (Phase 08) and publishing remain planned. Failed output retains scene/stage diagnostics and successful caches. All preview manifests remain explicitly unapproved, including those passing strict media checks.
 
 `queued → sources_fetched → research_done → script_draft → facts_approved → narration_ready → scenes_rendered → assembled → review_ready → approved → upload_requested → uploaded_private`
 
@@ -94,3 +94,14 @@ All required gates must be true for the same immutable release manifest. An appr
 ## Observability
 
 Log `{jobId, stage, sceneId, attempt, durationMs, model, tokensIn, tokensOut, costEstimate, assetHash, errorCode}`; redact prompts/URLs containing secrets. Write human-readable `run-summary.md`. At MVP, local structured logs and a readable job state command suffice; metrics dashboards are later.
+
+
+## Phase 07 implemented runner
+
+The long editorial/publication sequence above remains a target, not a claim of complete workflow automation. Actual job states are `queued → running → review_ready` with `failed`, `paused` and `needs_review` branches. Steps are `audio`, `scene` and `assembly`; each completed step binds its input hash to a verified file group/output hash in one transaction. Unknown/invalid transitions fail. CLI errors expose code, stage and scene; private attempt folders retain detailed existing Producer/renderer diagnostics. Retry is explicit through resume, limited to two attempts per unchanged failed/interrupted input. No whole-video fallback, LLM generation or publishing runs after a scene failure.
+
+One 120-second job lease and one local producer lease renew every 15 seconds. Replacement owners fence expired workers; unfinished steps become `abandoned` and consume an attempt. Import/revise uses immutable snapshots; a unique request key makes creation idempotent, and optional `--expected-version` rejects stale edits. Paused state survives revisions/resume, and source/claim/bundle/ledger changes retain a review gate even through pause/continue. Clear that gate only by importing a current, reviewed Director draft with matching approved bundle/ledger. Initial legacy unbound imports are still explicitly unapproved previews.
+
+Imported provider usage is an idempotent receipt from a saved Director draft: model, request hash, token estimates, conservative reserves, outcome and configured pricing. No raw generation brief/system prompt/API key is stored in usage records. These are local estimates from imported receipts, not billing verification or a new provider call. Re-importing a receipt does not charge/count it again. Separate real requests with identical exported receipts cannot be distinguished without a future provider request ID.
+
+The scene renderer uses Remotion's inclusive measured `frameRange` while retaining the full composition context. Good clips/WAVs survive retries. Clip cache keys intentionally include chapter ordinal, global start and total duration because those change visible header/progress pixels. Same-duration waveform/voice changes can reuse clips; timing changes can affect additional clips. Colors/fonts/caption style affect visuals, not unchanged speech. A visual edit with unchanged timing rebuilds that scene and assembly only. No arbitrary brand override, alternative resolution, approval command or publisher is added in this phase.

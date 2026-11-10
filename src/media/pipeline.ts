@@ -1,16 +1,11 @@
-import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { z } from 'zod';
 import { NarrationError } from '../audio/types.ts';
-import { probeWav } from '../audio/wav.ts';
 import { brandIdentity } from '../branding/identity.ts';
 import { parseVideoScript } from '../domain/validation.ts';
 import type { VideoScript } from '../domain/videoscript.ts';
-import {
-  hash,
-  NarrationArtifactSchema,
-  sourceInventory,
-} from '../render-manifest/manifest.ts';
+import { hash, sourceInventory } from '../render-manifest/manifest.ts';
 import { RenderInputError } from '../renderers/remotion/plan.ts';
 import {
   type RenderOptions,
@@ -23,7 +18,8 @@ import {
   srt,
 } from '../timing/timeline.ts';
 import { MediaError } from './error.ts';
-import { pcmData, signalReport, wavFromPcm } from './pcm.ts';
+import { loadNarrationAsset } from './narration-input.ts';
+import { wavFromPcm } from './pcm.ts';
 import {
   checkTiming,
   inspectDecodedAudio,
@@ -41,6 +37,7 @@ export interface NarratedOptions {
   strict: boolean;
   alignment?: unknown;
   onProgress?: (text: string) => void;
+  portableArtifacts?: boolean;
 }
 export interface PipelineDependencies {
   runner?: MediaRunner;
@@ -49,15 +46,10 @@ export interface PipelineDependencies {
     options: RenderOptions,
   ) => Promise<{ outputDir: string; manifest: unknown }>;
 }
-type AudioAsset = Awaited<ReturnType<typeof probeWav>> &
-  ReturnType<typeof signalReport> & {
-    sceneId: string;
-    sha256: string;
-    textSha256: string;
-    metadata: z.infer<typeof NarrationArtifactSchema>;
-    wavPath: string;
-    pcm: Buffer;
-  };
+type AudioAsset = Omit<
+  Awaited<ReturnType<typeof loadNarrationAsset>>,
+  'wavBytes'
+>;
 export async function renderNarratedPreview(
   input: VideoScript,
   options: NarratedOptions,
@@ -90,70 +82,35 @@ export async function renderNarratedPreview(
       sceneId = scene.scene_id;
       options.onProgress?.(`Validating narration ${sceneId}`);
       const source = join(resolve(options.narrationDir), sceneId);
-      const raw = JSON.parse(
-        await readFile(join(source, 'narration.json'), 'utf8'),
-      );
-      const metadata = NarrationArtifactSchema.parse(raw);
-      const sourceWav = join(source, `${sceneId}.wav`);
-      const info = await stat(sourceWav);
-      totalSamples += metadata.samples;
-      if (
-        !info.isFile() ||
-        info.size > metadata.limits.maxWavBytes ||
-        totalSamples > 108000 * 800
-      )
+      const { wavBytes, ...asset } = await loadNarrationAsset(scene, source);
+      totalSamples += asset.samples;
+      if (totalSamples > 108000 * 800)
         throw new MediaError(
           'AUDIO_LIMIT',
           'narration',
           sceneId,
-          'Saved narration exceeds the configured byte limit or one-hour total; repair inputs before loading audio',
+          'Saved narration exceeds the one-hour total',
         );
-      const bytes = await readFile(sourceWav);
-      if (
-        metadata.sceneId !== sceneId ||
-        metadata.originalTextSha256 !== hash(scene.narration) ||
-        metadata.sha256 !== hash(bytes) ||
-        metadata.bytes !== bytes.length
-      )
-        throw new MediaError(
-          'NARRATION_IDENTITY',
-          'narration',
-          sceneId,
-          'Scene/text/WAV hash differs from saved narration metadata; regenerate this scene explicitly',
-        );
-      const folder = join(output, 'narration', sceneId);
+      const relative = `narration/${sceneId}`;
+      const folder = join(output, relative);
       await mkdir(folder, { recursive: true });
       const wavPath = join(folder, `${sceneId}.wav`);
-      await writeFile(wavPath, bytes, { flag: 'wx' });
-      const measured = await probeWav(wavPath, metadata.limits);
-      if (
-        measured.samples !== metadata.samples ||
-        Math.abs(measured.durationSeconds - metadata.durationSeconds) >
-          1 / 24000
-      )
-        throw new MediaError(
-          'NARRATION_MEASUREMENT',
-          'narration',
-          sceneId,
-          'Saved duration/sample count differs from independent ffprobe measurement',
-        );
-      const pcm = pcmData(bytes);
-      const signal = signalReport(pcm, sceneId);
+      await writeFile(wavPath, wavBytes, { flag: 'wx' });
+      const metadata = {
+        ...asset.metadata,
+        wavPath: options.portableArtifacts
+          ? `${relative}/${sceneId}.wav`
+          : wavPath,
+        metadataPath: options.portableArtifacts
+          ? `${relative}/narration.json`
+          : join(folder, 'narration.json'),
+      };
       await writeFile(
         join(folder, 'narration.json'),
-        `${JSON.stringify({ ...metadata, wavPath, metadataPath: join(folder, 'narration.json') }, null, 2)}\n`,
+        `${JSON.stringify(metadata, null, 2)}\n`,
         { flag: 'wx' },
       );
-      assets.push({
-        sceneId,
-        sha256: metadata.sha256,
-        textSha256: metadata.originalTextSha256,
-        ...measured,
-        ...signal,
-        metadata,
-        wavPath,
-        pcm,
-      });
+      assets.push({ ...asset, metadata, wavPath: metadata.wavPath });
     }
     sceneId = null;
     stage = 'timing';

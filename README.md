@@ -1,6 +1,6 @@
 # Tech Explainer Studio
 
-> **Phases 01–06 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, and centralized branding. Director/provider tests are mocked; live provider and ingestion checks remain unverified. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+> **Phases 01–07 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, and SQLite jobs with fenced recovery and scene caches. Director/provider tests are mocked; live provider and ingestion checks remain unverified. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 >
 > **Read [EXECUTION_FLOW.md](EXECUTION_FLOW.md) first for the exact Codex build process.**
 
@@ -16,7 +16,7 @@ Tech Explainer Studio turns a technical topic or a public engineering reference 
 | Scenes | Versioned `VideoScript` data + registered components, Zod validation, no arbitrary LLM code execution |
 | Animation | Remotion + React + SVG, optional Playwright for legitimate UI walkthroughs |
 | Audio/video | Local Kokoro + FFmpeg; captions aligned to actual audio timing |
-| Persistence | SQLite and local artifacts (implemented in a later phase) |
+| Persistence | SQLite revisions, fenced leases and verified local scene caches (Phase 07) |
 | Publishing | Human approval; YouTube **private by default**, Instagram export first |
 | Reference project | `phi-video-gen` is an architecture inspiration, **not** a code source unless rights permit |
 | Tooling | Primarily local/free; API calls and cloud resources are optional and controlled |
@@ -295,3 +295,20 @@ The [`docs/`](docs/) directory retains the complete product and engineering blue
 ## What is not included
 
 The package contains script validation, local previews, narration, measured captioned assembly, bounded source ingestion and JSON claim review. It does **not** contain an automatic aligner, autonomous researcher, database, dashboard, publisher, API credentials, model weights, third-party media, or authorized copies of workplace code. Those later application stages remain a design target; model files and generated media stay outside Git.
+
+
+## Resumable local production (Phase 07)
+
+Import saved inputs once, then restart or retry through the saved job ID. The runner does not call Director/DeepSeek, fetch research or publish. All outputs remain unapproved previews.
+
+```bash
+npm run studio -- jobs create --script examples/http-server.videoscript.json --narration output/my-audio --allow-caption-fallback --key my-http-job
+npm run studio -- jobs list
+npm run studio -- jobs inspect <job-id>
+npm run studio -- jobs resume <job-id>
+npm run studio -- render --job <job-id> --scene scene-02-request
+```
+
+Use `--config narration.config.example.json` instead of `--narration` to save offline Kokoro configuration; missing speech then needs explicit `jobs resume <job-id> --allow-local-synthesis`. Config is non-secret and does not download models. Saved WAVs/settings remain authoritative until explicitly revised. `jobs revise <job-id> --script edited.json` retains unchanged audio/clips; a narrator change needs a revised config or matching replacement WAVs. Bound drafts also require the exact saved `--bundle` and `--ledger`; changed evidence pauses review until a current reviewed draft is imported. `jobs pause` applies to idle jobs; running jobs reject competing mutation. `jobs continue` cannot clear an evidence-review gate.
+
+Default state is `data/studio.sqlite`, byte cache under `data/cache/sha256`, retained failed attempts under `data/work/<job-id>`, and previews under `output/jobs/<job-id>/revision-N/<hash>/`. Repeat custom `--data`/`--output-root` options on later commands. Scene-only output is a silent captioned clip and needs measured WAVs for the whole timeline. Do not edit cached bytes or the database in place. Use `jobs --help` and [storage/CLI details](docs/09-data-and-api.md) for revisions, optimistic versions, leases, retry bounds and artifact layout.

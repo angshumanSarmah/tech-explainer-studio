@@ -49,7 +49,7 @@ The **Content Director** is the only LLM-driven stage. Producer and Publisher ar
 | Rerenders | Saved script can render again without calling an LLM; only affected scenes should require rebuilding |
 | Approval | Human approval of evidence, media/rights, final artifact and metadata hashes |
 | Publishing | Private-first and explicit; no unattended public posting |
-| Storage | Local filesystem and SQLite with resumable jobs when the phase lands |
+| Storage | Local filesystem plus SQLite job revisions, fenced leases and verified scene caches (Phase 07) |
 | Ownership | `phi-video-gen` patterns are conceptual reference unless rights for code transfer are documented |
 
 ## Implementation status and updates
@@ -93,3 +93,10 @@ The active visual union is `title-card` or `tech-animation`/`BrowserRequestFlow`
 6. Phases 11–13: optional component expansion, dashboard and analytics.
 
 Do **not** begin by building a sophisticated multi-agent orchestration framework, paid video generation, an auto-upload bot, or a full creator dashboard.
+
+
+**Implemented in Phase 07:** `src/storage/` uses Node 24's built-in SQLite, schema migration 1, strict typed repository reads, WAL/FULL durability, transactional state changes, optimistic versions and renewable job/producer leases. `src/workflow/` imports immutable Phase 01–06 script/audio/draft records and runs only the deterministic local producer. SQLite holds job/revision/step/asset/cache/render metadata and imported provider usage estimates; large files live in a SHA-256 cache. No earlier database schema is assumed. Imported research keeps bundle identity/hash/date, ledger revision/hash/fact approval and claim/source review references; raw documents, prompts and keys are not copied into job records. Local review identities remain unauthenticated assertions.
+
+`jobs create/list/inspect/revise/pause/continue/resume` and `render --job --scene` are implemented. Steps are scene audio, captioned scene clips, and final assembly/QC. Verified cache hits avoid synthesis/rendering; a failed or interrupted input gets at most two execution attempts. Both a per-job fencing lease and one local-producer lease protect execution. Atomic file publication and content hashes allow restart after file/database interruption without claiming partial outputs complete. All exports are unapproved previews; Phase 08 approval and Publisher remain unimplemented.
+
+Cache dependencies separate visual brand tokens from voice settings and measured pixels from waveform bytes. Colors/fonts/caption changes retain WAVs; narrator/lexicon changes retain the script and reuse clips whose measured frame ranges/captions/pixels are unchanged. The current composition bakes global progress and chapter position into clips: timing changes can invalidate other clips that display that changed progress. This is conservative, explicit invalidation, not independent base-layer compositing. Source/claim/review changes set a persistent evidence-review gate, never invoke Director/research, and require a newly reviewed bound draft to clear it. See ADR-015 and [workflow/storage contracts](docs/09-data-and-api.md).

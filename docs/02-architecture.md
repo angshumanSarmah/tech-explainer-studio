@@ -185,3 +185,12 @@ MVP runs as **a local CLI** on macOS (Apple Silicon). FFmpeg/FFprobe and a suppo
 - `ArtifactStore.put(bytes, metadata) -> sha256 address`
 
 Every interface is **side-effect-explicit**, testable, and fails closed if invalid.
+
+
+## Phase 07 implemented persistence boundary
+
+The diagrams above retain future approval/publishing/API targets. The implemented local runner is `JobRunner` → existing measured Producer, with SQLite `Repository` and `AssetCache`; it never constructs Director/DeepSeek or fetches evidence. Migration 1 is the first database; legacy JSON VideoScript 1.0.0 fixtures import with the existing default brand. Script revisions are immutable snapshots with source/claim review references, origin, brand fingerprint, saved local narrator/config and optional reviewed alignment. The database revision counter is separate from the author's VideoScript revision.
+
+Jobs use `queued/running/failed/paused/needs_review/review_ready`. Physical steps use `audio/scene/assembly` with `running/succeeded/failed/abandoned`, input/output hashes and bounded attempts. The larger editorial/publication state machine remains planned. One fenced job lease and one machine-local producer lease (120 seconds, renewed every 15 seconds) reject competing execution; compare-and-swap job versions reject stale edits. Expired running steps are abandoned before recovery. SQLite writes use `BEGIN IMMEDIATE`, WAL, foreign keys and FULL synchronization. Files are SHA-256 addressed, verified on every reuse, copied rather than hardlinked, and exported by a same-directory staging rename. A file/database crash window is reconciled by re-verifying cached/exported files on resume.
+
+Narration cache keys include text, scene ID, saved WAV/metadata or configured model/voice/rate/lexicon/resources, audio implementation and tool/runtime identities. Clip keys bind the resolved scene visual, measured duration, caption text/timing, global start/total/ordinal, visual brand, actual font hash, renderer implementation, browser/Remotion/tool/platform identities and dimensions. Waveform bytes enter assembly rather than the pixel key. Existing global-progress pixels mean changed total timing conservatively invalidates dependent clips. Assembly keys bind ordered clip/audio hashes, complete saved provenance/revision, effective brand and producer implementation. No stale render reference is carried into a revision; every preview remains `approvedForRelease:false`.

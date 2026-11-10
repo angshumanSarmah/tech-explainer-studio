@@ -51,6 +51,8 @@ export interface RenderOptions {
   guides?: boolean;
   onProgress?: (text: string) => void;
   presentation?: Presentation;
+  /** Inclusive global frame range; preserves composition context for scene caching. */
+  frameRange?: [number, number];
 }
 
 export async function renderSilentPreview(
@@ -61,6 +63,21 @@ export async function renderSilentPreview(
   const plan = options.presentation
     ? resolvePresentation(script, options.presentation)
     : planSilentRender(script);
+  const range = options.frameRange;
+  if (
+    range &&
+    (!Number.isInteger(range[0]) ||
+      !Number.isInteger(range[1]) ||
+      range[0] < 0 ||
+      range[1] < range[0] ||
+      range[1] >= plan.durationFrames)
+  )
+    throw new RenderStageError(
+      'frame-range',
+      null,
+      'Frame range must be inside the measured composition',
+    );
+  const renderedFrames = range ? range[1] - range[0] + 1 : plan.durationFrames;
   try {
     await access(options.browserExecutable);
   } catch {
@@ -149,6 +166,7 @@ export async function renderSilentPreview(
       scene_id: string,
     ) {
       sceneId = scene_id;
+      if (range) frame = Math.max(range[0], Math.min(range[1], frame));
       const comp = await selectComposition({
         ...common,
         id: 'TechExplainerSilent',
@@ -172,6 +190,11 @@ export async function renderSilentPreview(
       });
     }
     for (const item of plan.scenes) {
+      if (
+        range &&
+        (item.from > range[1] || item.from + item.durationFrames <= range[0])
+      )
+        continue;
       const phase =
         item.scene.visual.type === 'title-card'
           ? item.scene.visual.variant
@@ -203,6 +226,7 @@ export async function renderSilentPreview(
     );
     const galleryInputs: VideoScript[] = [];
     if (
+      !range &&
       !options.presentation &&
       sourceScene?.visual.type === 'tech-animation'
     ) {
@@ -238,12 +262,13 @@ export async function renderSilentPreview(
     }
     sceneId = null;
     stage = 'video';
-    options.onProgress?.(`Rendering ${plan.durationFrames} frames`);
+    options.onProgress?.(`Rendering ${renderedFrames} frames`);
     let lastPercent = -10;
     await renderMedia({
       ...common,
       composition,
       inputProps,
+      ...(range ? { frameRange: range } : {}),
       outputLocation: join(scratch, 'video.mp4'),
       codec: 'h264',
       pixelFormat: 'yuv420p',
@@ -265,7 +290,7 @@ export async function renderSilentPreview(
     stage = 'ffprobe';
     const qc = await probeSilentVideo(
       join(scratch, 'video.mp4'),
-      plan.durationFrames,
+      renderedFrames,
     );
     const { stdout: browserVersion } = await executeFile(
       options.browserExecutable,
@@ -288,7 +313,10 @@ export async function renderSilentPreview(
       scriptSha256: sha256(JSON.stringify(script)),
       videoSha256: sha256(await readFile(join(scratch, 'video.mp4'))),
       ...VIDEO,
-      durationFrames: plan.durationFrames,
+      durationFrames: renderedFrames,
+      ...(range
+        ? { frameRange: range, compositionFrames: plan.durationFrames }
+        : {}),
       timingMode: options.presentation
         ? 'measured-narration-visuals'
         : 'silent-preview-estimates',
