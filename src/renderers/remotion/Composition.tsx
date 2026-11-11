@@ -16,6 +16,8 @@ import {
 } from '../../timing/timeline.ts';
 import { CACHE_PHASE_COPY } from '../../visuals/cache-aside-state.ts';
 import { PHASE_LABELS } from '../../visuals/flow-state.ts';
+import type { StagedImages } from '../../visuals/LayeredAssets.tsx';
+import { LibraryScene, libraryTitle } from '../../visuals/LibraryScene.tsx';
 import { SvgText } from '../../visuals/SvgText.tsx';
 import { titleCardCopy } from '../../visuals/title-card.ts';
 import { planSilentRender, sceneAtFrame } from './plan.ts';
@@ -26,6 +28,7 @@ export type CompositionProps = {
   script?: VideoScript;
   guides?: boolean;
   presentation?: Presentation;
+  assets?: StagedImages;
 };
 
 function assertLabels(svg: SVGSVGElement, sceneId: string) {
@@ -78,6 +81,7 @@ export function ExplainerComposition({
   script,
   guides,
   presentation,
+  assets,
 }: CompositionProps) {
   const frame = useCurrentFrame();
   const validated = parseVideoScript(script);
@@ -92,13 +96,24 @@ export function ExplainerComposition({
   const localFrame = frame - active.from;
   const visual = scene.visual;
   const cardCopy =
-    visual.type === 'cache-aside-proof'
+    visual.type === 'registered-animation'
       ? {
           rows: [],
-          label: 'CACHE-ASIDE / MOTION PROOF',
-          footnote: 'Illustrative read path / no benchmark claims',
+          label: 'TECH EXPLAINER',
+          footnote:
+            visual.component === 'CityDemandHeatmap'
+              ? 'Illustrative • no real dispatch or pricing model'
+              : visual.component === 'LayeredAssetScene'
+                ? 'Reviewed illustration • 2.5D layers'
+                : 'Illustrative model • simplified for explanation',
         }
-      : titleCardCopy(visual.type === 'title-card' ? visual : undefined);
+      : visual.type === 'cache-aside-proof'
+        ? {
+            rows: [],
+            label: 'CACHE-ASIDE / MOTION PROOF',
+            footnote: 'Illustrative read path / no benchmark claims',
+          }
+        : titleCardCopy(visual.type === 'title-card' ? visual : undefined);
   const ref = useRef<SVGSVGElement>(null);
   const [fontHandle] = useState(() => delayRender('Load bundled Inter font'));
   useEffect(() => {
@@ -207,6 +222,24 @@ export function ExplainerComposition({
                     }
                   />
                 ))}
+              </g>
+            ) : visual.type === 'registered-animation' ? (
+              <g>
+                <SvgText
+                  text={libraryTitle(visual)}
+                  x={96}
+                  y={338}
+                  size={BRAND.typography.sizes.s68}
+                  columns={20}
+                  gap={78}
+                  weight={BRAND.typography.weights.heading}
+                />
+                <LibraryScene
+                  visual={visual}
+                  frame={localFrame}
+                  durationFrames={active.durationFrames}
+                  {...(assets ? { assets } : {})}
+                />
               </g>
             ) : visual.type === 'cache-aside-proof' ? (
               <g>

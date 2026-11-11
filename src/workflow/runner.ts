@@ -16,6 +16,7 @@ import {
 import { AssetCache } from '../storage/cache.ts';
 import { Repository } from '../storage/repository.ts';
 import { planNarratedRender } from '../timing/timeline.ts';
+import { preflightVisualAssets } from '../visual-assets/store.ts';
 import {
   audioKey,
   fingerprint,
@@ -91,6 +92,7 @@ export class JobRunner {
     let stage = 'preflight';
     try {
       const snapshot = this.repo.snapshot(id);
+      await preflightVisualAssets(snapshot.script);
       const originalState = this.repo.get(id).status;
       if (
         originalState === 'paused' ||

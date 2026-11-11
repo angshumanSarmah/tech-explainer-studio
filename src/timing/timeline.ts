@@ -246,7 +246,10 @@ export function planNarratedRender(
       : undefined;
     const renderScene = structuredClone(scene);
     delete renderScene.caption_overrides;
-    if (renderScene.visual.type === 'tech-animation')
+    if (
+      renderScene.visual.type === 'tech-animation' ||
+      renderScene.visual.type === 'registered-animation'
+    )
       for (const cue of renderScene.visual.cues) {
         if (cue.trigger.kind !== 'phrase') {
           cue.trigger = {
@@ -381,7 +384,8 @@ export function planNarratedRender(
       holdFrames: durationFrames - audioFrames,
       endPaddingSamples: durationFrames * 800 - a.samples,
       cueWindows:
-        renderScene.visual.type === 'tech-animation'
+        renderScene.visual.type === 'tech-animation' ||
+        renderScene.visual.type === 'registered-animation'
           ? renderScene.visual.cues.map((cue) => ({
               cueId: cue.cue_id,
               fromFrame:
@@ -431,6 +435,15 @@ export function resolvePresentation(script: VideoScript, raw: unknown) {
     const scene = script.scenes[index];
     if (!scene || item.from !== expected)
       throw new Error('Presentation is not contiguous');
+    if (
+      scene.visual.type === 'registered-animation' &&
+      scene.visual.component === 'CityDemandHeatmap' &&
+      (item.durationFrames < scene.timing.min_seconds * 30 ||
+        item.durationFrames > scene.timing.max_seconds * 30)
+    )
+      throw new Error(
+        `${scene.scene_id}: spatial presentation exceeds saved duration budget`,
+      );
     expected += item.durationFrames;
     return { scene, ...item };
   });

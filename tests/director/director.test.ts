@@ -17,6 +17,7 @@ import {
   reviewDraft,
 } from '../../src/director/core.ts';
 import { VideoScriptSchema } from '../../src/domain/videoscript.ts';
+import { componentRegistry } from '../../src/domain/visuals.ts';
 import { MockLLMProvider } from '../../src/llm/provider.ts';
 import { fixture, fixtureText } from '../helpers/fixture.ts';
 import { researchFixture } from './helpers.ts';
@@ -32,10 +33,10 @@ test('manual legacy import is keyless, executable, draft-only and explicit about
 test('export derives the current strict schema, complete example and real registered catalog from Zod', () => {
   const exported = directorContract(fixture());
   assert.equal(exported.currentVideoScriptVersion, '1.1.0');
-  assert.deepEqual(Object.keys(exported.catalog.components).sort(), [
-    'BrowserRequestFlow',
-    'CacheAsideProof',
-  ]);
+  assert.deepEqual(
+    Object.keys(exported.catalog.components).sort(),
+    Object.keys(componentRegistry).sort(),
+  );
   assert.equal(exported.catalog.components.CacheAsideProof?.previewOnly, true);
   assert.deepEqual(exported.catalog.execution.actions, ['move']);
   assert.equal(exported.example.schema_version, '1.0.0');
@@ -313,7 +314,7 @@ test('CLI manual export/import and legacy validation run with all network disabl
 test('exported raw schemas match the actual runtime Zod contract', () => {
   assert.deepEqual(
     directorContract(fixture()).schema,
-    z.toJSONSchema(VideoScriptSchema),
+    z.toJSONSchema(VideoScriptSchema, { reused: 'ref' }),
   );
 });
 

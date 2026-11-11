@@ -16,6 +16,7 @@ import { ReleaseStore } from '../release/store.ts';
 import { hash } from '../render-manifest/manifest.ts';
 import { ResearchBundleSchema } from '../sources/bundle.ts';
 import { Repository } from '../storage/repository.ts';
+import { preflightVisualAssets } from '../visual-assets/store.ts';
 import { readJson } from '../workflow/import.ts';
 import type { CliOutput } from './run.ts';
 
@@ -152,6 +153,22 @@ export async function runReleaseCli(
             'Reference for original narrative; no code or media reuse grant',
         }),
       );
+      for (const a of await preflightVisualAssets(
+        script,
+        join(dir, 'visual-assets'),
+      ))
+        assets.push(
+          unknownRightsAsset({
+            assetId: a.record.assetId,
+            kind: 'image',
+            path: a.file,
+            sha256: a.record.sha256,
+            origin: a.record.originalSource,
+            provider: 'Local reviewed asset',
+            creator: null,
+            usage: 'Layered illustration in final video',
+          }),
+        );
       const cover = await bindFile('cover', requireValue('cover'));
       const font = await bindFile(
         'font',

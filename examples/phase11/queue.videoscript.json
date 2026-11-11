@@ -1,0 +1,360 @@
+{
+  "schema_version": "1.1.0",
+  "script_id": "phase11-queue",
+  "revision": 1,
+  "profile": "technology-explainer",
+  "topic": "queue",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "queue",
+      "url": "https://docs.python.org/3/library/queue.html",
+      "title": "Python queue documentation",
+      "retrieved_at": null,
+      "source_kind": "documentation",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "queue-mechanism",
+      "text": "A bounded FIFO queue separates waiting work from one consumer; this illustration either blocks producers or drops arrivals when full.",
+      "source_ids": [
+        "queue"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "queue-1",
+      "educational_goal": "A producer can send work faster than one consumer can finish it.",
+      "narration": "A producer can send work faster than one consumer can finish it.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "EventQueue",
+        "props": {
+          "queueCapacity": 3,
+          "consumptionTime": 0.18,
+          "overflowPolicy": "block",
+          "events": [
+            {
+              "id": "A",
+              "label": "A",
+              "arrival": 0.08
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "arrival": 0.10500000000000001
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "arrival": 0.13
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "arrival": 0.15500000000000003
+            },
+            {
+              "id": "E",
+              "label": "E",
+              "arrival": 0.18
+            },
+            {
+              "id": "F",
+              "label": "F",
+              "arrival": 0.20500000000000002
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 5,
+        "preferred_seconds": 5,
+        "max_seconds": 13
+      }
+    },
+    {
+      "scene_id": "queue-2",
+      "educational_goal": "The queue holds waiting work. The consumer handles one item at a time.",
+      "narration": "The queue holds waiting work. The consumer handles one item at a time.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "EventQueue",
+        "props": {
+          "queueCapacity": 3,
+          "consumptionTime": 0.18,
+          "overflowPolicy": "block",
+          "events": [
+            {
+              "id": "A",
+              "label": "A",
+              "arrival": 0.08
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "arrival": 0.10500000000000001
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "arrival": 0.13
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "arrival": 0.15500000000000003
+            },
+            {
+              "id": "E",
+              "label": "E",
+              "arrival": 0.18
+            },
+            {
+              "id": "F",
+              "label": "F",
+              "arrival": 0.20500000000000002
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 5,
+        "preferred_seconds": 5,
+        "max_seconds": 13
+      }
+    },
+    {
+      "scene_id": "queue-3",
+      "educational_goal": "This bounded queue blocks arrivals when its waiting slots are full.",
+      "narration": "This bounded queue blocks arrivals when its waiting slots are full.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "EventQueue",
+        "props": {
+          "queueCapacity": 2,
+          "consumptionTime": 0.22,
+          "overflowPolicy": "block",
+          "events": [
+            {
+              "id": "A",
+              "label": "A",
+              "arrival": 0.08
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "arrival": 0.10500000000000001
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "arrival": 0.13
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "arrival": 0.15500000000000003
+            },
+            {
+              "id": "E",
+              "label": "E",
+              "arrival": 0.18
+            },
+            {
+              "id": "F",
+              "label": "F",
+              "arrival": 0.20500000000000002
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 5,
+        "preferred_seconds": 5,
+        "max_seconds": 13
+      }
+    },
+    {
+      "scene_id": "queue-4",
+      "educational_goal": "Another explicit policy drops new arrivals when the queue is full.",
+      "narration": "Another explicit policy drops new arrivals when the queue is full.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "EventQueue",
+        "props": {
+          "queueCapacity": 2,
+          "consumptionTime": 0.22,
+          "overflowPolicy": "drop",
+          "events": [
+            {
+              "id": "A",
+              "label": "A",
+              "arrival": 0.08
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "arrival": 0.10500000000000001
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "arrival": 0.13
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "arrival": 0.15500000000000003
+            },
+            {
+              "id": "E",
+              "label": "E",
+              "arrival": 0.18
+            },
+            {
+              "id": "F",
+              "label": "F",
+              "arrival": 0.20500000000000002
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 5,
+        "preferred_seconds": 5,
+        "max_seconds": 13
+      }
+    },
+    {
+      "scene_id": "queue-5",
+      "educational_goal": "First in, first out keeps accepted work in order with one consumer.",
+      "narration": "First in, first out keeps accepted work in order with one consumer.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "EventQueue",
+        "props": {
+          "queueCapacity": 3,
+          "consumptionTime": 0.2,
+          "overflowPolicy": "block",
+          "events": [
+            {
+              "id": "A",
+              "label": "A",
+              "arrival": 0.08
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "arrival": 0.10500000000000001
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "arrival": 0.13
+            },
+            {
+              "id": "D",
+              "label": "D",
+              "arrival": 0.15500000000000003
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 5,
+        "preferred_seconds": 5,
+        "max_seconds": 13
+      }
+    },
+    {
+      "scene_id": "queue-6",
+      "educational_goal": "When no work arrives, the queue is empty and the consumer is idle.",
+      "narration": "When no work arrives, the queue is empty and the consumer is idle.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "EventQueue",
+        "props": {
+          "queueCapacity": 3,
+          "consumptionTime": 0.18,
+          "overflowPolicy": "block",
+          "events": [],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 5,
+        "preferred_seconds": 5,
+        "max_seconds": 13
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "queue"
+    ],
+    "summary": "Original queue illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

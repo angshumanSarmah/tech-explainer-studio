@@ -1,0 +1,271 @@
+{
+  "schema_version": "1.1.0",
+  "script_id": "phase11-btree",
+  "revision": 1,
+  "profile": "technology-explainer",
+  "topic": "btree",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "btree",
+      "url": "https://opendatastructures.org/ods-python/14_2_B_Trees.html",
+      "title": "Open Data Structures: B-Trees",
+      "retrieved_at": null,
+      "source_kind": "documentation",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "btree-mechanism",
+      "text": "An illustrative minimum-degree-two B-tree searches sorted keys and one child branch at a time; leaves have equal depth.",
+      "source_ids": [
+        "btree"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "btree-1",
+      "educational_goal": "A B-tree keeps sorted keys in nodes. Here we search for thirty.",
+      "narration": "A B-tree keeps sorted keys in nodes. Here we search for thirty.",
+      "claim_ids": [
+        "btree-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "BTreeLookup",
+        "props": {
+          "minDegree": 2,
+          "nodes": [
+            {
+              "id": "root",
+              "keys": [
+                20
+              ],
+              "children": [
+                "left",
+                "right"
+              ]
+            },
+            {
+              "id": "left",
+              "keys": [
+                5,
+                10
+              ],
+              "children": []
+            },
+            {
+              "id": "right",
+              "keys": [
+                30,
+                40
+              ],
+              "children": []
+            }
+          ],
+          "rootNodeId": "root",
+          "searchKey": 30,
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 8,
+        "preferred_seconds": 8,
+        "max_seconds": 16
+      }
+    },
+    {
+      "scene_id": "btree-2",
+      "educational_goal": "A comparison chooses one child. Unvisited branches stay in the background.",
+      "narration": "A comparison chooses one child. Unvisited branches stay in the background.",
+      "claim_ids": [
+        "btree-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "BTreeLookup",
+        "props": {
+          "minDegree": 2,
+          "nodes": [
+            {
+              "id": "root",
+              "keys": [
+                20
+              ],
+              "children": [
+                "left",
+                "right"
+              ]
+            },
+            {
+              "id": "left",
+              "keys": [
+                5,
+                10
+              ],
+              "children": []
+            },
+            {
+              "id": "right",
+              "keys": [
+                30,
+                40
+              ],
+              "children": []
+            }
+          ],
+          "rootNodeId": "root",
+          "searchKey": 10,
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 8,
+        "preferred_seconds": 8,
+        "max_seconds": 16
+      }
+    },
+    {
+      "scene_id": "btree-3",
+      "educational_goal": "Finding a key stops the search. Different keys can take different paths.",
+      "narration": "Finding a key stops the search. Different keys can take different paths.",
+      "claim_ids": [
+        "btree-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "BTreeLookup",
+        "props": {
+          "minDegree": 2,
+          "nodes": [
+            {
+              "id": "root",
+              "keys": [
+                20
+              ],
+              "children": [
+                "left",
+                "right"
+              ]
+            },
+            {
+              "id": "left",
+              "keys": [
+                5,
+                10
+              ],
+              "children": []
+            },
+            {
+              "id": "right",
+              "keys": [
+                30,
+                40
+              ],
+              "children": []
+            }
+          ],
+          "rootNodeId": "root",
+          "searchKey": 20,
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 8,
+        "preferred_seconds": 8,
+        "max_seconds": 16
+      }
+    },
+    {
+      "scene_id": "btree-4",
+      "educational_goal": "Reaching a leaf without the key means this search found no match.",
+      "narration": "Reaching a leaf without the key means this search found no match.",
+      "claim_ids": [
+        "btree-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "BTreeLookup",
+        "props": {
+          "minDegree": 2,
+          "nodes": [
+            {
+              "id": "root",
+              "keys": [
+                20
+              ],
+              "children": [
+                "left",
+                "right"
+              ]
+            },
+            {
+              "id": "left",
+              "keys": [
+                5,
+                10
+              ],
+              "children": []
+            },
+            {
+              "id": "right",
+              "keys": [
+                30,
+                40
+              ],
+              "children": []
+            }
+          ],
+          "rootNodeId": "root",
+          "searchKey": 99,
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 8,
+        "preferred_seconds": 8,
+        "max_seconds": 16
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "btree"
+    ],
+    "summary": "Original btree illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

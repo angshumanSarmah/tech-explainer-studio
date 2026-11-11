@@ -60,7 +60,27 @@ export const SceneV1Schema = z
       .optional(),
   })
   .superRefine((scene, ctx) => {
-    if (scene.visual.type === 'tech-animation') {
+    if (
+      scene.visual.type === 'registered-animation' &&
+      scene.visual.component === 'CityDemandHeatmap'
+    ) {
+      const full = scene.visual.props.storyBeat === 'full';
+      if (
+        scene.timing.min_seconds < (full ? 10 : 2) ||
+        scene.timing.max_seconds > (full ? 20 : 6)
+      )
+        ctx.addIssue({
+          code: 'custom',
+          path: ['timing'],
+          message: full
+            ? 'Full spatial stories require 10–20 seconds'
+            : 'Spatial story beats require 2–6 seconds',
+        });
+    }
+    if (
+      scene.visual.type === 'tech-animation' ||
+      scene.visual.type === 'registered-animation'
+    ) {
       const ids = new Set<string>();
       scene.visual.cues.forEach((cue, index) => {
         if (ids.has(cue.cue_id))
@@ -204,11 +224,14 @@ export const VideoScriptV1Schema = VideoScriptV1Base.superRefine(
   (script, ctx) => {
     validateReferences(script, ctx);
     script.scenes.forEach((scene, index) => {
-      if (scene.visual.type === 'cache-aside-proof')
+      if (
+        scene.visual.type === 'cache-aside-proof' ||
+        scene.visual.type === 'registered-animation'
+      )
         ctx.addIssue({
           code: 'custom',
           path: ['scenes', index, 'visual'],
-          message: 'CacheAsideProof is a preview-only VideoScript 1.1.0 visual',
+          message: 'New library/proof visuals require VideoScript 1.1.0',
         });
       if (scene.visual.type === 'title-card' && scene.visual.content)
         ctx.addIssue({

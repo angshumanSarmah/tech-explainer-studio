@@ -10,10 +10,12 @@ export function CacheAsideProof({
   props,
   frame,
   durationFrames,
+  premium = false,
 }: {
   props: CacheAsideProofProps;
   frame: number;
   durationFrames: number;
+  premium?: boolean;
 }) {
   const s = cacheAsideState(props.visualPhase, frame, durationFrames);
   const hit = props.visualPhase === 'hit';
@@ -33,30 +35,32 @@ export function CacheAsideProof({
         opacity={0.35}
         fill="none"
       />
-      <DepthPanel x={96} y={480} width={816} height={62}>
-        <SvgText
-          text={hit ? 'READ 02' : 'READ 01'}
-          x={120}
-          y={520}
-          size={BRAND.typography.sizes.s26}
-          color={THEME.flow}
-        />
-        <SvgText
-          text="DATABASE READS"
-          x={566}
-          y={519}
-          size={BRAND.typography.sizes.s23}
-          color={THEME.muted}
-        />
-        <SvgText
-          text={String(s.queryCount)}
-          x={868}
-          y={522}
-          size={BRAND.typography.sizes.s32}
-          color={hit ? THEME.muted : THEME.text}
-          weight={BRAND.typography.weights.heading}
-        />
-      </DepthPanel>
+      {!premium && (
+        <DepthPanel x={96} y={480} width={816} height={62}>
+          <SvgText
+            text={hit ? 'READ 02' : 'READ 01'}
+            x={120}
+            y={520}
+            size={BRAND.typography.sizes.s26}
+            color={THEME.flow}
+          />
+          <SvgText
+            text="DATABASE READS"
+            x={566}
+            y={519}
+            size={BRAND.typography.sizes.s23}
+            color={THEME.muted}
+          />
+          <SvgText
+            text={String(s.queryCount)}
+            x={868}
+            y={522}
+            size={BRAND.typography.sizes.s32}
+            color={hit ? THEME.muted : THEME.text}
+            weight={BRAND.typography.weights.heading}
+          />
+        </DepthPanel>
+      )}
       <MotionPath
         curve={CACHE_PATHS.lookup}
         progress={props.visualPhase === 'lookup' || hit ? s.lookup : 0}
@@ -99,7 +103,7 @@ export function CacheAsideProof({
           weight={BRAND.typography.weights.heading}
         />
         <SvgText
-          text="cache-aside reader"
+          text={premium ? 'Application' : 'cache-aside reader'}
           x={124}
           y={692}
           size={BRAND.typography.sizes.s23}
@@ -251,7 +255,9 @@ export function CacheAsideProof({
             s.dbBusy
               ? 'reading source data'
               : hit
-                ? 'IDLE / not queried'
+                ? premium
+                  ? 'Idle'
+                  : 'IDLE / not queried'
                 : 'source of truth'
           }
           x={540}
@@ -263,6 +269,7 @@ export function CacheAsideProof({
       </g>
       {s.requestVisible && (
         <MovingPacket
+          scale={premium ? 1.65 : 1}
           curve={CACHE_PATHS.lookup}
           progress={s.lookup}
           color={THEME.flow}
@@ -270,6 +277,7 @@ export function CacheAsideProof({
       )}
       {s.missVisible && (
         <MovingPacket
+          scale={premium ? 1.65 : 1}
           curve={CACHE_PATHS.reply}
           progress={s.missReply}
           color={THEME.highlight}
@@ -277,6 +285,7 @@ export function CacheAsideProof({
       )}
       {s.queryVisible && (
         <MovingPacket
+          scale={premium ? 1.65 : 1}
           curve={CACHE_PATHS.query}
           progress={s.query}
           color={THEME.flow}
@@ -284,6 +293,7 @@ export function CacheAsideProof({
       )}
       {s.dataVisible && (
         <MovingPacket
+          scale={premium ? 1.65 : 1}
           curve={CACHE_PATHS.data}
           progress={s.data}
           color={THEME.success}
@@ -292,6 +302,7 @@ export function CacheAsideProof({
       )}
       {s.fillVisible && (
         <MovingPacket
+          scale={premium ? 1.65 : 1}
           curve={CACHE_PATHS.fill}
           progress={s.fill}
           color={THEME.success}
@@ -300,6 +311,7 @@ export function CacheAsideProof({
       )}
       {s.hitVisible && (
         <MovingPacket
+          scale={premium ? 1.65 : 1}
           curve={CACHE_PATHS.reply}
           progress={s.hitReply}
           color={THEME.success}

@@ -59,6 +59,18 @@ export function planSilentRender(script: VideoScript) {
           'Each cache proof beat needs at least one second for causal motion',
           '["timing"]',
         );
+    } else if (visual.type === 'registered-animation') {
+      if (scene.timing.preferred_seconds * VIDEO.fps < 30)
+        fail('Mechanism scenes need at least 30 frames', '["timing"]');
+      for (const cue of visual.cues)
+        if (
+          cue.trigger.kind !== 'progress' ||
+          cue.trigger.to <= cue.trigger.from
+        )
+          fail(
+            'Mechanism cues require nonzero progress windows; phrase cues need reviewed audio alignment',
+            '["visual"]["cues"]',
+          );
     } else {
       if (!visual.props.illustrative)
         fail(

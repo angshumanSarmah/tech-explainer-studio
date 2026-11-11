@@ -85,11 +85,13 @@ export function MovingPacket({
   progress,
   color,
   data = false,
+  scale = 1,
 }: {
   curve: Curve;
   progress: number;
   color: string;
   data?: boolean;
+  scale?: number;
 }) {
   const point = curvePoint(curve, progress);
   const ahead = curvePoint(curve, Math.min(1, progress + 0.001));
@@ -97,7 +99,7 @@ export function MovingPacket({
   const angle =
     (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
   return (
-    <g transform={`translate(${point.x} ${point.y})`}>
+    <g transform={`translate(${point.x} ${point.y}) scale(${scale})`}>
       <ellipse
         cx={4}
         cy={20}

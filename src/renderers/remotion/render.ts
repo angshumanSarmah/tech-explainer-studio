@@ -25,6 +25,8 @@ import {
   type Presentation,
   resolvePresentation,
 } from '../../timing/timeline.ts';
+import { VisualAssetError } from '../../visual-assets/model.ts';
+import { stageVisualAssets } from '../../visual-assets/store.ts';
 import type { CompositionProps } from './Composition.tsx';
 import { executeFile, executeMedia, probeSilentVideo } from './media-tools.ts';
 import { planSilentRender } from './plan.ts';
@@ -101,7 +103,7 @@ export async function renderSilentPreview(
       'Output directory already exists or cannot be created; choose a new --output directory',
     );
   }
-  let stage = 'bundle';
+  let stage = 'asset-preflight';
   let sceneId: string | null = null;
   let browser: Awaited<ReturnType<typeof openBrowser>> | undefined;
   try {
@@ -112,7 +114,21 @@ export async function renderSilentPreview(
         import.meta.url,
       ),
     );
+    const stagedAssets = await stageVisualAssets(
+      script,
+      join(outputDir, 'visual-assets'),
+    );
+    stage = 'bundle';
+    const publicDir = join(scratch, 'public');
+    await mkdir(publicDir);
+    const { cp } = await import('node:fs/promises');
+    await cp(
+      join(outputDir, 'visual-assets'),
+      join(publicDir, 'visual-assets'),
+      { recursive: true },
+    );
     const serveUrl = await bundle({
+      publicDir,
       entryPoint,
       outDir: join(scratch, 'bundle'),
       enableCaching: false,
@@ -141,6 +157,9 @@ export async function renderSilentPreview(
     };
     const inputProps: CompositionProps = {
       script,
+      assets: Object.fromEntries(
+        stagedAssets.map((a) => [a.ref.recordSha256, a.file]),
+      ),
       guides: options.guides ?? false,
       ...(options.presentation ? { presentation: options.presentation } : {}),
     };
@@ -198,7 +217,9 @@ export async function renderSilentPreview(
       const phase =
         item.scene.visual.type === 'title-card'
           ? item.scene.visual.variant
-          : item.scene.visual.props.visualPhase;
+          : item.scene.visual.type === 'registered-animation'
+            ? item.scene.visual.component
+            : item.scene.visual.props.visualPhase;
       await still(
         `${item.scene.scene_id}.png`,
         inputProps,
@@ -305,6 +326,30 @@ export async function renderSilentPreview(
       ),
     );
     const manifest = {
+      spatialScenes: plan.scenes.flatMap(({ scene }) =>
+        scene.visual.type === 'registered-animation' &&
+        scene.visual.component === 'CityDemandHeatmap'
+          ? [
+              {
+                sceneId: scene.scene_id,
+                component: scene.visual.component,
+                backend: 'svg',
+                renderMode: scene.visual.props.renderMode,
+                cameraPreset: scene.visual.props.cameraPreset,
+                graphicsRequirement: 'SVG only; WebGL not required',
+                fallbackAvailable: 'flat-svg',
+                selection:
+                  'Explicit validated props; no silent runtime substitution',
+                dataKind: 'synthetic',
+                cells: 25,
+                snapshots: 4,
+                vehicles: scene.visual.props.vehicles.length,
+                importedAssets: 0,
+              },
+            ]
+          : [],
+      ),
+      visualAssets: stagedAssets,
       kind: options.presentation ? 'narrated-visuals' : 'silent-preview',
       brand: brandIdentity('brand' in script ? script.brand : undefined),
       approvedForRelease: false,
@@ -329,7 +374,9 @@ export async function renderSilentPreview(
         phase:
           scene.visual.type === 'title-card'
             ? scene.visual.variant
-            : scene.visual.props.visualPhase,
+            : scene.visual.type === 'registered-animation'
+              ? scene.visual.component
+              : scene.visual.props.visualPhase,
       })),
       tools: {
         remotion: VERSION,
@@ -384,6 +431,7 @@ export async function renderSilentPreview(
   } catch (error) {
     const reason =
       error instanceof Error ? error.message : 'Unknown renderer failure';
+    if (error instanceof VisualAssetError) sceneId = error.sceneId;
     sceneId ??=
       script.scenes.find((s) => reason.includes(s.scene_id))?.scene_id ?? null;
     await writeFile(

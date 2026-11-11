@@ -137,7 +137,13 @@ export async function implementationIdentity(
     visuals: {
       ...runtime,
       remotion: VERSION,
-      code: await tree(['src/renderers', 'src/visuals', 'src/timing']),
+      code: await tree([
+        'src/renderers',
+        'src/visuals',
+        'src/timing',
+        'src/domain',
+        'src/visual-assets',
+      ]),
       fontSha256: await fileHash(font),
       browser:
         adapterId ??

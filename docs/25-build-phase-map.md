@@ -16,6 +16,7 @@ This file breaks [docs/13-roadmap.md](13-roadmap.md) into smaller coding tasks. 
 | 09 | YouTube OAuth, private upload, retries and reconciliation | [Phase 09](../codex/09-youtube-private-publishing.md) |
 | 10 | Instagram Reels manual export bundle | [Phase 10](../codex/10-instagram-export.md) |
 | 11 | EventQueue, B-tree, Git object graph and code traces | [Phase 11](../codex/11-animation-component-library.md) |
+| 11B | Optional bounded spatial city/heatmap proof | [Phase 11B](../codex/11b-selective-3d-spatial-scenes.md) |
 | 12 | Optional localhost review dashboard | [Phase 12](../codex/12-local-creator-dashboard.md) |
 | 13 | Optional analytics feedback, hardening and controlled launch | [Phase 13](../codex/13-analytics-and-launch-readiness.md) |
 

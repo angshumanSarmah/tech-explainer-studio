@@ -1,6 +1,6 @@
 # Tech Explainer Studio
 
-> **Phases 01–07 implemented:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, and SQLite jobs with fenced recovery and scene caches. Director/provider tests are mocked; live DeepSeek remains unverified. Approved MDN/Redis source ingestion was verified for the caching episode. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+> **Phases 01–08 implemented; Phases 11/11B await visual review:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, SQLite jobs with fenced recovery and scene caches, and local exact-artifact release gates. Director/provider tests are mocked; live DeepSeek remains unverified. Approved MDN/Redis source ingestion was verified for the caching episode. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 >
 > **Read [EXECUTION_FLOW.md](EXECUTION_FLOW.md) first for the exact Codex build process.**
 
@@ -27,7 +27,7 @@ Tech Explainer Studio turns a technical topic or a public engineering reference 
 2. **[ARCHITECTURE.md](ARCHITECTURE.md)** — main architecture and Mermaid diagram; updated only when design changes.
 3. **[AGENTS.md](AGENTS.md)** — persistent Codex engineering rules; Claude Code starts from [CLAUDE.md](CLAUDE.md).
 4. **[PROJECT_STATUS.md](PROJECT_STATUS.md)** — factual phase completion log; updated after **each** phase.
-5. **[CODEX_PROMPTS.md](CODEX_PROMPTS.md)** — index of the 14 copy-ready implementation phase prompts under [`codex/`](codex/).
+5. **[CODEX_PROMPTS.md](CODEX_PROMPTS.md)** — index of the copy-ready implementation phase prompts under [`codex/`](codex/).
 6. **[docs/02-architecture.md](docs/02-architecture.md)**, **[docs/03-contracts.md](docs/03-contracts.md)**, **[docs/20-component-specs.md](docs/20-component-specs.md)** — detailed implementation references.
 7. **[MIGRATION_FROM_PREVIOUS_ZIP.md](MIGRATION_FROM_PREVIOUS_ZIP.md)** — what changed, what old files to remove, how to preserve existing work.
 
@@ -54,7 +54,7 @@ node dist/cli/index.js script validate --file examples/http-server.videoscript.j
 
 `npm run format` formats and applies safe Biome fixes to source, tests and configuration; it leaves the reference fixture untouched. No global CLI installation is needed. A successful validation emits JSON on stdout and exits `0`. Failures emit structured JSON on stderr: `2` for input/JSON/schema/file errors, `3` for unsupported visual types/components. Help exits `0`.
 
-Stable visuals are `title-card` and `tech-animation` with `BrowserRequestFlow`. A bounded `cache-aside-proof` / `CacheAsideProof` prototype is available only for the requested prerequisite visual review; the full Phase 11 library remains unimplemented. Validation stays independent of the renderer. VideoScript 1.1.0 title cards can supply bounded authored label/three rows/footnote for topic-correct animated text episodes; BrowserRequestFlow remains HTTP-specific. Legacy 1.0.0 keeps its original defaults. Syntax/schema validity does not approve facts, rights, timing or a release.
+Stable visuals are `title-card` and `tech-animation` with `BrowserRequestFlow`. A bounded `cache-aside-proof` / `CacheAsideProof` prototype is available only for the requested prerequisite visual review; the Phase 11 library described below is implemented for human visual review. Validation stays independent of the renderer. VideoScript 1.1.0 title cards can supply bounded authored label/three rows/footnote for topic-correct animated text episodes; BrowserRequestFlow remains HTTP-specific. Legacy 1.0.0 keeps its original defaults. Syntax/schema validity does not approve facts, rights, timing or a release.
 
 ## Render a silent preview
 
@@ -235,7 +235,7 @@ Manual creation is a first-class, keyless workflow. Export the actual Zod-derive
 npm run studio -- director export --output output/director-contract
 ```
 
-Give `output/director-contract/contract.json`, `external-director.md` and `request.json` to ChatGPT, Claude, Codex or another external tool yourself. The app does not send or upload these files. The prompt requests directly importable VideoScript JSON, including narration, source/claim IDs and supported storyboard cues. Only HTTP request/response visuals and HTTP-decorated title cards exist today; other mechanisms must return `unsupported_visual`, rather than substitute unrelated visuals. The schema is generated from actual runtime Zod definitions, with separate executable catalog constraints and tested producer preflight. The `research`, `audit`, `narration`, `storyboard` and `repair` prompt fragments have versions/hashes and are included in the export.
+Give `output/director-contract/contract.json`, `external-director.md` and `request.json` to ChatGPT, Claude, Codex or another external tool yourself. The app does not send or upload these files. The prompt requests directly importable VideoScript JSON, including narration, source/claim IDs and supported storyboard cues. The current exported registry includes the Phase 11 queue, B-tree, Git object, reviewed trace, file transfer, cache-aside and local layered-asset mechanisms alongside HTTP and title cards. Prefer a supported mechanism; unsupported visuals return `unsupported_visual`/`needs_review`. Multi-scene all-title-card explainers require review. The schema is generated from actual runtime Zod definitions, with separate executable catalog constraints and tested producer preflight. The `research`, `audit`, `narration`, `storyboard` and `repair` prompt fragments have versions/hashes and are included in the export.
 
 For grounded external work, first perform Phase 05's real human claim review. Then add `--bundle <saved-research-bundle.json> --ledger <approved-ledger.json>` to export/import/validate. Export includes bounded reviewed quotes, source records, claims and source IDs; pasted notes remain user assertions. `--brief brief.json` can supply:
 
@@ -317,3 +317,24 @@ Default state is `data/studio.sqlite`, byte cache under `data/cache/sha256`, ret
 ## Exact-artifact human review (Phase 08)
 
 Use `npm run studio -- release --help` to create a rights inventory, prepare an immutable release candidate and export its reviewer package. Separate `review facts`, `review rights`, `review video` and `review publish` commands bind exact dependencies; `release check` fails closed on missing/stale approval, unknown rights, missing attribution or bad media. `--data` uses the same local SQLite store as jobs. Rendering never approves or uploads. Review identities are local assertions; actual human factual/rights/playback/metadata review remains required. See [commands, JSON fields and invalidation rules](docs/07-workflow.md#phase-08-implemented-release-reviews). No production Publisher or network upload command exists.
+
+
+## Phase 11 reusable mechanisms and local visual assets
+
+The existing Producer now supports `EventQueue`, `BTreeLookup`, `HashObjectGraph`, `CodeTrace`, `FileTransfer`, `CacheAsideScene` and `LayeredAssetScene` through the 1.1.0 `registered-animation` contract. All use the approved brand and measured cue/caption pipeline. Phase 11B adds the bounded synthetic `CityDemandHeatmap` described below. Full GPU 3D, generated code and remote image props remain unsupported. The original CacheAsideProof remains preview-only.
+
+```bash
+npm run studio -- director export --output output/current-component-contract
+npm run studio -- assets --help
+node scripts/render-phase11.mjs caching cloud-sync queue btree git-objects code-trace http
+```
+
+The demo runner explicitly uses installed local Kokoro and Chrome, preserves raw WAVs and exact audio processing receipts, and writes fresh ignored review directories. It calls no LLM or paid service. Mechanism windows follow measured speech activity; captions still use the explicitly unreviewed speech-span fallback. Human listening and phone playback remain required.
+
+The minimal asset manager imports local PNG/JPEG/WebP/passive SVG, starts assets pending, records separate explicit rights review, deduplicates file bytes and stages only approved hash-verified local assets for bundling. WebP currently uses the vetted macOS `sips` decoder; other systems must convert it locally to PNG. Rendering never replaces Phase 08 rights/release approvals. Complete fixture/import instructions are in [examples/phase11](examples/phase11/README.md); current props, limits, empty/failure states and taxonomy are in [component specs](docs/20-component-specs.md#phase-11-current-library-supersedes-the-p2-planning-sketches-above). Actual test/render evidence and the human-review handoff are in PROJECT_STATUS.md.
+
+## Phase 11B synthetic spatial proof
+
+`CityDemandHeatmap` adds one original procedural SVG city: fixed buildings/roads, moving demo vehicles, changing synthetic demand cells, a guided camera push and a wider changing pattern. `isometric-svg` supplies 2.5D depth; explicit `flat-svg` preserves the planar fallback. Both work with WebGL disabled. This is an illustrative spatial story, not a real map or dispatch/pricing model. No new package, tile, texture, model or remote service is needed.
+
+`node scripts/render-phase11b.mjs` explicitly synthesizes with installed local Kokoro and renders through the existing Producer. Replay saved WAVs with `node scripts/render-phase11b.mjs --replay output/phase11b/run-<suffix>`; add `--flat` for the planar version. Fresh output directories are created automatically. [Fixture/contract notes](examples/phase11b/README.md) include a minimal valid script. Actual MP4s, costs and limitations are in `output/phase11b/REVIEW.md` and PROJECT_STATUS.md. Human visual, voice, timing and rights approval remain pending. True ThreeCanvas/R3F integration is unimplemented; the successful WebGL probe does not establish that stack's compatibility or performance.

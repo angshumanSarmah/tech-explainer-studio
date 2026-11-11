@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.1.0",
+  "script_id": "phase11-code-trace",
+  "revision": 1,
+  "profile": "technology-explainer",
+  "topic": "code-trace",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "code",
+      "url": null,
+      "title": "Original manually derived arithmetic trace",
+      "retrieved_at": null,
+      "source_kind": "pasted_text",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "code-mechanism",
+      "text": "The supplied arithmetic trace states are authored values and no code executes.",
+      "source_ids": [
+        "code"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "code-trace-1",
+      "educational_goal": "This reviewed trace shows total changing from zero, to two, to five.",
+      "narration": "This reviewed trace shows total changing from zero, to two, to five.",
+      "claim_ids": [
+        "code-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "CodeTrace",
+        "props": {
+          "snippetId": "sum",
+          "review": {
+            "reviewer": "author",
+            "rationale": "Manually checked arithmetic",
+            "reviewed": true
+          },
+          "lines": [
+            "let total = 0",
+            "total = total + 2",
+            "total = total + 3"
+          ],
+          "steps": [
+            {
+              "line": 1,
+              "state": "total = 0"
+            },
+            {
+              "line": 2,
+              "state": "total = 2"
+            },
+            {
+              "line": 3,
+              "state": "total = 5"
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 7,
+        "preferred_seconds": 7,
+        "max_seconds": 15
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "code-trace"
+    ],
+    "summary": "Original code-trace illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

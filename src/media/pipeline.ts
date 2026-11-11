@@ -17,6 +17,8 @@ import {
   planNarratedRender,
   srt,
 } from '../timing/timeline.ts';
+import { VisualAssetError } from '../visual-assets/model.ts';
+import { stageVisualAssets } from '../visual-assets/store.ts';
 import { MediaError } from './error.ts';
 import { loadNarrationAsset } from './narration-input.ts';
 import { wavFromPcm } from './pcm.ts';
@@ -68,10 +70,12 @@ export async function renderNarratedPreview(
       'Choose a fresh writable output directory; reviewed files are never overwritten',
     );
   }
-  let stage = 'narration';
+  let stage = 'asset-preflight';
   let sceneId: string | null = null;
   const runner = deps.runner ?? runMedia;
   try {
+    await stageVisualAssets(script, join(output, 'visual-assets'));
+    stage = 'narration';
     const alignment =
       options.alignment === undefined
         ? undefined
@@ -299,32 +303,39 @@ export async function renderNarratedPreview(
     return { outputDir: output, manifest, report, timeline };
   } catch (error) {
     const failure =
-      error instanceof MediaError
-        ? error
-        : error instanceof NarrationError
-          ? new MediaError(error.code, stage, sceneId, error.message)
-          : error instanceof RenderInputError
-            ? new MediaError(
-                error.code,
-                'visual-preflight',
-                error.scene_id,
-                error.message,
-              )
-            : error instanceof RenderStageError
+      error instanceof VisualAssetError
+        ? new MediaError(
+            error.code,
+            'asset-preflight',
+            error.sceneId,
+            error.message,
+          )
+        : error instanceof MediaError
+          ? error
+          : error instanceof NarrationError
+            ? new MediaError(error.code, stage, sceneId, error.message)
+            : error instanceof RenderInputError
               ? new MediaError(
                   error.code,
-                  error.stage,
+                  'visual-preflight',
                   error.scene_id,
                   error.message,
                 )
-              : new MediaError(
-                  'NARRATED_RENDER_FAILED',
-                  stage,
-                  sceneId,
-                  error instanceof z.ZodError
-                    ? 'Invalid saved metadata or reviewed timing schema'
-                    : `Local ${stage} failed; inspect scene files, runtime and output permissions`,
-                );
+              : error instanceof RenderStageError
+                ? new MediaError(
+                    error.code,
+                    error.stage,
+                    error.scene_id,
+                    error.message,
+                  )
+                : new MediaError(
+                    'NARRATED_RENDER_FAILED',
+                    stage,
+                    sceneId,
+                    error instanceof z.ZodError
+                      ? 'Invalid saved metadata or reviewed timing schema'
+                      : `Local ${stage} failed; inspect scene files, runtime and output permissions`,
+                  );
     const record = {
       code: failure.code,
       stage: failure.stage,

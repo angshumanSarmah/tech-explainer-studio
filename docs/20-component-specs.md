@@ -157,3 +157,49 @@ This user-requested proof does **not** start or complete the Phase 11 library. I
 Reusable parts: `DepthPanel` (layered SVG surfaces), `MotionPath` (base path and animated stroke), `MovingPacket` (frame-based position, directional request glyph or stacked data card), and `cacheAsideState` (pure out-of-order-safe frame evaluation/eased cubic positions). Fixed ports keep scene boundaries continuous. The miss returns to the app **before** the app queries the database; returned data reaches the app **before** a copy populates the cache. The hit starts with that populated cache, returns its result and keeps the database-read counter at one. Narration/subtitles use measured existing Producer timing; the fixed artistic path windows do not claim word alignment. Existing mobile label/caption checks remain active on every frame. Human visual approval and release approval remain separate; neither is granted by rendering this proof.
 
 Phase 08 now enforces the prototype's existing `previewOnly` restriction at the release video gate. Independent media QC can pass while playback/release approval remains blocked on `PREVIEW_ONLY_COMPONENT:<scene-id>`. This does not promote or implement Phase 11.
+
+## Phase 11 current library (supersedes the P2 planning sketches above)
+
+The live authoritative schemas and public semantic descriptions are in `src/domain/visual-library-registry.ts` and `src/domain/library.ts`. `studio director export` emits complete 1.1.0 example VideoScripts, exact JSON prop schemas, supported cues, asset requirements, empty/failure behavior and safe-zone rules for every entry. JSON Schema cannot express all Zod refinements: the common parser and Producer preflight remain mandatory. Static render bindings attach fixed local implementations. No unknown component is replaced by a title card. Multi-scene all-title-card Director drafts return `NEEDS_REVIEW`.
+
+All seven library entries use:
+
+```json
+{"type":"registered-animation","taxonomy_version":"1.0.0","component":"FileTransfer","props":{"direction":"upload","fileLabel":"notes.pdf","outcome":"complete","illustrative":true},"cues":[]}
+```
+
+An optional single cue uses the existing VisualCue schema with action `{"kind":"move","target":"mechanism"}` and a nonzero progress window. It drives the component's deterministic complete mechanism. Unsupported actions/targets/values fail. A unique phrase trigger requires the existing reviewed WAV-bound word alignment; the silent path rejects unresolved phrases. The taxonomy category comes from the registry rather than LLM styling: EventQueue=flow_animation; BTreeLookup/HashObjectGraph/CodeTrace=diagram_2d; FileTransfer/CacheAsideScene=hybrid_2_5d; LayeredAssetScene=illustration_layered. `scene_3d` remains reserved; Phase 11B below implements the `map_heatmap` category through the bounded CityDemandHeatmap component.
+
+| Component | Actual bounded props and semantics | Empty/failure behavior |
+|---|---|---|
+| EventQueue | `queueCapacity` 1–4 waiting slots; one consumer; `consumptionTime` 0.05–0.5 in normalized mechanism time; ≤8 events `{id,label≤8,arrival:0..1}`, ordered by arrival; `overflowPolicy:block|drop`. Completions precede arrivals at a tie, equal arrivals use input order. In-service work is outside waiting capacity. Blocked work stays at producer in FIFO order, before later arrivals. | `events:[]` renders idle/empty; burst plus drop visibly counts rejected arrivals; block retains producer backlog. Never claims JavaScript microtask or distributed broker semantics. |
+| BTreeLookup | `minDegree:2`; 1–7 `{id,keys,children}` nodes; ≤3 integer keys per node, within −999..999; existing root/search key; connected acyclic single-parent tree, strict global search ranges, keys+1 children, balanced leaves, ≤3 levels and ≤3 nodes/level. Search path is computed, never trusted from model output. | Empty root leaf is valid; `searchKey:99` in the example produces not found. Malformed/cyclic/unsorted/unbalanced trees fail validation. Illustrative B-tree, not B+ tree or every database index. |
+| HashObjectGraph | ≤6 objects `{id,kind:blob|tree|commit,label≤16}` and ≤8 edges `{from,to,meaning:root|entry|parent}`. Each commit has one root tree; commit→parent commit; tree→tree/blob entries; acyclic and referentially valid, no duplicates. | `objects:[],edges:[]` renders empty store; missing roots/dangling/wrong-kind/cyclic edges fail. IDs are always illustrative; no calculated hash claim. Tree entry labels depict filenames; blobs hold contents. |
+| CodeTrace | `snippetId`, `review:{reviewer,rationale,reviewed:true}`, 1–6 literal source lines ≤38 characters, 1–8 `{line,state≤28}` steps, line within snippet. Reviewed identity is an operator assertion. | Empty/unreviewed/out-of-range input fails; errors may be authored literal state values. Render process never evaluates, imports or executes supplied code. No sandbox/live executor exists. |
+| FileTransfer | `direction:upload|download`, `fileLabel≤16`, `outcome:complete|failed`; causal device/cloud/storage paths, transfer→processing→store→complete. | Failed transfer stops at cloud and never reports stored completion. Completion is for this illustrative transfer, not global sync/replica consistency. |
+| CacheAsideScene | Four `visualPhase:lookup|miss|fill|hit` beats; `keyLabel/valueLabel≤14`. Reuses pure causal cache proof state, eased paths and depth primitives with larger packets and less counter/debug copy. | Lookup/miss start empty; hit assumes the preceding fill. Miss returns to app before DB request; fill returns data to app before writing a cache copy; hit keeps DB idle. Old CacheAsideProof remains independently preview-only. |
+| LayeredAssetScene | 1–4 ordered layers `{id,asset:{assetId,sha256,recordSha256},x,y,width,height,fit:contain|cover,depth,panX,panY,zoom,enter,exit}`; semantic `intent:reveal|compare|focus`. Positions/sizes and pan≤24/zoom≤1.08 are bounded; geometry checks retain caption clearance. Array order is composition order. Brand palette/font, overlays and depth shadows resolve locally. | Missing/unreviewed/changed assets fail preflight by ID. No placeholder, URL, arbitrary CSS/JS, raw path or code-as-animation. Catalog zero-hash example requires real reviewed asset refs before rendering. |
+
+`illustrative` must be true for all library entries. Every mechanism requires at least 30 frames. The fixed content rectangle is above captions (`x=96..912`, graphics through `y≤1290`, footnote at1324; caption band starts1372). Text stays within BrandProfile safe bounds and actual browser label-collision checks. Asset layers have a stricter bounded box through1280, with entrance/exit and shadow clearance. All movement is deterministic from frame number; 2.5D refers to layered illustrations and depth cues, not GPU/full 3D. The current brand has null logo/watermark assets; scenes do not invent new branding.
+
+Original complete fixtures and import instructions are in `examples/phase11/README.md`; the unchanged HTTP fixture remains the compatibility case. Generated MP4s, golden frames, exact cue windows and manifests are ignored local review artifacts listed in PROJECT_STATUS.md. Phone playback, subjective visual polish and word-level alignment remain human checks; rendering never grants release approval.
+
+## Phase 11B — CityDemandHeatmap@1.0.0
+
+The `map_heatmap` category is now implemented by `registered-animation/CityDemandHeatmap` (taxonomy 1.0.0); it is not a new visual type. `scene_3d`, arbitrary map types and unknown component names remain rejected. Runtime/Zod/Director schemas and static renderer dispatch share one registry.
+
+| Field | Bounds and meaning |
+|---|---|
+| sceneType / dataKind / illustrative | Literal synthetic-city-demand / synthetic / true |
+| renderMode | isometric-svg shaded extrusions, or explicit flat-svg roof footprints; both GPU-independent |
+| cameraPreset | follow-demand (bounded 1→1.16→1 zoom, pan ≤24px/18px), or wide |
+| storyBeat | establish, demand, respond, pattern adjoining quarters; full covers the complete story |
+| focusCell | Integer x/y 0–4; fixed pulse and focus-intensity readout |
+| density | Exactly four equally spaced snapshots, exactly 25 finite values 0–1 each; row-major y×5+x |
+| vehicles | 1–6 unique IDs, each exactly five waypoints x/y 0–5; axis-aligned integer-grid roads; routes are authored, not computed dispatch |
+| palette | Fixed brand roles low:flow, high:highlight, vehicle:success; no custom colors/styles |
+| assetIds | Empty array; no imported images, models, textures or footage accepted in this proof |
+
+All nested objects are strict. Fixed original geometry contains 25 cells, 19 low-poly building prisms and at most six vehicle glyphs plus one pulse. No shader, free geometry, live location, raw path/URL or executable code is accepted. All-zero density displays no demand; malformed/off-road routes and unknown assets fail before rendering. Full stories require 10–20s, partial beats 2–6s; measured presentation durations also respect saved budgets. Existing optional single nonzero move/mechanism cue or reviewed phrase anchor drives the story; no word timings are guessed. Shared topology/data/routes across partial beats give continuous positions.
+
+The established content/caption safe regions and BrandProfile remain in force. City art stays above the focus readout/legend; captions retain their separate band. The legend maps teal to gold for synthetic demand, with changing numeric focus intensity. Labels explicitly say fictional/synthetic and disavow real dispatch/pricing. Vehicles move independently of camera; demand changes independently of vehicles. No model/API/tiles/rights bypass is introduced. Unit tests, encoded mobile poses, offline/no-WebGL renders and current costs are recorded in PROJECT_STATUS.md. Subjective cinematic quality and phone playback still require human review.

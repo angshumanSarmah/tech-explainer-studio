@@ -89,7 +89,7 @@ export function makeRequest(
   const brief = DirectorBriefSchema.parse(
     briefInput ?? research.bundle.instructions,
   );
-  const contract = directorContract(example);
+  const { schema: _legacySchema, ...contract } = directorContract(example); // Generation needs one current schema, not duplicate legacy branches.
   const data = {
     brief,
     research: research.context,
@@ -245,6 +245,21 @@ export function importDraft(
       ],
     );
   }
+  if (
+    script.scenes.length >= 3 &&
+    script.scenes.every((s) => s.visual.type === 'title-card')
+  )
+    throw new DirectorError(
+      'NEEDS_REVIEW',
+      'All-title-card explainer needs a mechanism storyboard; choose a registered animation or return unsupported_visual',
+      [
+        {
+          path: '$.scenes',
+          reason:
+            'Show the mechanism using the exported catalog; title cards may frame a story but cannot replace its behavior',
+        },
+      ],
+    );
   const reviewIssues = [
     'NARRATION_AND_STORYBOARD_NEED_HUMAN_REVIEW',
     'FACTS_RIGHTS_TIMING_AND_RELEASE_REVIEW_SEPARATE',
@@ -313,7 +328,8 @@ export function importDraft(
   if (
     script.scenes.some(
       (s) =>
-        s.visual.type === 'tech-animation' &&
+        (s.visual.type === 'tech-animation' ||
+          s.visual.type === 'registered-animation') &&
         s.visual.cues.some((c) => c.trigger.kind === 'phrase'),
     )
   )

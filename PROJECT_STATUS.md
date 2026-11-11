@@ -1,8 +1,8 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phases 01–07 remain working. Phase 08 local release gates are implemented and verified: 213/213 regression tests, including 16 network-denied release tests, pass. Real saved Kokoro media independently reprobes/decodes successfully. Live DeepSeek was not called.
-> **Current stop:** Phase 08 is **Needs review**. No real episode has received facts/rights/playback/publish approval. The focused cache-motion proof remains preview-only and awaiting the user's visual approval. Full Phases 11/11B/12 and network publishing have not started. Next planned implementation is Phase 11 only after review and explicit authorization.
-> **Last updated:** 2026-11-10 (Asia/Kolkata).
+> **Status baseline:** Phases 01–08 remain implemented. Phase 11 adds the reusable mechanism library, reviewed local asset import/staging and Director anti-slideshow integration. Latest Phase 11B regression suite: **232/232 passed**; strict typecheck, lint and build passed. No live DeepSeek call was made.
+> **Current stop:** Optional Phase 11B is **Needs review** after a real narrated 16.3s CityDemandHeatmap proof, explicit flat fallback, offline/no-WebGL renders, encoded mobile poses and verified Phase 07 caching. Phase 11 visual acceptance also remains pending. Technical tests do not approve cinematic quality, voice, timing, rights or release. Phase 12 and network publishing remain unstarted.
+> **Last updated:** 2026-11-11 (Asia/Kolkata; Phase 11 work began 2026-11-10).
 
 ## Phase tracker
 
@@ -19,7 +19,8 @@
 | 08 | Human fact/media/video approval and immutable release manifest | Needs review | Four hash-bound CLI gates, immutable SQLite candidates/audit, optional visual asset rights, fresh AAC/media checks; 213/213 full tests and 16/16 network-denied release tests; real artifact remains intentionally ineligible |
 | 09 | YouTube OAuth, private upload, retries and reconciliation | Not started | — |
 | 10 | Instagram Reels manual export bundle | Not started | — |
-| 11 | EventQueue, B-tree, Git object graph and code traces | Not started | — |
+| 11 | Reusable 2D/2.5D mechanisms, local assets and Director quality | Needs review | 226/226 tests; six 30–37.1s Kokoro demos, two 7s scene proofs, 51 encoded golden poses at full/mobile size; human visual/listening/timing/rights review pending |
+| 11B | Optional synthetic city spatial story | Needs review | 232/232 tests; narrated 16.3s isometric SVG proof + flat fallback, no-WebGL/offline renders, 24 encoded poses at full/mobile size, tolerant 489-frame replay and real cached job resume; human review pending |
 | 12 | Optional localhost review dashboard | Not started | — |
 | 13 | Optional analytics feedback, hardening and controlled launch | Not started | — |
 
@@ -814,3 +815,149 @@ Limitations / next manual review:
 - Actual full listening, pronunciation/naturalness, mobile playback, claim/evidence/rights decisions and metadata consent are **UNVERIFIED/pending**; audio signal measurements alone do not establish speech quality. No actual reviewer identity or approval was fabricated.
 - The existing cache-motion prototype is deliberately preview-only. Review this phase's code/package and separately give visual feedback on that proof. Before an eventual release, repair/review the bundle/claim bindings, complete rights evidence/credits and use an approved component; a playback checkbox cannot bypass the prototype restriction.
 - No OAuth, outbox, YouTube/Instagram adapter, public action, dashboard, general visual asset pipeline or new animation library was implemented. Next planned phase is 11, only after explicit review/authorization; stop here.
+
+
+## Phase 11 — Mechanism library, local illustrations and Director quality (2026-11-10–11)
+
+Observed status: **implementation and technical verification complete; Needs review for human visual acceptance**. The user's full Phase 11 request authorized proceeding from the verified Phase 08 implementation and functional cache proof. Starting Git state was clean at existing `b0121f5`; prior release gates, prompt edits and approved/prototype artifacts were preserved. No Phase 11B/12, publishing integration, paid API, model/dependency/global-tool installation, OAuth, upload, commit or push was performed.
+
+### Diagnosis and reuse
+
+Inspected `output/caching-explainer/final/videoscript.json`, its exported `director-contract/storyboard-v1.md`, actual composition/dispatch, BrandProfile, cache proof, manifests and Phase 07 keys. The old episode contains **13 title-card scenes**. The old Director prompt/catalog offered only HTTP mechanisms and title cards, and import accepted an all-card story. That was a **Director capability/editorial-validation problem**. The title-card renderer only changed entrance opacity/progress; literal text arrows were not moving objects. That was a **renderer capability limitation**, not a failed packet animation. Prior valid stream/audio tests did not establish visual storytelling quality.
+
+Reused the pure cache-aside state, cubic/easing functions, DepthPanel/MotionPath/MovingPacket, existing local Inter/BrandProfile, unchanged `af_heart` narration settings, measured frame/sample timeline, caption band, Remotion/FFmpeg pipeline and Phase 08 restrictions. The old `CacheAsideProof@0.1.0` remains preview-only. Its saved `output/cache-motion-proof/final/video.mp4` is preserved; the new CacheAsideScene is independently versioned and grants no automatic approval.
+
+### Changed implementation
+
+- `src/domain/{visual-common,library,visual-library-registry,visuals,videoscript,validation}.ts`: strict bounded props, one authoritative semantic registry, shared VisualCue contract, nested 1.1.0 `registered-animation` union and taxonomy version 1.0.0. Categories: diagram_2d, flow_animation, illustration_layered, hybrid_2_5d; scene_3d/map_heatmap remain reserved and rejected. Unknown names fail with actionable scene/path diagnostics. Legacy HTTP and 1.0.0 contracts remain supported.
+- `src/visuals/{LibraryScene,LayeredAssets}.tsx`, `library-state.ts`, existing motion/cache proof: EventQueue (one FIFO consumer, capacity excludes processing, explicit block/drop, producer backlog, completion-before-arrival ties); balanced/range-validated BTreeLookup with computed search; typed acyclic Git root/entry/parent graph; inert bounded reviewed CodeTrace; causal upload/download/failure FileTransfer; larger cache packets/reduced debug counters; ordered local image layers with fit/crop, bounded pan/zoom/parallax, entrances/exits, shadows and brand overlays. No supplied source code executes.
+- `src/visual-assets/{model,store}.ts`, `src/cli/assets-cli.ts`: pending local import, inspect, separate explicit hash-bound rights review, immutable content/record addressing, source/license/attribution/status metadata, deduplication. Extension plus actual decoded content/dimensions/bytes are checked; renderer preflight rechecks content. Symlinks, remote/active SVG references, entities, CSS, foreignObject and unsupported markup are rejected. Passive SVG has geometry/size limits; PNG/JPEG use pinned FFmpeg. The installed small FFmpeg omits WebP decoding, so this macOS build uses bounded native sips; other systems get an actionable local-PNG-conversion requirement. No unpinned imaging dependency was installed.
+- Existing render/composition/timing/media integration stages hashed local assets into actual Remotion publicDir, waits for image decoding, retains portable bytes/records in outputs and manifests, applies the same measured cue contract and identifies failed assets by stage/scene/ID. Props accept references, never raw paths/URLs/CSS/JS. Geometry/labels remain above the caption band. The current BrandProfile has null logo/watermark; no new branding was invented.
+- `src/workflow/{dependencies,runner}.ts`: preflight assets before cache reuse; scene props bind file and rights-record hashes, visual implementation identity includes domain/asset code. Asset/review changes invalidate affected visuals while narration stays independent.
+- `src/director/{contracts,prompts,core}.ts`: auto-export actual schemas, public descriptions, cue support, safe zones, asset requirements, failure/empty states and complete component example VideoScripts. Current external prompt and optional provider use the same mechanisms. Multi-scene all-title-card drafts return NEEDS_REVIEW; unsupported visuals never silently become cards. JSON Schema references and omission of duplicate legacy schema from generation requests retain the existing 96 KiB bound. Live DeepSeek remains unverified/not called.
+- `src/release/service.ts`, `src/cli/release-cli.ts`: actual staged image IDs/hashes and required credits are mandatory rights-inventory inputs, and complete staged bytes/records remain hash-bound. Import review is separate from release facts/rights/playback/publish gates. Existing private-only/fresh-media/prototype restrictions are retained.
+- `examples/phase11/`: original complete caching/cloud/queue/tree/Git fixtures, reviewed inert arithmetic scene, original passive SVG source illustrations and usage instructions. `scripts/{render-phase11,review-phase11,compare-render-replays}.mjs` provide local synthesis/render, encoded/mobile frame evidence and strict independent replay comparison. New library/asset/release tests plus existing Director parity tests cover the contracts. No new package/dependency/database migration was needed.
+
+### Actual verification
+
+| Command/check | Observed result |
+|---|---|
+| `npm test` | **PASS 226/226**, zero failures/skips; `output/phase11/checks/npm-test.log` |
+| `npm run typecheck`, `npm run lint`, `npm run build` | **PASS**; logs in `output/phase11/checks/`; final lint checks 134 files |
+| Network-denied Director/release/library tests | **PASS 50/50**; `checks/network-denied-tests.log`; mocked providers only |
+| Asset security/decoding/error-stage tests | **PASS 4/4**; real PNG/JPEG/WebP decode, passive SVG/security/path/rights tests, missing asset fails before browser/audio; `checks/asset-security-final.log` |
+| Separate asset/release integration regression | **PASS**; omitted actual layered image and required credit block release; changed staged bytes make candidate stale |
+| `director export`, all seven fixtures through compiled validation, `assets --help` | **PASS**; current package `output/phase11/director-contract-final/`; component runtime/export parity in tests |
+| Local Kokoro doctor/narration + complete Producer | **PASS**, unchanged model/voice/rate/seed/lexicon; no downloads/remote synthesis |
+| Six full demo MP4s + two scene proofs | **PASS**; exact durations/frames/hashes below; all real narrated examples have H.264/yuv420p + audible-by-signal AAC, 1080×1920@30 |
+| `review-phase11.mjs` on delivery inputs | **PASS**; independent ffprobe, source-text/audio identity, decoded audio/captions, 17 representative event regions, **51 encoded poses + 51 mobile PNGs**; `output/phase11/review-delivery/` |
+| Mechanism-only cropped frame differences | Cache 2,879–14,034 changed pixels; cloud 9,670–10,977; queue 14,117/22,461 (empty idle control **0**); B-tree 2,618/2,651; Git 2,319; trace 3,857; layered reveal 77,744; HTTP 9,608/10,922. Crops exclude headings, captions and global progress |
+| Independent layered replay | **PASS** exact golden PNG and all **210 decoded frames** for baseline vs final replay; MP4 bytes also match. A third replay has one small frame difference; limitation recorded below |
+| Coding-agent actual visual inspection | Inspected paired encoded 360×640 frames for cache miss/fill/hit, file upload/failure/download, queue occupancy/drop/idle, B-tree path/miss, Git edge travel, code highlight/states, layered reveal and HTTP. Original 1080 frames retained. **Human visual sign-off remains pending** |
+| `git diff --check`, reviewer-link and final hash audit | **PASS**; 21 handoff links resolve, all 8 final MP4 hashes match, old cache-proof MP4 hash unchanged |
+
+The demo runner retains raw Kokoro WAVs and audio receipts. As in the prior proof, rounded constant PCM mean subtraction removes the installed INT8 model's DC offset without changing gain, sample count, voice or detected speech endpoints. Assertions verify the timing is unchanged. New mechanism cue windows follow **measured speech activity**, not guessed words; the speech-span caption fallback and `requiresTimingReview:true` remain explicit. Signal analysis is not a listening/naturalness review.
+
+Real rendering found and repaired a B-tree footnote collision, code-highlight lag and ambiguous Git filename/blob labels. Early raster tests exposed the pinned FFmpeg's missing synthetic-color/WebP encoder/decoder features; tests now use original synthetic bytes and the explicit native decoder adapter, without installing tools. Initial sandbox Chrome launch failed; scoped local Chrome execution succeeded. Earlier failed/prototype outputs remain for diagnosis and were not overwritten.
+
+### Delivery artifacts (ignored local output)
+
+The reviewer index is **`output/phase11/REVIEW.md`**; exact inputs are `output/phase11/review-inputs.json`. Each narrated directory retains MP4, WAVs/metadata, captions.srt, timeline, saved script, ffprobe, QC and hashed manifests. Nominal min-holds stay within 30–60 seconds; narration is independently measured.
+
+| Example | Final MP4 path (relative to repository) | Frames / duration | SHA-256 |
+|---|---|---|---|
+| Caching | `output/phase11/caching-delivery/video.mp4` | 960 / 32s | `8d7b93e4bf69d55b4f00a06c3b1ac6efe41c7f2058dd4b308a6a20d69953033b` |
+| Cloud transfer | `output/phase11/demos-gQdOmK/cloud-sync/render/video.mp4` | 900 / 30s | `b79d156f02dd2d278631ecd3ccec7993c624443f6aa135151d88cc81de8c33df` |
+| Queue | `output/phase11/queue-final/video.mp4` | 900 / 30s | `81045a52c5d4e655e86342c1b0524db9eb7b82e35d7d61101151c6180a21a78e` |
+| B-tree | `output/phase11/btree-final/video.mp4` | 960 / 32s | `41e394abf4145bc52b0255dfb6913cf84aff9b1b3dd56d3b4984e745a9582ecb` |
+| Git objects | `output/phase11/git-final/video.mp4` | 900 / 30s | `b4bb257d437c65a3d71e916b4068150f9fd6ec01a1b64bdb56ab752b4549cb9f` |
+| Existing HTTP | `output/phase11/demos-GnsK2F/http/render/video.mp4` | 1113 / 37.1s | `58c86392414ef83547446c1851d1833f61bddc65b811527c74487f0e91d69565` |
+| Code trace scene | `output/phase11/code-trace-final/video.mp4` | 210 / 7s | `1e60ed265a2306a68647ce4c9b6b7000df0276a4039f9f28e992dc54e537e3bc` |
+| Synthetic asset-layer scene (silent) | `output/phase11/layered-replay-current/video.mp4` | 210 / 7s | `4087db5135c42bb6638d0cb151a1afe4e42e2638d6274f430e2882b2921d323b` |
+
+`output/phase11/review-delivery/{review-report.json,golden-manifest.json,HUMAN-REVIEW.md}` contains exact pose/frame/ROI data and the handoff checklist. `checks/layered-replay-parity.json` records exact matching independent output. Current external-AI package is `director-contract-final/`; original pending asset records and explicitly synthetic test-only reviews are in `checks/*-asset-*.json`.
+
+### Acceptance and remaining human checks — stop here
+
+- **Technical behavior (AC-01/03/04/08/09/10): verified.** More than three concepts reuse one Producer; invariants, registry/props/cues parity, anti-slideshow/unsupported behavior, local media security and prior release compatibility pass. No topic string selects an alternate renderer.
+- **Visual evidence (AC-02/05/06/07/11): rendered and coding-agent inspected; human acceptance pending.** Distinct cloud/queue/tree/Git/HTTP/caching examples show purposeful motion/state, brand/caption consistency and measurable speech windows. Cache larger packets/reduced counters and layered depth are implemented; whether the result meets the requested premium quality is a human art-direction decision, not a unit-test claim.
+- **Timing/voice UNVERIFIED by human playback:** full listening, pronunciation/noise/naturalness, exact word/event sync, small secondary labels and platform overlays need phone review. Existing fallback captions remain unreviewed; these windows are not forced word alignment.
+- **Pixel-level limitation:** independent layer runs A/C have identical MP4 bytes, golden PNG and all decoded frames. Run B's PNG is identical but one of 210 encoded frames differs in a small illustration-edge region (675 RGB channels, max difference42, full-frame mean0.000394). Reported in `checks/replay-frame-differences.json` and `replay-delta.json`; no universal bitwise guarantee is claimed. Frame geometry remains deterministic and no random state/timers are used. The strict comparison initially failed for that run and is retained in `checks/layered-parity.log`; it was not relabeled as passing.
+- **Rights/evidence/release pending:** new example claims retain needs_human_review and unknown source snapshot hashes. Primary reference mechanisms were checked against Python queue docs, Open Data Structures, Pro Git, MDN and Redis, but this is not a newly approved claim bundle. The cloud protocol is explicitly illustrative. The layered scene uses original synthetic SVGs and an `automated-test-harness` assertion solely to exercise the pipeline; it is **not a human production rights approval**. Pending import records are retained. Every actual demo remains approvedForRelease:false; no human approval or publication consent was fabricated.
+- **Bounds/deferred work:** one consumer, small trees/graphs/traces, passive SVG subset and macOS native WebP adapter are deliberate documented bounds. The layer scene is a silent 7s integration proof; six complete narrated 30–37.1s videos meet the full-demo requirement independently. Full 3D, heatmaps, arbitrary live code, AI image API/photoreal generation, dashboard, autonomous research and network publishing remain unimplemented.
+
+Updated README, ARCHITECTURE.md, docs/02, docs/03, docs/05, docs/20 and ADR-017 for actual interfaces/bounds; AGENTS.md/CLAUDE.md and future phase prompts were not changed. **Next action: review `output/phase11/REVIEW.md`, play the videos and give visual/voice/timing feedback. Stop after Phase 11. Phase 12 is only a recommendation after acceptance and separate authorization; do not begin it automatically.**
+
+## Optional Phase 11B — CityDemandHeatmap spatial story (2026-11-11, Needs review)
+
+The user explicitly authorized this optional phase, including cinematic spatial storytelling, while earlier Phase 11 human visual acceptance remains pending. The incoming dirty worktree contained Phase 11 code/docs/assets; it was preserved. The incoming tracked diff and status were saved under `output/phase11b/checks/incoming-*`. No commit, push, dependency installation, model download, paid call, OAuth, upload or publication ran. Phase 12 was not started.
+
+### Feasibility decision and implemented scope
+
+- Actual target: MacBook Air Mac17,3, Apple M5 (10 CPU/8 GPU cores), 16 GiB RAM, Darwin 27.2.0 arm64; Node 24.15.0, React 19.3.1, Remotion/bundler/renderer 4.0.542, Chrome 157.0.8103.38, pinned FFmpeg n7.1, local Inter 5.3.0. Hardware IDs were excluded from saved environment evidence. CI/other hardware performance is **UNVERIFIED**.
+- `probe-corrected/capabilities.json`: WebGL2 works both with `swangle` (SwiftShader, max texture 8192) and `angle` (Apple M5 Metal, max texture 16384). Repeated deterministic clear/readback matches; this is not a Three.js scene reproducibility test. `probe-local/headless-smoke/video.mp4` proves the existing headless vertical 30-frame path (8.24s wall time).
+- ThreeCanvas/R3F/Three.js are not installed. Official [ThreeCanvas](https://www.remotion.dev/docs/three-canvas), [backend](https://www.remotion.dev/docs/gl-options) and [R3F compatibility](https://r3f.docs.pmnd.rs/getting-started/introduction) guidance was checked: use frame-driven declarative animation, matched Remotion packages and React-compatible R3F. Exact prospective package/peer/license compatibility remains **UNVERIFIED**: the sandbox `npm view @remotion/three@4.0.542 ...` failed with ENOTFOUND, and no new dependency was authorized or installed. True 3D is blocked at that integration/dependency layer; the local GPU was not shown to be incapable.
+- Implemented exactly **one** template, `CityDemandHeatmap@1.0.0`, using the expressly allowed SVG 2.5D heatmap route. Original fixed roads/buildings use shaded extrusions, moving vehicles, progressive heat cells/pulse, semantic brand colors, a smooth 1→1.16→1 camera push/return and changing spatial patterns. Explicit `flat-svg` is the planar fallback with identical data/routes/story. Neither requires WebGL; there is no silent backend substitution, separate engine or speculative Three.js code.
+- The private component smoke ran before registry promotion. The first shuffled still comparison failed because the standalone harness did not await font readiness. After adding the production-style font gate, `spatial-smoke-font-ready/smoke.json` reports matching shuffled PNGs and a real 60-frame/2s MP4 in 12.05s. Failed probe artifacts remain intact. The production composition already had the font gate.
+
+### Changed files and interfaces
+
+- New `src/domain/spatial.ts`: strict synthetic-only scene props, finite mode/camera/beat presets, integer focus cell, exactly four 25-value snapshots in 0..1, ≤6 unique vehicles/five bounded axis-aligned road waypoints, fixed semantic palette roles, empty asset IDs. Fixed geometry: 25 cells, 19 building prisms, ≤6 cars, one pulse, no textures/models/footage. All-zero density is valid; raw URLs, shaders, arbitrary graphs/code, real coordinates and malformed/budget-exceeding inputs fail.
+- `src/domain/{library,visual-library-registry,videoscript,validation}.ts`: add the proved component/category, keep taxonomy 1.0.0 additive and legacy visuals unchanged, retain unknown-name rejection. Full spatial scenes require 10–20s; individual adjoining story quarters require 2–6s. `src/timing/timeline.ts` additionally rejects measured spatial presentations outside saved duration budgets.
+- New `src/visuals/{city-demand-state.ts,CityDemandHeatmap.tsx}` plus LibraryScene/composition integration: pure frame-progress evaluation, continuous shared city/data/routes across four narrated beats, fixed typography and separate caption band, fictional/synthetic/no-real-dispatch disclosure. Vehicles and density change independently of camera; their paths are authored illustration, not an actual dispatch model. BrandProfile and voice settings remain unchanged.
+- Existing renderer records `spatialScenes` with explicit SVG mode, graphics requirements, camera, budgets and fallback availability. Existing Phase 11 asset preflight still runs; this procedural template accepts no imported asset. The model/texture/video import pipeline is **not implemented** or falsely approved. Existing script/data/source/code hashes and Phase 07 scene keys bind changes; unchanged speech is retained. Phase 08 rights/facts/playback/private-publish gates were not changed.
+- Director catalog/schema/example export and both manual/provider prompts now include the bounded spatial option (prompt version director-1.2.0). Optional DeepSeek remains mock-tested only, never called live. No unknown component is substituted with a title card. New fixtures: `examples/phase11b/{city-demand,minimal}.videoscript.json`; main source hash identifies original synthetic `{density,vehicles}` JSON. Claims remain needs_human_review; no human approval was invented.
+- New probe/smoke/render/review scripts document local execution and retain raw/processed WAV hashes, measured speech windows, frame poses, manifests and costs. The same prior integer DC removal retains samples/speech endpoints; it does not change voice/rate/gain. New spatial tests and extended registry-parity test cover rejection, motion, continuity, bounds, measured cues, provenance and cache invalidation.
+
+### Actual verification and artifacts
+
+| Command / check | Observed result |
+|---|---|
+| `npm run typecheck`, `npm run lint`, `npm run build` | PASS; `checks/*-final.log`; lint checked 142 files |
+| `npm test` | **PASS 232/232**, no skips/failures; `checks/npm-test-final.log` |
+| `node --test tests/visual/spatial.test.ts` | PASS 6/6, including negative data/code/asset/route/duration/cue cases, 601-frame shuffled deterministic state, independent motion, adjoining-beat continuity and camera/planar bounds |
+| OS-network-denied spatial/library/asset/Director/release-asset tests | **PASS 37/37**; `checks/offline-targeted-tests.log`; no paid calls |
+| Source/compiled main/minimal script validation; Director export | PASS; `director-contract/` has the current catalog, schemas, example and manual prompts; mock provider uses the same registry |
+| `node scripts/render-phase11b.mjs` | Real Kokoro speech and H.264/AAC proof, **489 frames /16.3s**, 1080×1920@30/yuv420p. Three beats hold 4s; measured response narration takes 4.3s |
+| Offline isometric replays and `--flat` | PASS under inherited macOS `sandbox-exec` profile denying external outbound connections and allowing only localhost. An external-IP connection returns EPERM. `probe-no-webgl/capabilities.json` confirms WebGL2 false in both configured backends. Both modes still render |
+| `review-phase11b.mjs` with matching browser settings | PASS independent ffprobe/audio decode/captioned event-pose checks and all **489** mobile grayscale decoded-frame comparisons; report below |
+| Coding-agent visual inspection | Inspected three encoded mobile poses in **each of four beats, in both modes**; 24 full-size and 24 mobile PNGs retained. Vehicles change position, gold intensity/readout changes, camera pushes/returns, late demand moves to another region. Actual caption band/text safe-zone checks pass. This is not human visual approval |
+| Phase 07 real `jobs create/resume` | PASS using saved narration, no WebGL and external networking denied: `fde11c7c-f3e8-4f74-a8a7-1e3c86c503e6` reaches review_ready, 9 succeeded steps, providerUsage empty, approvedForRelease false |
+| Second `jobs resume` | Same step/render records, input/output hashes and artifact tree; no added synthesis/render step. **0.66s wall** versus **80.81s** first job execution; `checks/job-{resume,cache-replay}.log` and before/after inspect JSON |
+
+The reviewer index is **`output/phase11b/REVIEW.md`**. Primary delivery:
+
+| Artifact | Path relative to repository | Exact video SHA-256 |
+|---|---|---|
+| Narrated isometric SVG proof | `output/phase11b/run-dfknt9/render/video.mp4` | `160e8d08ec7b99b9ca08a90b2101ad0c3c040bfa91f8e4e129a245521524dd1d` |
+| Explicit narrated flat fallback | `output/phase11b/run-uYud3v/render/video.mp4` | `c189b5ffe88b28d43b7018a9d42db4b4b60182703898cf90af8239cee822a02d` |
+| Independent no-WebGL isometric baseline | `output/phase11b/run-M6wC00/render/video.mp4` | `ec1114b9a99ab70cec8a09697145139af7517b9ec3aa50823df46c034ad1a710` |
+
+Each directory retains script, measured timeline, actual WAVs/metadata, captions.srt, ffprobe, decoded-audio QC, source/implementation/input hashes and unapproved manifests. Review evidence is in `review-same-backend/{review-report,replay-frames}.json` and its 48 PNGs; `environment-and-cost.json` consolidates sanitized hardware/tools/run metrics. All generated assets, model files and job state remain ignored local output.
+
+### Reproducibility and measured cost
+
+Four full-size selected still PNGs match exactly between independent no-WebGL runs. Encoded MP4 bytes differ. The unchanged declared per-frame mobile grayscale tolerances (mean absolute delta ≤0.05/255 and changed-pixel fraction ≤0.005) pass across all 489 frames. Only frames 246/371/372/373 differ, maximum delta **4/255**; worst frame mean **0.001246**, worst changed fraction **0.001124**. Whole-video mean is **0.000002885** and changed fraction **0.000002583**. This is bounded visual reproducibility under recorded inputs/backend, not universal exact RGB/GPU pixel equality.
+
+The earlier enabled-versus-disabled-WebGL comparison failed those thresholds (worst frame mean0.116302, max delta17, changed fraction0.019397). It remains failed in `checks/review-verified.log`, with all-frame diagnostics in `checks/replay-diagnostics.json`; tolerances were not loosened. Rendering/backend changes therefore still require a new visual review. Other harness failures (sandbox Chrome launch, missing font gate, unsupported FFmpeg filter/muxer and direct-binary dylib setup) were corrected explicitly; failed outputs/logs are retained. No failure was silently relabeled as passing.
+
+Measured local costs, no API charges:
+
+- Initial synthesis+render: **67.16s total**, including **60.17s** Producer render.
+- Matching no-WebGL replays: **73.33s** and **61.99s** Producer wall time. Final replay OS elapsed **62.27s**. Flat replay: **82.26s** Producer, OS elapsed **82.57s**. Some earlier probes/renders overlapped; these are observations, not isolated universal speed benchmarks.
+- Runner Node peak RSS: final replay **1,173,184 KiB**; flat **818,512 KiB**. BSD `time -l` records maximum resident set **1,201,340,416 bytes** / peak footprint **1,326,592,888 bytes** for the final replay, flat **863,633,408 /1,013,804,872 bytes**. These process/child high-water statistics are **not simultaneous aggregate browser+FFmpeg+Node memory**. Aggregate peak is **UNVERIFIED**.
+
+### Requested concept versus actual result; acceptance boundary
+
+| Requested direction | Actual result and remaining judgment |
+|---|---|
+| Establish city, animate vehicles | Original fixed road/building geometry, four clearly moving cars; no static-slide substitution |
+| Emerging hotspots and changing heat | Continuous interpolation of four synthetic snapshots; teal-to-gold cells, pulse and numeric focus readout; later hotspot shifts to a different region |
+| Narration-led focus/response/wide sequence | Four measured speech-window beats, vehicles move closer on authored roads, eased camera push then wider pattern; precise word/event sync remains unreviewed |
+| Cinematic lighting, depth and camera | Restrained shaded SVG prisms, depth ordering, shadow, guided pan/zoom and progressive disclosure; **no true 3D lighting, perspective camera, physical occlusion or GPU scene**. Premium/cinematic quality is a human decision |
+| Branded mobile clarity | Existing Inter/BrandProfile/caption band, clear synthetic label, encoded 360×640 inspection; secondary labels/car glyph size and platform overlays need phone review |
+| Safety/rights | Entirely original procedural geometry and synthetic local data; no maps, real locations, remote asset, employer code, new dependency or fabricated approval. Existing Remotion license notice and Inter OFL/MIT dependencies were inspected; no new third-party media license is asserted. Phase 08 release gate remains closed |
+
+AC-01/02/03/04/05 technical evidence is present for the bounded spatial/fallback path. **Visual quality, full listening/naturalness, caption timing, real-phone playback and human facts/rights/release approval remain UNVERIFIED/pending.** Scene-speech-span captions retain requiresTimingReview:true and approvedForRelease:false. Three.js/R3F integration, GPU-render regressions, 3D asset ingestion and CI performance are not implemented/verified.
+
+Updated README, ARCHITECTURE, docs/02, docs/03, docs/05, docs/20, ADR-018, prompt/phase-map indexes and fixture instructions for actual interfaces/results. AGENTS/CLAUDE and existing approval boundaries were preserved. **Next recommendation: review `output/phase11b/REVIEW.md`, play both MP4s on a phone and provide visual/voice/timing feedback. STOP after Phase 11B; no next phase is started.**

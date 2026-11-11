@@ -4,6 +4,7 @@ import {
   VideoScriptV1Schema,
   VideoScriptV11Schema,
 } from './videoscript.ts';
+import { componentRegistry } from './visuals.ts';
 
 export interface ValidationIssue {
   code:
@@ -79,6 +80,43 @@ export function parseVideoScript(input: unknown): VideoScript {
         reason: 'Supported VideoScript versions: 1.0.0 and 1.1.0',
       },
     ]);
+  const rawScenes = record(input)?.scenes;
+  if (Array.isArray(rawScenes))
+    for (const [i, raw] of rawScenes.entries()) {
+      const v = record(record(raw)?.visual);
+      if (!v) continue;
+      const id = record(raw)?.scene_id;
+      if (
+        typeof v.type === 'string' &&
+        ![
+          'title-card',
+          'tech-animation',
+          'cache-aside-proof',
+          'registered-animation',
+        ].includes(v.type)
+      )
+        throw new ScriptValidationError('SCRIPT_VALIDATION_FAILED', [
+          {
+            code: 'UNSUPPORTED_VISUAL_TYPE',
+            scene_id: typeof id === 'string' ? id : null,
+            path: formatPath(['scenes', i, 'visual', 'type']),
+            reason:
+              'Visual type is not renderable. Use the exported registered catalog; spatial scenes use registered-animation/CityDemandHeatmap. Arbitrary 3D or map types remain unsupported.',
+          },
+        ]);
+      if (
+        typeof v.component === 'string' &&
+        !Object.hasOwn(componentRegistry, v.component)
+      )
+        throw new ScriptValidationError('SCRIPT_VALIDATION_FAILED', [
+          {
+            code: 'UNKNOWN_VISUAL_COMPONENT',
+            scene_id: typeof id === 'string' ? id : null,
+            path: formatPath(['scenes', i, 'visual', 'component']),
+            reason: `Unsupported component. Choose one of: ${Object.keys(componentRegistry).join(', ')}; otherwise return unsupported_visual/needs_review.`,
+          },
+        ]);
+    }
   const result = (
     version === '1.0.0' ? VideoScriptV1Schema : VideoScriptV11Schema
   ).safeParse(input);

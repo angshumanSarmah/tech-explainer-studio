@@ -7,6 +7,7 @@ import { VideoScriptSchema } from '../domain/videoscript.ts';
 import { componentRegistry } from '../domain/visuals.ts';
 import { hash, NarrationArtifactSchema } from '../render-manifest/manifest.ts';
 import { ResearchBundleSchema } from '../sources/bundle.ts';
+import { preflightVisualAssets } from '../visual-assets/store.ts';
 import { readJson } from '../workflow/import.ts';
 import { bindFile, renderFiles, verifyFiles } from './files.ts';
 import { inspectReleaseMedia, PreviewSchema } from './media.ts';
@@ -266,7 +267,16 @@ export class ReleaseService {
       }
     }
     if (gate === 'rights') {
+      const imported = await preflightVisualAssets(
+        script,
+        join(manifest.renderDir, 'visual-assets'),
+      );
       const required = [
+        ...imported.map((a) => ({
+          assetId: a.record.assetId,
+          kind: 'image',
+          sha256: a.record.sha256,
+        })),
         ...bundle.sources.map((s) => ({
           assetId: s.sourceId,
           kind: 'source',
@@ -294,6 +304,13 @@ export class ReleaseService {
           )
         )
           issues.push(`RIGHTS_INVENTORY_MISSING:${item.kind}`);
+      for (const a of imported)
+        if (
+          a.record.attribution.required &&
+          (!a.record.attribution.text ||
+            !metadata.description.includes(a.record.attribution.text))
+        )
+          issues.push(`ATTRIBUTION_MISSING:${a.record.assetId}`);
       for (const asset of rights.assets) {
         if (
           !asset.review ||

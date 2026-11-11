@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.1.0",
+  "script_id": "phase11-git-objects",
+  "revision": 1,
+  "profile": "technology-explainer",
+  "topic": "git-objects",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "git",
+      "url": "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+      "title": "Pro Git: Git Objects",
+      "retrieved_at": null,
+      "source_kind": "documentation",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "git-mechanism",
+      "text": "Git commit objects reference a root tree and parent commits; trees reference entries; blobs hold file contents.",
+      "source_ids": [
+        "git"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "git-objects-1",
+      "educational_goal": "A Git commit points to a root tree describing a snapshot.",
+      "narration": "A Git commit points to a root tree describing a snapshot.",
+      "claim_ids": [
+        "git-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "HashObjectGraph",
+        "props": {
+          "objects": [
+            {
+              "id": "commit",
+              "kind": "commit",
+              "label": "snapshot"
+            },
+            {
+              "id": "tree",
+              "kind": "tree",
+              "label": "hello.txt entry"
+            },
+            {
+              "id": "blob",
+              "kind": "blob",
+              "label": "Hello, Git!"
+            }
+          ],
+          "edges": [
+            {
+              "from": "commit",
+              "to": "tree",
+              "meaning": "root"
+            },
+            {
+              "from": "tree",
+              "to": "blob",
+              "meaning": "entry"
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 10,
+        "preferred_seconds": 10,
+        "max_seconds": 18
+      }
+    },
+    {
+      "scene_id": "git-objects-2",
+      "educational_goal": "A tree points to entries. A blob holds file content, not its filename.",
+      "narration": "A tree points to entries. A blob holds file content, not its filename.",
+      "claim_ids": [
+        "git-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "HashObjectGraph",
+        "props": {
+          "objects": [
+            {
+              "id": "commit",
+              "kind": "commit",
+              "label": "snapshot"
+            },
+            {
+              "id": "tree",
+              "kind": "tree",
+              "label": "hello.txt entry"
+            },
+            {
+              "id": "blob",
+              "kind": "blob",
+              "label": "Hello, Git!"
+            }
+          ],
+          "edges": [
+            {
+              "from": "commit",
+              "to": "tree",
+              "meaning": "root"
+            },
+            {
+              "from": "tree",
+              "to": "blob",
+              "meaning": "entry"
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 10,
+        "preferred_seconds": 10,
+        "max_seconds": 18
+      }
+    },
+    {
+      "scene_id": "git-objects-3",
+      "educational_goal": "These object labels are illustrative, not calculated content hashes.",
+      "narration": "These object labels are illustrative, not calculated content hashes.",
+      "claim_ids": [
+        "git-mechanism"
+      ],
+      "visual": {
+        "type": "registered-animation",
+        "taxonomy_version": "1.0.0",
+        "component": "HashObjectGraph",
+        "props": {
+          "objects": [
+            {
+              "id": "commit",
+              "kind": "commit",
+              "label": "snapshot"
+            },
+            {
+              "id": "tree",
+              "kind": "tree",
+              "label": "hello.txt entry"
+            },
+            {
+              "id": "blob",
+              "kind": "blob",
+              "label": "Hello, Git!"
+            }
+          ],
+          "edges": [
+            {
+              "from": "commit",
+              "to": "tree",
+              "meaning": "root"
+            },
+            {
+              "from": "tree",
+              "to": "blob",
+              "meaning": "entry"
+            }
+          ],
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 10,
+        "preferred_seconds": 10,
+        "max_seconds": 18
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "git-objects"
+    ],
+    "summary": "Original git-objects illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

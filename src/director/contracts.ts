@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import { BRAND } from '../branding/profile.ts';
+import { VisualTaxonomy } from '../domain/library.ts';
 import type { VideoScript } from '../domain/videoscript.ts';
 import {
   VideoScriptSchema,
   VideoScriptV11Schema,
 } from '../domain/videoscript.ts';
+import { libraryRegistry } from '../domain/visual-library-registry.ts';
 import {
   componentRegistry,
   VisualCueSchema,
@@ -39,7 +41,10 @@ export function validateStoryboard(script: VideoScript) {
         scene.scene_id,
         `$.scenes[${index}].narration`,
       );
-    if (scene.visual.type === 'tech-animation')
+    if (
+      scene.visual.type === 'tech-animation' ||
+      scene.visual.type === 'registered-animation'
+    )
       for (const cue of scene.visual.cues)
         if (cue.trigger.kind === 'phrase')
           cue.trigger = { kind: 'progress', from: 0.2, to: 0.8 };
@@ -53,8 +58,8 @@ export function directorContract(example: unknown) {
     contractVersion: 'director-1.0.0',
     currentVideoScriptVersion: '1.1.0',
     legacyVideoScriptVersion: '1.0.0',
-    schema: z.toJSONSchema(VideoScriptSchema),
-    generationSchema: z.toJSONSchema(VideoScriptV11Schema),
+    schema: z.toJSONSchema(VideoScriptSchema, { reused: 'ref' }),
+    generationSchema: z.toJSONSchema(VideoScriptV11Schema, { reused: 'ref' }),
     catalog: {
       titleCard: z.toJSONSchema(VisualSpecSchema.options[0]),
       components: Object.fromEntries(
@@ -63,21 +68,62 @@ export function directorContract(example: unknown) {
           {
             version: entry.version,
             props: z.toJSONSchema(entry.schema),
+            ...('description' in entry
+              ? {
+                  description: entry.description,
+                  category: entry.category,
+                  supportedCues: entry.supportedCues,
+                  assetRequirements: entry.assetRequirements,
+                  fallback: entry.fallback,
+                  emptyState: entry.emptyState,
+                  safeZone: entry.safeZone,
+                  example: {
+                    ...valid,
+                    schema_version: '1.1.0',
+                    script_id: `example-${id}`,
+                    scenes: [
+                      {
+                        ...valid.scenes[0],
+                        scene_id: `example-${id}`,
+                        ...(id === 'CityDemandHeatmap'
+                          ? {
+                              timing: {
+                                min_seconds: 16,
+                                preferred_seconds: 16,
+                                max_seconds: 20,
+                              },
+                            }
+                          : {}),
+                        visual: {
+                          type: 'registered-animation',
+                          taxonomy_version: '1.0.0',
+                          component: id,
+                          props: entry.example,
+                          cues: [],
+                        },
+                      },
+                    ],
+                  },
+                }
+              : {}),
             ...('previewOnly' in entry
               ? { previewOnly: entry.previewOnly }
               : {}),
           },
         ]),
       ),
+      taxonomy: VisualTaxonomy,
+      registryIds: Object.keys(componentRegistry),
       cueSchema: z.toJSONSchema(VisualCueSchema),
       execution: {
         scope:
-          'BrowserRequestFlow animates HTTP request/response only. VideoScript 1.1.0 title cards accept bounded authored labels, three text rows and a footnote for other topics; they are animated text cards, not a simulation of an unsupported mechanism. A preview-only cache-aside-proof/CacheAsideProof supports four fixed causal beats (lookup, miss, fill, hit); it is a visual-approval prototype, not the Phase 11 library. Other component mechanisms require unsupported_visual.',
+          'Prefer a registered mechanism whenever it can demonstrate the topic. Title cards are for brief hooks/conclusions. All registered components below are executable; CacheAsideProof remains preview-only. Unsupported mechanisms return unsupported_visual or needs_review, never title-card substitution.',
         resolution: [1080, 1920],
         fps: 30,
         profile: 'technology-explainer',
         illustrative: true,
         actions: ['move'],
+        mechanismComponents: Object.keys(libraryRegistry),
         targets: { request: 'http-request', response: 'http-response' },
         progress: true,
         phrase:
