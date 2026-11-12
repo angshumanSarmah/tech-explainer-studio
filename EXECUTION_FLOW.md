@@ -40,6 +40,7 @@ codex
 
 1. **Select next:** Read `PROJECT_STATUS.md` for the current status and prerequisites; use [`CODEX_PROMPTS.md`](CODEX_PROMPTS.md) to open the phase document.
 2. **Run Codex:** In a new Codex task/session if appropriate, paste the **single prompt** under “Run this phase in Codex”. It already includes scope, non-goals and tests; you do not need another plan-generation step.
+   For remaining phases, read that original prompt **and every companion** in [CODEX_PROMPTS.md](CODEX_PROMPTS.md#required-companion-reading-for-remaining-phases): 11D requires its Hybrid C addendum; 12 requires both v6.1 and Hybrid C addenda. Originals are preserved. [Hybrid C's accepted order](docs/architecture-next/HYBRID_C_PHASE_MAP.md) adds independent H1/H2 gates under ADR-020, accepted on 2026-11-12. Every phase still requires separate authorization; acceptance does not restart completed 11C, start 11D or authorize paid calls.
 3. **Implementation:** Codex inspects the real code, implements only the phase, creates tests and runs permitted verifications. Unit tests should mock remote dependencies; no unexpected paid calls.
 4. **Verification:** Check the actual commands, test outputs and `git diff`; for video phases also preview real frames/audio and inspect ffprobe details. Do not accept fake screenshots or claimed artifacts.
 5. **Status handoff:** Codex updates `PROJECT_STATUS.md` with exactly what was verified, unverified, skipped or blocked. If it failed, mark **Blocked/Needs review**, not Done.

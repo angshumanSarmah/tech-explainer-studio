@@ -3,6 +3,8 @@
 > **Primary architectural entry point.** Detailed diagrams/contracts: [docs/02-architecture.md](docs/02-architecture.md), [docs/03-contracts.md](docs/03-contracts.md), [docs/05-video-engine.md](docs/05-video-engine.md).  
 > **Implementation status:** Design target until phases are verified. See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the factual current state.
 
+> **Accepted direction — 2026-11-12:** [ADR-020: Hybrid C](docs/15-adrs.md#adr-020--hybrid-c-directed-media-production) is **ACCEPTED by the user**, with implementation still pending. It adds Director portability and separately approved image/optional-clip provisioning through the existing Node.js orchestrator before frozen assets enter the one deterministic Producer. Stage-specific supported providers, independent image controls, video OFF by default and Preview Before Spend preserve local/manual use. Accepted ADR-019, engineering-complete 11C, legacy contracts and release safeguards remain authoritative; Phase 09 remains private-only. See the [repository reconciliation](docs/architecture-next/HYBRID_C_INTEGRATION_REVIEW_2026-11-12.md) and [accepted gate order](docs/architecture-next/HYBRID_C_PHASE_MAP.md). No phase implementation or paid API call is authorized by this acceptance.
+
 ## Purpose and content boundaries
 
 Create **original, technically validated animations** about computer science, system design, and *Build Your Own X*-style engineering. GitHub repositories, standards and official documentation are content inputs. Dark-store and Uber heatmap references describe a desired animation principle only; they are **not** prescribed video topics or assets to copy.

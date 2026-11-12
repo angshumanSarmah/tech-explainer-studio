@@ -1,5 +1,7 @@
 # One-package execution order — no v6 / v6.1 dependency
 
+> **Current navigation — 2026-11-12:** The sequence and review prompt below are preserved historical pre-11C planning. ADR-019 is accepted and 11C is engineering-complete; see [PROJECT_STATUS](../../PROJECT_STATUS.md). Hybrid C/[ADR-020](../15-adrs.md#adr-020--hybrid-c-directed-media-production) is now **ACCEPTED by the user**. Use the [historical reconciliation](HYBRID_C_INTEGRATION_REVIEW_2026-11-12.md), [accepted gate order](HYBRID_C_PHASE_MAP.md) and [required original-plus-companion reading](../../CODEX_PROMPTS.md#required-companion-reading-for-remaining-phases). Do not rerun 11C or infer authorization to start 11D/H1/H2; each phase needs a separate instruction.
+
 **Completed phases (01–08, 11, 11B) are NOT rerun; source code remains unchanged by the installer.** Replaced historical prompt text from a previous v6 installation is only documentation; do not use it as an implementation command. There is no requirement to undo it to proceed.
 
 **Current gate (2026-11-11):** the user reviewed the existing audit and gave CONDITIONAL GO subject to amendments. The amended [ADR-019](ADR-019-PROPOSED-composed-scenes.md) awaits final human acceptance. Do not rerun the audit. This documentation task does not authorize 11C or 11D; the [audit report](ARCHITECTURE_VERIFICATION_2026-11-11.md) remains unchanged historical evidence.

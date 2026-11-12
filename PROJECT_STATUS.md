@@ -4,6 +4,8 @@
 > **Current stop:** **Phase 11C accepted by the user as engineering-complete on 2026-11-12.** Engineering readiness for Phase 11D is accepted; explicit authorization to start that phase is still required. This does not approve production videos, source facts, rights, full listening/caption quality or release. The frozen Kafka artifacts and four topic storyboards remain unchanged. See the [engineering closure](docs/architecture-next/PHASE_11C_ENGINEERING_CLOSURE_2026-11-11.md). Phase 11D/12 and publishing remain unstarted.
 > **Last updated:** 2026-11-12 (Asia/Kolkata).
 
+> **Architecture acceptance stop:** The user explicitly accepted [ADR-020 — Hybrid C](docs/15-adrs.md#adr-020--hybrid-c-directed-media-production) on 2026-11-12. The [historical integration review](docs/architecture-next/HYBRID_C_INTEGRATION_REVIEW_2026-11-12.md) records compatibility and missing implementation dependencies. No material conflict prevents acceptance. No implementation phase started; accepted ADR-019, 11C engineering completion and Phase 09 private-only publication remain unchanged. Await a separate phase instruction.
+
 ## Phase tracker
 
 | Phase | Deliverable | Status | Evidence / notes |
@@ -22,6 +24,9 @@
 | 11 | Reusable 2D/2.5D mechanisms, local assets and Director quality | Needs review | 226/226 tests; six 30–37.1s Kokoro demos, two 7s scene proofs, 51 encoded golden poses at full/mobile size; human visual/listening/timing/rights review pending |
 | 11B | Optional synthetic city spatial story | Needs review | 232/232 tests; narrated 16.3s isometric SVG proof + flat fallback, no-WebGL/offline renders, 24 encoded poses at full/mobile size, tolerant 489-frame replay and real cached job resume; human review pending |
 | 11C | Generic composition, compiler, shared continuity and pacing | Done — engineering accepted | User accepted engineering completion on 2026-11-12; 247/247 tests and exact aligned comparisons across 1,943 frames recorded in the closure evidence; production video/source/rights acceptance remains separate |
+| 11D | Source-guided Director and bounded declarative revision | Not started | Original prompt and portability companion preserved under accepted ADR-020; requires separate start authorization |
+| H1 | Image resources and shared media spending controls | Not started | Gate under accepted ADR-020; existing image import is implemented, generated-media orchestration/reservations are not |
+| H2 | Optional generated clips | Not started | Optional gate under accepted ADR-020; generation OFF by default; current authoring/asset contracts need separate versioned review before implementation |
 | 12 | Optional localhost review dashboard | Not started | — |
 | 13 | Optional analytics feedback, hardening and controlled launch | Not started | — |
 
@@ -1103,3 +1108,43 @@ Engineering GO does not approve human production rights (asset records remain ex
 The user explicitly accepted Phase 11C as **engineering-complete**. This closes the engineering review gate using the [verified engineering closure](docs/architecture-next/PHASE_11C_ENGINEERING_CLOSURE_2026-11-11.md). The current implementation still matches its source SHA `3f1376a44bb0f31b98a5cd0820e9c815c365572969cf5cae50d71e9fc24732d1`. No application/test/fixture/media or approval record was changed; no tests or renders were rerun for this documentation-only acceptance update.
 
 Production visual quality, factual/source review, asset rights, complete listening/caption quality and exact Phase 08 release approvals remain separate and unapproved. The frozen holdout and declared unsupported capabilities remain unchanged. Phase 11D/12 is not started; acceptance of 11C does not itself authorize another phase, publication or paid calls.
+
+## Hybrid C documentation integration — 2026-11-12
+
+**Documentation-only; STOP for human review.** Registered ADR-020 as **PROPOSED** after confirming IDs 001–019 were occupied and 020 was available. No accepted ADR text, original phase prompt, previous addendum, implementation, test, dependency, fixture, media, job database or approval record was changed. The full [change-impact matrix, compatibility findings, conflicts and proposed order](docs/architecture-next/HYBRID_C_INTEGRATION_REVIEW_2026-11-12.md) is the review artifact, not a new executable contract.
+
+### Actual file changes
+
+- Tracked: `ARCHITECTURE.md` adds a clearly proposed reference; `docs/15-adrs.md` appends proposed 020 only; `CODEX_PROMPTS.md` indexes missing 11D, both new H gates and mandatory original-plus-companion reading; `EXECUTION_FLOW.md` links that reading requirement; `docs/architecture-next/EXECUTION_ORDER.md` adds a current pointer above preserved historical instructions; this status file records the audit and unstarted gates.
+- Supplied untracked package: `docs/architecture-next/ADR-HYBRID-C-PROPOSED.md` receives its checked registration/link; `HYBRID_C_PHASE_MAP.md` receives conditional order/reading pointers; `HYBRID_C_CONTRACT_AND_SECURITY_RULES.md` clarifies the real image-only asset and missing media-budget baseline. These three files existed before this task. The other nine supplied Hybrid C files remain unchanged.
+- Created: `docs/architecture-next/HYBRID_C_INTEGRATION_REVIEW_2026-11-12.md`. No source schema, standalone plan/spec/tasks framework or duplicate provider/job/rights contract was created. No staging or commit.
+
+### Actual verification and limits
+
+- Read actual prompts, ADR register/detailed accepted 019, historical audit, engineering closure, relevant contracts, CLI and code. Initial HEAD was `b007742`; tracked/staged diffs were empty, with twelve supplied untracked Markdown files.
+- Python SHA-256 comparison against saved closure records: **92/92 source files and 6/6 protected artifacts match**, including accepted detailed ADR-019 and frozen Kafka artifacts. Both regression MP4s freshly rehash to `e10a152a24fba8a3bacd4795552a428e063de34cb2c5ef37818bf4bd3e2ae09d`. Saved closure reports and full-suite log exist and record 247/247 tests and 1,943 compared frames; those executions were not repeated here.
+- `npm run typecheck`: **PASS**. `npm run lint`: **PASS**, 154 files, no fixes.
+- `node --import ./tests/helpers/no-network.ts --test tests/director/director.test.ts tests/director/provider.test.ts tests/visual/composed.test.ts tests/visual/engineering-closure.test.ts`: **36/36 PASS**, no failures/skips. Existing tests only; provider behavior mocked and network blocked.
+- `node --import ./tests/helpers/no-network.ts src/cli/index.ts --help` and corresponding `director --help` / `assets --help`: **PASS**, confirming real command surface without provider use.
+- Final `git diff --check`: **PASS**. Python local-link/heading validation: **38 new local references PASS**. Initial/final SHA comparison: **210 protected files unchanged**, all original prompts retained, the existing ADR register preserved as an exact byte prefix, no deleted files and Markdown-only changes. Temporary logs, initial hashes and `integration.diff` are under `/private/tmp/hybrid-c-audit-20261112-e1d5udf7/`; no generated evidence was added to Git.
+- **UNVERIFIED this pass:** fresh full-suite/build, new rendering/ffprobe/pixel replay, human media/facts/rights acceptance, live providers/ingestion, Kit ZIP, media generation/shared budget controls, dashboard, publishing and analytics. No paid API, OAuth, upload, install, source/media repair or Phase 11D implementation occurred.
+
+### Findings and next recommendation
+
+Existing image import/review, real Zod/catalog export, common Director validation, measured Producer, fenced cache and release gates are reusable. Missing: source-selection/staged planner persistence, portable Kit/privacy/staleness workflow, generated-image receipts and shared durable cost reservations, all clip authoring/decoding/placement, Vue and distribution integrations. Provider selection currently means mock or configured DeepSeek; Ollama and image/clip adapters are absent. Phase 07 `ai_usage` is imported accounting, not a paid-media reservation ledger.
+
+Inherited discrepancies are explicit in the review: pre-11C planning is historical; engineering acceptance does not certify video quality; original 11D keeps paid image generation out of scope; all three Phase 12 documents must be read despite the old “only new delta” wording. Original Phase 09 and its strict private-only schema override the old companion's “unlisted” wording. No weakened publication gate is proposed. H2 cannot embed clips in current VideoScript/VisualAsset contracts and must stop for a new version's review before code.
+
+**Proposed next order, only after human decision and separate authorization:** 11D → H1 → H2 (optional) → 12 → 09 → 10 → 13; 14 separately optional. H1 owns common media spend/attempt approval services; H2 reuses them. Deferred H2 remains disabled in UI and does not block ordinary videos or Phase 12. Review proposed ADR-020 and this documentation diff now; do not start implementation.
+
+## ADR-020 architectural acceptance — 2026-11-12
+
+**ACCEPTED by explicit user approval; STOP without starting a phase.** Re-read the detailed Hybrid C decision, integration review, existing ADR register and accepted detailed ADR-019. No unresolved material architectural conflict prevents acceptance. The user explicitly retained Phase 09's private-only restriction, resolving the inherited companion's non-authoritative “unlisted” wording. The earlier proposal/integration record above remains historical; it is not the current decision status.
+
+Accepted scope: AI-directed deterministic animation, topic-driven images and optional clips; independent provider/model configuration for supported stages; local/manual/external-JSON workflows; exportable Director Kit; video generation OFF by default and independent image controls; selective Preview Before Spend approvals with enforced spending limits; one VideoScript family, renderer, measured narration timeline and authoritative Node.js orchestrator. The accepted incremental order is **11D → H1 → optional H2 → 12 → 09 → 10 → 13**, with 14 separately optional. Acceptance grants no implementation, API-spend, OAuth, upload or release authorization.
+
+Updated `docs/15-adrs.md` ADR-020 and `docs/architecture-next/ADR-HYBRID-C-PROPOSED.md` to record acceptance; retained the detailed filename and old proposal anchor for stable references. Synchronized current status/navigation in `ARCHITECTURE.md`, `CODEX_PROMPTS.md`, `EXECUTION_FLOW.md`, this file, `docs/architecture-next/EXECUTION_ORDER.md`, `HYBRID_C_PHASE_MAP.md` and `HYBRID_C_CONTRACT_AND_SECURITY_RULES.md`. Added a subsequent-decision note above the otherwise unchanged historical integration report. No original phase prompt, accepted ADR-001–019 text, implementation, test, legacy contract, dependency, fixture, media or approval record was edited.
+
+Nonblocking implementation dependencies remain: 11D source-selection/planner persistence and Kit packaging/privacy/version checks; H1 actual image adapter, immutable receipts and durable shared cost/attempt reservations; optional H2 a separately reviewed backward-compatible clip authoring/asset version, decoder/placement support and actual clip adapter; later UI/distribution integrations. Existing provider-origin/receipt compatibility and all source/rights/exact-artifact gates require targeted verification when extended. No duplicate contracts/stores are approved or created by this acceptance. Human production-video/factual/rights/listening/release decisions remain separate.
+
+Verification: current **92/92 source files** still match the saved 11C closure inventory. `git diff --check`: **PASS**. Python SHA-256/diff checks confirm **10 Markdown-only updates, 267 other files unchanged, no created/deleted files**, accepted ADR-001–019 text preserved and the historical review body unchanged. **Eight new/current ADR local links and anchors pass**, including the retained proposal anchor. Acceptance-only diff and verification records are in `/private/tmp/adr020-acceptance-20261112-gvr_mltk/`. Application tests/typecheck/lint/build/renders and live APIs were **not rerun (UNVERIFIED this pass)** because no implementation changed. Earlier execution results remain historical. Await a separate phase start instruction; do not begin 11D.

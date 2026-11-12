@@ -1,0 +1,36 @@
+# Hybrid C — draft interface, contract and trust-boundary constraints
+
+**This is not an executable schema.** Codex must inspect existing Zod/VisualAsset/job/Director/ReleaseManifest contracts and reuse them. No new parallel source of truth is authorized here.
+
+**Audited baseline — 2026-11-12:** See the [repository reconciliation](HYBRID_C_INTEGRATION_REVIEW_2026-11-12.md). The “Asset Manifest” below describes a conceptual target: current VisualAsset 1.0.0 is image-only and has no clip duration or generation receipt/cost fields. Phase 07 imports Director usage but has no durable shared media reservation service; H1 owns that missing extension and H2 reuses it. Unresolved resource planning is also absent from current strict draft/job records. Preserve old hashes/readers through reviewed additive versioning; do not instantiate parallel contracts or stores. Existing SVG handling **rejects** active/unsupported markup; general sanitization/rasterization is not an installed capability. [ADR-020's architectural direction is ACCEPTED](../15-adrs.md#adr-020--hybrid-c-directed-media-production); exact new schemas/interfaces and their implementation remain future reviewed work, not executable contracts created by this document.
+
+## Distinguish four artifacts conceptually
+
+1. **ResearchBundle / ClaimLedger (existing Phase 05):** approved ingestion scope, snapshots/hashes, claim provenance and review status. A user-entered URL is not proof of retrieval.
+2. **Creative/Resource Plan (11D proposal):** source-grounded narration/story beats and typed `AssetNeed` / production-method suggestions. These can be *unresolved*; no invented VisualAsset IDs or provider receipts. Store in existing candidate/job records if possible. Model may suggest technical-graphic, existing asset, uploaded media, AI image, optional AI video; actual method choice is capability/budget restricted.
+3. **Asset Manifest (existing Phase 11/07 infrastructure):** concrete immutable bytes with asset identity, media type/dimensions/duration, provenance, prompt/model/provider/request hash, rights status, storage path under containment, input/output checksum and actual observed cost when available. Imported and generated resources use the same validation path. Never equate content generation with rights approval.
+4. **VideoScript:** existing canonical versioned Zod authoring format, with approved IDs and no executable content. Derived `CompiledVisualPlan` stays internal; media timing follows the Phase 04 authoritative narration/caption frames. No dangling unresolvable asset references in final renderable script.
+
+## External-AI portability
+
+`Director Kit` should be generated, not manually maintained: versioned instruction template; actual Zod-exported JSON schema; actual executable registry catalog (entities/layouts/actions/transitions/limits); valid matching examples; brand tokens; source+claim context with explicit review status; allowed asset IDs and capabilities; compatibility manifest/hashes. Support a **privacy-safe export mode** omitting source bodies and private data unless an operator authorizes sharing with an external model; explain consequences for source-grounding and block false citations. Do not embed API keys or local absolute file paths. Plain `.json` VideoScript import is minimum; optionally later support a media bundle, but do not require it for 11D. Validate imports with exactly the same Zod/source/assets/compiler pipeline as integrated model outputs. Display precise errors with JSON paths and exported catalog version; provide a copyable repair report.
+
+## Provider settings
+
+Logical stage settings: Director (may use one LLM for content+visual initially), image generation, optional clip generation, TTS/voice. For each actual adapter, expose provider/model identifier, base defaults, account/availability, disabled/manual/local selection, spend ceilings and feature capabilities. Do not implement a second model abstraction in 11D. Provider information must not become part of VideoScript scene grammar unless necessary for deterministic rendering; store job/config identity separately. Credentials server-side only. Invalid/unsupported model selection fails closed, not silently switched.
+
+## Approval: immutable plan and reservation
+
+The preview-before-spend UX shows **a proposal, not ungenerated media**. Each item: scene/use, creative prompt or asset brief, asset type, exact provider/model/settings, width/height/duration, estimated price + timestamp + uncertainty, maximum attempts, total allowable charge and technical fallback. User can approve/reject individual items. Sign/record approval using canonical plan hash plus payer/project/provider/model/pricing ceiling and approved item IDs, with expiration/nonce/version as appropriate. Any changed brief, cost cap, provider/model, media duration/settings or item list requires renewed approval. No paid call until upper bound is enforceable; if current provider cannot predict a safe upper bound, obtain an explicit capped authorization or block dispatch. Aggregate pending reservations atomically across concurrent/retried jobs; account for failed attempts that may be billed. A declined image/video request cannot be auto-retried with a different paid provider. Billing receipts are **estimated or observed**, not claimed reconciled invoices.
+
+## Source and asset trust boundaries
+
+GitHub root or mutable branch requires explicit file/commit scope selection; no silent repository crawl. Source text, model output, image metadata and user-provided SVG remain untrusted. Never feed an instruction from those sources into privileged system/tool roles. No runtime generated JS/TS/React/HTML/raw SVG with scripts/GLSL/commands/dependencies; sanitize or rasterize user SVG, block remote references/active content. Validate image decoder and media container/streams, mime/magic, media dimensions/length/frame rate, file size, storage containment and output codecs. Rights review remains separate for every imported, generated and reused asset. Generated image text/diagrams may contain errors and must not count as factual authority.
+
+## Timeline and reproducibility
+
+Freeze media outputs **before** Remotion renders. Media hash and positioning/config affect render/cache and exact-artifact release approvals. Clips should be mute by default, with explicit deterministic cover/contain/trim/loop/hold choices and enough decoded frames; audio from a generated clip must not collide with narration or be silently retained. Scene duration does not change because a generated clip is too short/long; failure or explicit user-approved edit, not automatic narration stretching. Frame 0 and final frame, caption safe zones and transition boundaries must be verified. Re-renders of frozen inputs should not re-call models.
+
+## Failure and fallback
+
+Unresolved asset = explicit `needs_resource` / `needs_review` or existing equivalent, not a fabricated approved ID. Video generation disabled = planner catalog omits paid-video tool; programmatic or image path is still available when accurate. If no capable provider/render path exists, report a meaningful limitation. No forced cross-vendor fallback, no unbounded retries, no automatic release.
