@@ -17,6 +17,7 @@ This file breaks [docs/13-roadmap.md](13-roadmap.md) into smaller coding tasks. 
 | 10 | Instagram Reels manual export bundle | [Phase 10](../codex/10-instagram-export.md) |
 | 11 | EventQueue, B-tree, Git object graph and code traces | [Phase 11](../codex/11-animation-component-library.md) |
 | 11B | Optional bounded spatial city/heatmap proof | [Phase 11B](../codex/11b-selective-3d-spatial-scenes.md) |
+| 11C | Bounded generic composition, deterministic compiler and shared continuity; engineering accepted 2026-11-12, production media review separate | [Phase 11C](../codex/11c-generic-visual-composition-and-continuity.md) |
 | 12 | Optional localhost review dashboard | [Phase 12](../codex/12-local-creator-dashboard.md) |
 | 13 | Optional analytics feedback, hardening and controlled launch | [Phase 13](../codex/13-analytics-and-launch-readiness.md) |
 
@@ -33,3 +34,9 @@ Each phase updates `PROJECT_STATUS.md` after verification. Architecture docs are
 ## Current execution-order override
 
 The Phase 08 user request selects Phase 11 as the next planned implementation before dashboard/distribution. This changes execution order, not authorization: finish Phase 08 review and the existing focused cache-motion visual approval first. Do not automatically start Phase 11/11B, Phase 09/10, dashboard or publishing. Actual observed phase status remains in PROJECT_STATUS.md.
+
+
+**2026-11-11 authorization update:** The user explicitly accepted ADR-019 and authorized Phase 11C only. Its implementation is present; encoded reproducibility failures and human media acceptance remain open in PROJECT_STATUS.md. STOP for review before any 11D/12 work. This supersedes the earlier execution-order gate only for the explicitly requested 11C scope.
+
+
+**2026-11-12 acceptance update:** The user accepted Phase 11C as engineering-complete. Its engineering gate is closed; production-video, source/rights/listening and release approvals remain separate. Phase 11D/12 remains unstarted and requires its own explicit implementation instruction.

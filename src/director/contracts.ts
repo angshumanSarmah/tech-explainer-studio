@@ -4,7 +4,7 @@ import { VisualTaxonomy } from '../domain/library.ts';
 import type { VideoScript } from '../domain/videoscript.ts';
 import {
   VideoScriptSchema,
-  VideoScriptV11Schema,
+  VideoScriptV12Schema,
 } from '../domain/videoscript.ts';
 import { libraryRegistry } from '../domain/visual-library-registry.ts';
 import {
@@ -42,6 +42,7 @@ export function validateStoryboard(script: VideoScript) {
         `$.scenes[${index}].narration`,
       );
     if (
+      scene.visual.type === 'composed' ||
       scene.visual.type === 'tech-animation' ||
       scene.visual.type === 'registered-animation'
     )
@@ -56,10 +57,10 @@ export function directorContract(example: unknown) {
   validateStoryboard(valid);
   return {
     contractVersion: 'director-1.0.0',
-    currentVideoScriptVersion: '1.1.0',
+    currentVideoScriptVersion: '1.2.0',
     legacyVideoScriptVersion: '1.0.0',
     schema: z.toJSONSchema(VideoScriptSchema, { reused: 'ref' }),
-    generationSchema: z.toJSONSchema(VideoScriptV11Schema, { reused: 'ref' }),
+    generationSchema: z.toJSONSchema(VideoScriptV12Schema, { reused: 'ref' }),
     catalog: {
       titleCard: z.toJSONSchema(VisualSpecSchema.options[0]),
       components: Object.fromEntries(
@@ -67,6 +68,8 @@ export function directorContract(example: unknown) {
           id,
           {
             version: entry.version,
+            crossfade: entry.crossfade,
+            ...('limits' in entry ? { limits: entry.limits } : {}),
             props: z.toJSONSchema(entry.schema),
             ...('description' in entry
               ? {
@@ -79,7 +82,7 @@ export function directorContract(example: unknown) {
                   safeZone: entry.safeZone,
                   example: {
                     ...valid,
-                    schema_version: '1.1.0',
+                    schema_version: id === 'ComposedScene' ? '1.2.0' : '1.1.0',
                     script_id: `example-${id}`,
                     scenes: [
                       {
@@ -95,8 +98,13 @@ export function directorContract(example: unknown) {
                             }
                           : {}),
                         visual: {
-                          type: 'registered-animation',
-                          taxonomy_version: '1.0.0',
+                          type:
+                            id === 'ComposedScene'
+                              ? 'composed'
+                              : 'registered-animation',
+                          ...(id === 'ComposedScene'
+                            ? {}
+                            : { taxonomy_version: '1.0.0' }),
                           component: id,
                           props: entry.example,
                           cues: [],
@@ -113,6 +121,13 @@ export function directorContract(example: unknown) {
         ]),
       ),
       taxonomy: VisualTaxonomy,
+      continuity: {
+        version: '1.0.0',
+        frames: 12,
+        crossfadeComponents: Object.keys(componentRegistry),
+        matchedComponents: ['ComposedScene'],
+        unsupported: ['title-card crossfade', 'cross-template object matching'],
+      },
       registryIds: Object.keys(componentRegistry),
       cueSchema: z.toJSONSchema(VisualCueSchema),
       execution: {
@@ -123,6 +138,9 @@ export function directorContract(example: unknown) {
         profile: 'technology-explainer',
         illustrative: true,
         actions: ['move'],
+        actionScope:
+          'The actions/targets fields describe legacy HTTP and mechanism adapters. ComposedScene uses its descriptor supportedCues and limits with stable entity/link IDs.',
+        composedActions: componentRegistry.ComposedScene.supportedCues,
         mechanismComponents: Object.keys(libraryRegistry),
         targets: { request: 'http-request', response: 'http-response' },
         progress: true,

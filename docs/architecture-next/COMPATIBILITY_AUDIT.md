@@ -1,0 +1,20 @@
+# Completed-phase compatibility — reviewed amendment obligations
+
+Use the unchanged [architecture audit](ARCHITECTURE_VERIFICATION_2026-11-11.md) for existing source-code evidence and amended [ADR-019](ADR-019-PROPOSED-composed-scenes.md) for the conditional direction. Do not rerun the audit or completed phases. These are future integration/acceptance obligations; application changes require final amendment acceptance and separate 11C authorization.
+
+| Existing phase | Preserve | Check before 11C/11D | Owner of potential fixes |
+|---|---|---|---|
+| 01 contracts | 1.0.0/1.1.0 fixtures, strict rejection/default behavior | Add strict 1.2.0 composed branch and scene-level opt-in boundary policy for supported visual types; no automatic migration or old-script edits | 11C |
+| 02 renderer | One Remotion Producer and existing component handlers | Executed registry/schema/renderer dispatch parity; compatible specialized→specialized and composed↔specialized crossfade; composed stable-ID handoff; typed unsupported pairs | 11C |
+| 03 Kokoro | Existing local voice, WAV bytes/hashes and measured duration | Visual/asset/transition edits reuse valid audio; no trimming/rewriting or invented alignment | 11C compatibility only; no separate 03 rerun |
+| 04 assembly | Phase 04 global audio/frame/caption timeline, FFmpeg/QC | Fixed total frames under cuts/overlap; per-boundary activity/padding/caption diagnostics; classify editorial intent through human real-MP4 listening | 11C compatibility only; no separate 04 rerun |
+| 05 research | Existing ResearchBundle, ClaimLedger, trust/access/rights boundaries | One-or-more approved inputs; roots/moving refs return actionable selection-required with exact paths/commit approvals; initial 11D pinned-file limitation visible | 11D compatibility only |
+| 06 Director | Same LLMProvider and keyless manual import/export; historical draft identity | Version-aware old draft reads; actual executable catalog export; one structural repair initially; stage-wide size/time/spend caps | 11C contract integration; 11D planning |
+| 07 jobs | SQLite fencing, verified cache and recovery | Both-neighbor compiled/handler/camera/transition/asset dependencies; verify scene-only/full replay; unchanged audio reuse for visual-only edits | 11C/11D compatibility |
+| 08 approvals | Independent human facts/asset/media/private release gates | Test visual/continuity meaning change with unchanged narration; complete compiled/pacing/artifact/asset-record/file/rights identities from both boundary sides | 11C/11D compatibility |
+| 11 visuals | Existing reviewed local asset store and reusable SVG primitives | Generic compositions reuse approved assets plus supported 2D/2.5D motion/depth/camera; meaningful asset-backed example and complete reference collection/preflight | 11C |
+| 11B spatial | Original specialized fixtures, code paths and saved review assets | Historical hard cuts unchanged; explicit revised-script crossfade via shared boundary integration where compatible; no city-specific logic advertised as generic or GPU 3D | 11C regression and shared continuity integration |
+
+No prompt file is executable evidence. Future implementation reports actual code/test/render results against these obligations; the current amendment changes documentation only. Existing audit gaps include historical prompt-literal draft reads, asset discovery limited to LayeredAssetScene, textual rather than exhaustive executed dispatcher parity, and factual dependency projection excluding visuals. Resolve them within the owning new phase without standalone reruns.
+
+Freeze schema/grammar, registry/compiler/renderer and evaluation prompts before selecting the unseen holdout. Record hashes and permit no application source-code changes between holdout-topic renders. Require bounded full context (including examples/evidence/feedback) under the current 96KiB Director request-data cap, adapter-specific limits and invocation spend cap. Unsupported cases remain visible; no silent fallback or retrospective quality/rights approval.

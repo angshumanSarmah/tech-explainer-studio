@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { BrandSelectionSchema } from '../branding/profile.ts';
-import { displayText, StableIdSchema, VisualSpecSchema } from './visuals.ts';
+import { BoundarySchema, PauseIntentSchema } from './composed.ts';
+import {
+  displayText,
+  StableIdSchema,
+  VisualSpecSchema,
+  VisualSpecV12Schema,
+} from './visuals.ts';
 
 const SourceSnapshotSchema = z.strictObject({
   source_id: StableIdSchema,
@@ -260,11 +266,65 @@ export const VideoScriptV11Schema = z
     brand: BrandSelectionSchema.optional(),
   })
   .superRefine(validateReferences);
+export const SceneV12Schema = z
+  .strictObject({
+    ...SceneV1Schema.shape,
+    visual: VisualSpecV12Schema,
+    transition: BoundarySchema.optional(),
+    pause_before: PauseIntentSchema.optional(),
+  })
+  .superRefine((scene, ctx) => {
+    const { transition: _transition, pause_before: _pause, ...base } = scene;
+    const checked = SceneV1Schema.safeParse({
+      ...base,
+      visual:
+        scene.visual.type === 'composed'
+          ? { type: 'title-card', heading: 'Composed', variant: 'hook' }
+          : scene.visual,
+    });
+    if (!checked.success)
+      for (const issue of checked.error.issues) ctx.addIssue({ ...issue });
+    if (scene.visual.type === 'composed') {
+      const ids = new Set<string>();
+      scene.visual.cues.forEach((c, i) => {
+        if (ids.has(c.cue_id))
+          ctx.addIssue({
+            code: 'custom',
+            path: ['visual', 'cues', i],
+            message: 'Duplicate cue ID',
+          });
+        ids.add(c.cue_id);
+        if (
+          c.trigger.kind === 'phrase' &&
+          (scene.narration.indexOf(c.trigger.text) < 0 ||
+            scene.narration.indexOf(
+              c.trigger.text,
+              scene.narration.indexOf(c.trigger.text) + 1,
+            ) >= 0)
+        )
+          ctx.addIssue({
+            code: 'custom',
+            path: ['visual', 'cues', i, 'trigger'],
+            message: 'Phrase must occur exactly once in narration',
+          });
+      });
+    }
+  });
+export const VideoScriptV12Schema = z
+  .strictObject({
+    ...VideoScriptV11Schema.shape,
+    schema_version: z.literal('1.2.0'),
+    scenes: z.array(SceneV12Schema).min(1).max(100),
+  })
+  .superRefine(validateReferences);
 export const VideoScriptSchema = z.union([
   VideoScriptV1Schema,
   VideoScriptV11Schema,
+  VideoScriptV12Schema,
 ]);
 
 export type VideoScriptV1 = z.infer<typeof VideoScriptV1Schema>;
 export type VideoScript = z.infer<typeof VideoScriptSchema>;
 export type SceneV1 = z.infer<typeof SceneV1Schema>;
+
+export type Scene = z.infer<typeof SceneV12Schema>;

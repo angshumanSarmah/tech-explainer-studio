@@ -443,10 +443,14 @@ export async function resolveVisualAsset(
 }
 export function scriptAssetRefs(script: VideoScript) {
   return script.scenes.flatMap((s) =>
-    s.visual.type === 'registered-animation' &&
-    s.visual.component === 'LayeredAssetScene'
-      ? s.visual.props.layers.map((l) => l.asset)
-      : [],
+    s.visual.type === 'composed'
+      ? s.visual.props.entities.flatMap((e) =>
+          e.kind === 'node' && e.asset ? [e.asset] : [],
+        )
+      : s.visual.type === 'registered-animation' &&
+          s.visual.component === 'LayeredAssetScene'
+        ? s.visual.props.layers.map((l) => l.asset)
+        : [],
   );
 }
 export async function preflightVisualAssets(
@@ -462,11 +466,16 @@ export async function preflightVisualAssets(
       } catch (error) {
         const scene = script.scenes.find(
           (s) =>
-            s.visual.type === 'registered-animation' &&
-            s.visual.component === 'LayeredAssetScene' &&
-            s.visual.props.layers.some(
-              (l) => l.asset.recordSha256 === r.recordSha256,
-            ),
+            (s.visual.type === 'composed' &&
+              s.visual.props.entities.some(
+                (e) =>
+                  e.kind === 'node' && e.asset?.recordSha256 === r.recordSha256,
+              )) ||
+            (s.visual.type === 'registered-animation' &&
+              s.visual.component === 'LayeredAssetScene' &&
+              s.visual.props.layers.some(
+                (l) => l.asset.recordSha256 === r.recordSha256,
+              )),
         );
         throw new VisualAssetError(
           `Asset ${r.assetId}: ${error instanceof VisualAssetError ? error.message : 'Missing, malformed or unsafe local asset; import and review it again'}`,

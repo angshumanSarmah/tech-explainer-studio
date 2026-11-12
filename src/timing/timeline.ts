@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import type { SceneV1, VideoScript } from '../domain/videoscript.ts';
+import { parseVideoScript } from '../domain/validation.ts';
+import type { Scene, VideoScript } from '../domain/videoscript.ts';
 import { MediaError } from '../media/error.ts';
 import {
   type PlannedScene,
@@ -83,11 +84,7 @@ function fail(code: string, sceneId: string, reason: string): never {
 function tokens(text: string) {
   return [...text.matchAll(/\S+/gu)];
 }
-function reviewedWords(
-  scene: SceneV1,
-  audio: AudioTiming,
-  alignment: Alignment,
-) {
+function reviewedWords(scene: Scene, audio: AudioTiming, alignment: Alignment) {
   const entries = alignment.scenes.filter(
     (item) => item.sceneId === scene.scene_id,
   );
@@ -247,6 +244,7 @@ export function planNarratedRender(
     const renderScene = structuredClone(scene);
     delete renderScene.caption_overrides;
     if (
+      renderScene.visual.type === 'composed' ||
       renderScene.visual.type === 'tech-animation' ||
       renderScene.visual.type === 'registered-animation'
     )
@@ -384,6 +382,7 @@ export function planNarratedRender(
       holdFrames: durationFrames - audioFrames,
       endPaddingSamples: durationFrames * 800 - a.samples,
       cueWindows:
+        renderScene.visual.type === 'composed' ||
         renderScene.visual.type === 'tech-animation' ||
         renderScene.visual.type === 'registered-animation'
           ? renderScene.visual.cues.map((cue) => ({
@@ -410,7 +409,9 @@ export function planNarratedRender(
       'Narrated preview exceeds one hour',
     );
   // Reuse existing layout/cue preflight and preserve the Phase 02 renderer contract.
-  planSilentRender({ ...script, scenes: scenes.map((item) => item.scene) });
+  planSilentRender(
+    parseVideoScript({ ...script, scenes: scenes.map((item) => item.scene) }),
+  );
   validateCaptions(captions, scenes, from);
   return {
     scenes,

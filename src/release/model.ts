@@ -99,6 +99,20 @@ export const ReviewSchema = z.strictObject({
   decision: z.enum(['approve', 'reject']),
   rationale: editorialText(2000),
   reviewedAt: z.iso.datetime(),
+  boundaryPacing: z
+    .strictObject({
+      reportSha256: Sha,
+      decisions: z
+        .array(
+          z.strictObject({
+            id: z.string().min(1).max(260),
+            classification: z.enum(['deliberate', 'unintended', 'unresolved']),
+            rationale: editorialText(1000),
+          }),
+        )
+        .max(100),
+    })
+    .optional(),
   checks: z.strictObject({
     playback: z.boolean().default(false),
     pronunciation: z.boolean().default(false),

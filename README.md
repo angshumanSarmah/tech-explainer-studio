@@ -1,6 +1,6 @@
 # Tech Explainer Studio
 
-> **Phases 01–08 implemented; Phases 11/11B await visual review:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, SQLite jobs with fenced recovery and scene caches, and local exact-artifact release gates. Director/provider tests are mocked; live DeepSeek remains unverified. Approved MDN/Redis source ingestion was verified for the caching episode. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+> **Phases 01–08 implemented; Phases 11/11B/11C await human media review:** script validation, local narrated previews with captions/QC, bounded multi-source research bundles, source snapshots, manual claim review, keyless Director import/export, optional budgeted DeepSeek, centralized branding, SQLite jobs with fenced recovery and scene caches, and local exact-artifact release gates. Director/provider tests are mocked; live DeepSeek remains unverified. Approved MDN/Redis source ingestion was verified for the caching episode. Voice quality, caption timing and human playback review remain pending; publishing remains planned. Verified progress is recorded in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 >
 > **Read [EXECUTION_FLOW.md](EXECUTION_FLOW.md) first for the exact Codex build process.**
 
@@ -338,3 +338,17 @@ The minimal asset manager imports local PNG/JPEG/WebP/passive SVG, starts assets
 `CityDemandHeatmap` adds one original procedural SVG city: fixed buildings/roads, moving demo vehicles, changing synthetic demand cells, a guided camera push and a wider changing pattern. `isometric-svg` supplies 2.5D depth; explicit `flat-svg` preserves the planar fallback. Both work with WebGL disabled. This is an illustrative spatial story, not a real map or dispatch/pricing model. No new package, tile, texture, model or remote service is needed.
 
 `node scripts/render-phase11b.mjs` explicitly synthesizes with installed local Kokoro and renders through the existing Producer. Replay saved WAVs with `node scripts/render-phase11b.mjs --replay output/phase11b/run-<suffix>`; add `--flat` for the planar version. Fresh output directories are created automatically. [Fixture/contract notes](examples/phase11b/README.md) include a minimal valid script. Actual MP4s, costs and limitations are in `output/phase11b/REVIEW.md` and PROJECT_STATUS.md. Human visual, voice, timing and rights approval remain pending. True ThreeCanvas/R3F integration is unimplemented; the successful WebGL probe does not establish that stack's compatibility or performance.
+
+
+## Bounded generic composition (Phase 11C)
+
+VideoScript 1.2.0 adds ComposedScene and opt-in scene-level continuity; old scripts keep their strict defaults. Start with [saved examples](examples/phase11c/README.md), [contract bounds](docs/03-contracts.md#phase-11c-implemented-composition-contract-human-acceptance-pending), and [accepted ADR-019](docs/15-adrs.md#adr-019--bounded-composition-and-shared-scene-continuity). Rendering still uses the existing Producer, local approved assets and measured narration. No LLM or runtime code generation is needed.
+
+```sh
+npm run studio -- script validate --file examples/phase11c/caching.videoscript.json
+npm run studio -- director export --output output/composition-contract
+npm run studio -- render --script examples/phase11c/caching.videoscript.json --narration <matching-saved-WAV-directory> --output output/composition-preview --allow-caption-fallback
+node scripts/review-phase11c.mjs <render-map.json> <new-evidence-directory>
+```
+
+The review-map entries are `{name:{renderDir,narrationDir}}`; the read-only review script independently checks final media and saved WAV identity, then extracts encoded mobile/boundary poses and decoded-audio excerpts. Complete human video/listening/factual/rights acceptance remains pending. Flagged pacing requires exact-report decisions at the existing Phase 08 gate; no waveform is silently repaired. Initial node/link/token layouts and modest SVG depth/camera are bounded 2D/2.5D, not universal composition or true GPU 3D. The earlier city/Kafka pixel failures remain historical evidence. Generic engineering closure 1.0.1 now passes a byte-identical short replay and exact aligned legacy comparisons; production-video acceptance remains separate. See PROJECT_STATUS.md and the engineering closure report. Phase 11D and Phase 12 remain unimplemented.

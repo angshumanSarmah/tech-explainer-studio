@@ -1,0 +1,551 @@
+{
+  "schema_version": "1.2.0",
+  "script_id": "composed-caching",
+  "revision": 2,
+  "profile": "technology-explainer",
+  "topic": "caching",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "cache",
+      "url": "https://redis.io/docs/latest/develop/use-cases/cache-aside/",
+      "title": "Redis documentation: cache-aside",
+      "retrieved_at": null,
+      "source_kind": "documentation",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "cache-mechanism",
+      "text": "In cache-aside reads, the application checks cache, queries storage on a miss, and stores a reusable copy.",
+      "source_ids": [
+        "cache"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "caching-1",
+      "educational_goal": "The app first checks the cache for a reusable copy.",
+      "narration": "The app first checks the cache for a reusable copy.",
+      "claim_ids": [
+        "cache-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Look for a reusable copy",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "app",
+              "kind": "node",
+              "label": "Application",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "cache",
+              "kind": "node",
+              "label": "Cache",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "database",
+              "kind": "node",
+              "label": "Database",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "app",
+              "label": "Key",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "lookup",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "miss",
+              "from": "cache",
+              "to": "app"
+            },
+            {
+              "id": "read",
+              "from": "app",
+              "to": "database"
+            },
+            {
+              "id": "data",
+              "from": "database",
+              "to": "app"
+            },
+            {
+              "id": "fill",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "reply",
+              "from": "cache",
+              "to": "app"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.14777777777777776,
+              "to": 0.6033333333333334
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "lookup"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.6033333333333334,
+              "to": 0.8766666666666666
+            },
+            "action": {
+              "kind": "highlight",
+              "target": "cache"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      }
+    },
+    {
+      "scene_id": "caching-2",
+      "educational_goal": "A miss returns to the app. The app then asks the database.",
+      "narration": "A miss returns to the app. The app then asks the database.",
+      "claim_ids": [
+        "cache-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "A miss returns to the app",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "app",
+              "kind": "node",
+              "label": "Application",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "cache",
+              "kind": "node",
+              "label": "Cache",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "database",
+              "kind": "node",
+              "label": "Database",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "cache",
+              "label": "Key",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "lookup",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "miss",
+              "from": "cache",
+              "to": "app"
+            },
+            {
+              "id": "read",
+              "from": "app",
+              "to": "database"
+            },
+            {
+              "id": "data",
+              "from": "database",
+              "to": "app"
+            },
+            {
+              "id": "fill",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "reply",
+              "from": "cache",
+              "to": "app"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10181818181818182,
+              "to": 0.38000000000000006
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "miss"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.42636363636363633,
+              "to": 0.8436363636363636
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "read"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "caching-3",
+      "educational_goal": "Data returns to the app, which saves a copy in the cache.",
+      "narration": "Data returns to the app, which saves a copy in the cache.",
+      "claim_ids": [
+        "cache-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Fetch, then save a copy",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "app",
+              "kind": "node",
+              "label": "Application",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "cache",
+              "kind": "node",
+              "label": "Cache",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "database",
+              "kind": "node",
+              "label": "Database",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "database",
+              "label": "Data",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "lookup",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "miss",
+              "from": "cache",
+              "to": "app"
+            },
+            {
+              "id": "read",
+              "from": "app",
+              "to": "database"
+            },
+            {
+              "id": "data",
+              "from": "database",
+              "to": "app"
+            },
+            {
+              "id": "fill",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "reply",
+              "from": "cache",
+              "to": "app"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.055238095238095246,
+              "to": 0.4026666666666667
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "data"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.4666666666666667,
+              "to": 0.8140952380952381
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "fill"
+            }
+          },
+          {
+            "cue_id": "action-2",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.8140952380952381,
+              "to": 0.9146666666666666
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "cache",
+              "value": "Copy saved"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "caching-4",
+      "educational_goal": "The next read hits the cache. The database stays idle.",
+      "narration": "The next read hits the cache. The database stays idle.",
+      "claim_ids": [
+        "cache-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Read the reusable copy",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "app",
+              "kind": "node",
+              "label": "Application",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "cache",
+              "kind": "node",
+              "label": "Cache",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "database",
+              "kind": "node",
+              "label": "Database",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "cache",
+              "label": "Data",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "lookup",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "miss",
+              "from": "cache",
+              "to": "app"
+            },
+            {
+              "id": "read",
+              "from": "app",
+              "to": "database"
+            },
+            {
+              "id": "data",
+              "from": "database",
+              "to": "app"
+            },
+            {
+              "id": "fill",
+              "from": "app",
+              "to": "cache"
+            },
+            {
+              "id": "reply",
+              "from": "cache",
+              "to": "app"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10202020202020201,
+              "to": 0.6535353535353534
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "reply"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10202020202020201,
+              "to": 0.19393939393939394
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "database",
+              "value": "Idle"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "caching"
+    ],
+    "summary": "Original caching illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

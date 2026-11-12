@@ -17,6 +17,7 @@ Each file has **one copy-ready prompt** containing the phase's work, non-goals, 
 | 10 | Instagram Reels manual export bundle | Phase 4 — Publisher / Instagram manual bundle   | [Open](codex/10-instagram-export.md) |
 | 11 | EventQueue, B-tree, Git object graph and code traces | Phase 5 — Channel-scale refinement / animation components   | [Open](codex/11-animation-component-library.md) |
 | 11B | Optional bounded spatial city/heatmap proof | Phase 5 — Selective spatial storytelling | [Open](codex/11b-selective-3d-spatial-scenes.md) |
+| 11C | Bounded generic composition, deterministic compiler and shared continuity | Phase 5 — Engineering accepted 2026-11-12; see PROJECT_STATUS | [Open](codex/11c-generic-visual-composition-and-continuity.md) |
 | 12 | Optional localhost review dashboard | Phase 5 — Channel-scale refinement / optional UI   | [Open](codex/12-local-creator-dashboard.md) |
 | 13 | Optional analytics feedback, hardening and controlled launch | Phase 5 — Channel-scale refinement / optional analytics & launch readiness   | [Open](codex/13-analytics-and-launch-readiness.md) |
 

@@ -1,0 +1,639 @@
+{
+  "schema_version": "1.2.0",
+  "script_id": "composed-queue",
+  "revision": 2,
+  "profile": "technology-explainer",
+  "topic": "queue",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "queue",
+      "url": "https://docs.python.org/3/library/queue.html",
+      "title": "Python queue documentation",
+      "retrieved_at": null,
+      "source_kind": "documentation",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "queue-mechanism",
+      "text": "A bounded FIFO queue separates waiting work from one consumer; this illustration either blocks producers or drops arrivals when full.",
+      "source_ids": [
+        "queue"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "queue-1",
+      "educational_goal": "A producer can send work faster than one consumer can finish it.",
+      "narration": "A producer can send work faster than one consumer can finish it.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "A burst of work",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "label": "Producer",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "queue",
+              "kind": "node",
+              "label": "Waiting queue",
+              "slot": 1,
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "worker",
+              "kind": "node",
+              "label": "One consumer",
+              "slot": 2,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "producer",
+              "label": "Work",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "admit",
+              "from": "producer",
+              "to": "queue"
+            },
+            {
+              "id": "consume",
+              "from": "queue",
+              "to": "worker"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10086206896551725,
+              "to": 0.6543103448275861
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "admit"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      }
+    },
+    {
+      "scene_id": "queue-2",
+      "educational_goal": "The queue holds waiting work. The consumer handles one item at a time.",
+      "narration": "The queue holds waiting work. The consumer handles one item at a time.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Waiting and active work",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "label": "Producer",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "queue",
+              "kind": "node",
+              "label": "Waiting queue",
+              "slot": 1,
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "worker",
+              "kind": "node",
+              "label": "One consumer",
+              "slot": 2,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "queue",
+              "label": "Work",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "admit",
+              "from": "producer",
+              "to": "queue"
+            },
+            {
+              "id": "consume",
+              "from": "queue",
+              "to": "worker"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10075757575757577,
+              "to": 0.753030303030303
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "consume"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.7809848484848484,
+              "to": 0.9207575757575757
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "worker",
+              "value": "One at a time"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "queue-3",
+      "educational_goal": "This bounded queue blocks arrivals when its waiting slots are full.",
+      "narration": "This bounded queue blocks arrivals when its waiting slots are full.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Full queue: block arrivals",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "label": "Producer",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "queue",
+              "kind": "node",
+              "label": "Waiting queue",
+              "slot": 1,
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "worker",
+              "kind": "node",
+              "label": "One consumer",
+              "slot": 2,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "producer",
+              "label": "Work",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "admit",
+              "from": "producer",
+              "to": "queue"
+            },
+            {
+              "id": "consume",
+              "from": "queue",
+              "to": "worker"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.05521739130434783,
+              "to": 0.1947826086956522
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "queue",
+              "value": "Full"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.24130434782608695,
+              "to": 0.7995652173913044
+            },
+            "action": {
+              "kind": "highlight",
+              "target": "producer"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "queue-4",
+      "educational_goal": "Another explicit policy drops new arrivals when the queue is full.",
+      "narration": "Another explicit policy drops new arrivals when the queue is full.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Full queue: drop arrivals",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "label": "Producer",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "queue",
+              "kind": "node",
+              "label": "Waiting queue",
+              "slot": 1,
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "worker",
+              "kind": "node",
+              "label": "One consumer",
+              "slot": 2,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "producer",
+              "label": "Work",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "admit",
+              "from": "producer",
+              "to": "queue"
+            },
+            {
+              "id": "consume",
+              "from": "queue",
+              "to": "worker"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.05491803278688525,
+              "to": 0.19508196721311477
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "queue",
+              "value": "Full"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.3819672131147541,
+              "to": 0.7557377049180328
+            },
+            "action": {
+              "kind": "disappear",
+              "target": "item"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "queue-5",
+      "educational_goal": "First in, first out keeps accepted work in order with one consumer.",
+      "narration": "First in, first out keeps accepted work in order with one consumer.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "First accepted, first served",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "label": "Producer",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "queue",
+              "kind": "node",
+              "label": "Waiting queue",
+              "slot": 1,
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "worker",
+              "kind": "node",
+              "label": "One consumer",
+              "slot": 2,
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "queue",
+              "label": "Work",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "admit",
+              "from": "producer",
+              "to": "queue"
+            },
+            {
+              "id": "consume",
+              "from": "queue",
+              "to": "worker"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.11496062992125985,
+              "to": 0.7543307086614174
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "consume"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.7817322834645669,
+              "to": 0.9187401574803149
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "worker",
+              "value": "Accepted first"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "queue-6",
+      "educational_goal": "When no work arrives, the queue is empty and the consumer is idle.",
+      "narration": "When no work arrives, the queue is empty and the consumer is idle.",
+      "claim_ids": [
+        "queue-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Empty and idle",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "label": "Producer",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "queue",
+              "kind": "node",
+              "label": "Waiting queue",
+              "slot": 1,
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "worker",
+              "kind": "node",
+              "label": "One consumer",
+              "slot": 2,
+              "role": "success",
+              "depth": "raised"
+            }
+          ],
+          "links": [
+            {
+              "id": "admit",
+              "from": "producer",
+              "to": "queue"
+            },
+            {
+              "id": "consume",
+              "from": "queue",
+              "to": "worker"
+            }
+          ],
+          "groups": [],
+          "camera": "wide",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10084745762711865,
+              "to": 0.285593220338983
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "queue",
+              "value": "Empty"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.10084745762711865,
+              "to": 0.285593220338983
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "worker",
+              "value": "Idle"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "queue"
+    ],
+    "summary": "Original queue illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

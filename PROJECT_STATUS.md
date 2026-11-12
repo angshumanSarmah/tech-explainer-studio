@@ -1,8 +1,8 @@
 # Tech Explainer Studio — Implementation status
 
-> **Status baseline:** Phases 01–08 remain implemented. Phase 11 adds the reusable mechanism library, reviewed local asset import/staging and Director anti-slideshow integration. Latest Phase 11B regression suite: **232/232 passed**; strict typecheck, lint and build passed. No live DeepSeek call was made.
-> **Current stop:** Optional Phase 11B is **Needs review** after a real narrated 16.3s CityDemandHeatmap proof, explicit flat fallback, offline/no-WebGL renders, encoded mobile poses and verified Phase 07 caching. Phase 11 visual acceptance also remains pending. Technical tests do not approve cinematic quality, voice, timing, rights or release. Phase 12 and network publishing remain unstarted.
-> **Last updated:** 2026-11-11 (Asia/Kolkata; Phase 11 work began 2026-11-10).
+> **Status baseline:** Phases 01–08 remain implemented; Phase 11/11B visual work and accepted ADR-019 are preserved. Phase 11C generic engineering closure is verified at compiler/layout 1.0.1. Latest checks: **247/247 tests**, typecheck, lint (154 files) and build pass. No live DeepSeek call was made.
+> **Current stop:** **Phase 11C accepted by the user as engineering-complete on 2026-11-12.** Engineering readiness for Phase 11D is accepted; explicit authorization to start that phase is still required. This does not approve production videos, source facts, rights, full listening/caption quality or release. The frozen Kafka artifacts and four topic storyboards remain unchanged. See the [engineering closure](docs/architecture-next/PHASE_11C_ENGINEERING_CLOSURE_2026-11-11.md). Phase 11D/12 and publishing remain unstarted.
+> **Last updated:** 2026-11-12 (Asia/Kolkata).
 
 ## Phase tracker
 
@@ -21,6 +21,7 @@
 | 10 | Instagram Reels manual export bundle | Not started | — |
 | 11 | Reusable 2D/2.5D mechanisms, local assets and Director quality | Needs review | 226/226 tests; six 30–37.1s Kokoro demos, two 7s scene proofs, 51 encoded golden poses at full/mobile size; human visual/listening/timing/rights review pending |
 | 11B | Optional synthetic city spatial story | Needs review | 232/232 tests; narrated 16.3s isometric SVG proof + flat fallback, no-WebGL/offline renders, 24 encoded poses at full/mobile size, tolerant 489-frame replay and real cached job resume; human review pending |
+| 11C | Generic composition, compiler, shared continuity and pacing | Done — engineering accepted | User accepted engineering completion on 2026-11-12; 247/247 tests and exact aligned comparisons across 1,943 frames recorded in the closure evidence; production video/source/rights acceptance remains separate |
 | 12 | Optional localhost review dashboard | Not started | — |
 | 13 | Optional analytics feedback, hardening and controlled launch | Not started | — |
 
@@ -961,3 +962,144 @@ Measured local costs, no API charges:
 AC-01/02/03/04/05 technical evidence is present for the bounded spatial/fallback path. **Visual quality, full listening/naturalness, caption timing, real-phone playback and human facts/rights/release approval remain UNVERIFIED/pending.** Scene-speech-span captions retain requiresTimingReview:true and approvedForRelease:false. Three.js/R3F integration, GPU-render regressions, 3D asset ingestion and CI performance are not implemented/verified.
 
 Updated README, ARCHITECTURE, docs/02, docs/03, docs/05, docs/20, ADR-018, prompt/phase-map indexes and fixture instructions for actual interfaces/results. AGENTS/CLAUDE and existing approval boundaries were preserved. **Next recommendation: review `output/phase11b/REVIEW.md`, play both MP4s on a phone and provide visual/voice/timing feedback. STOP after Phase 11B; no next phase is started.**
+
+
+## Phase 11C — Implemented, acceptance incomplete; STOP for review (2026-11-11)
+
+### Authority, scope and actual changes
+
+The user accepted amended ADR-019 and explicitly authorized 11C after the earlier documentation-only stop. `docs/15-adrs.md` appends ACCEPTED ADR-019 without changing ADR-001–018; its stable detailed filename remains `docs/architecture-next/ADR-019-PROPOSED-composed-scenes.md`, now labeled ACCEPTED. The 11C prompt links both records and preserves the existing audit. No substantive ADR/prompt conflict was found. The architecture audit was not rerun. The pre-existing untracked proposed architecture/prompt documents were retained; no 11D/12 implementation, historical script/media/release edit, dependency install, paid API, commit or publishing occurred.
+
+- Contracts/Director: new `src/domain/composed.ts`; strict additive 1.2.0 in videoscript/visuals/validation; one existing capability registry exports bounds/examples/compatibility. Historical schema branches/defaults and Director prompt identities are preserved. Director complete-data size now includes repair feedback before dispatch; the existing LLMProvider and budgets remain authoritative.
+- Existing renderer: new derived `renderers/remotion/compile.ts`, shared input-error type and registered `visuals/ComposedScene.tsx`; Composition evaluates deterministic geometry/tracks and at most two content layers. Existing depth/path/text/LayeredAssets are reused; asset clip IDs are namespaced. No second renderer, timeline, registry, arbitrary geometry/code or topic dispatcher was added.
+- Timing/media: existing measured Phase 04 timeline resolves composed cues; new `timing/pacing.ts` derives every adjacent boundary's activity decomposition without WAV edits. Narrated 1.2.0 artifacts bind canonical compiled/input hashes and raw pacing file identity; normal mux/decode/QC remains independent.
+- Cache/rights/release: existing collector/preflight handles composed AssetRefs; visual clip keys bind consumed predecessor/current visual and terminal state plus complete existing timing/brand/tool/asset dependencies. Pure visual changes reuse audio. Factual dependencies include composed/transition meaning with unchanged narration. Phase 08 independently reconstructs compiled/pacing artifacts and requires exact-report deliberate findings for flagged gaps; unresolved/unintended pacing cannot be approved.
+- Evidence: new `examples/phase11c/` JSON fixtures/README, `scripts/review-phase11c.mjs` and four test files; existing Director current-version assertion updated. Documentation updated in README, ARCHITECTURE, docs/03,05,20,15 and phase indexes. The review script only creates fresh evidence and never grants approval.
+
+### Functional checks and commands
+
+| Actual command/check | Observed result |
+|---|---|
+| `npm run typecheck`, `npm run lint`, `npm run build` | PASS, `output/phase11c/{typecheck,lint,build}-delivery.log`; lint 152 files, no fixes/warnings |
+| `npm test` | **244/244 PASS**, no skips/failures; `tests-delivery.log` |
+| Actual component schema/catalog/renderer dispatch | All 11 finite handlers exercised via real React bindings, not source-name matching; strict legacy/new schema, unknown/unsafe fields, graph refs, layout/action/budget/concurrency/transition/match negatives pass |
+| SQLite/FFmpeg cache/release integration | Both-neighbor visual invalidation, unchanged WAV cache reuse, exact asset file/record rights dependencies and visual factual-meaning edits with identical narration pass |
+| `studio director export`, `director import` | Real `director-contract-final/` schema/catalog/examples and `manual-draft-final/`; no provider/network/approval |
+| Complete context/budget checks | Frozen generation contract 77,985 bytes, full synthetic reviewed-evidence request 81,162, request with feedback 81,249; 98,304 data cap and existing 131,072 adapter-message/usage caps retained. Oversize feedback rejected, no paid call |
+| `studio render --script ... --narration ... --allow-caption-fallback` | Real H.264/AAC MP4s below, under existing macOS external-network-denial profile (localhost only), existing local Chrome/Kokoro/FFmpeg; no rendering-time source fetch |
+| `node scripts/review-phase11c.mjs ...` | Eight final MP4s independently probed/decoded; measured timing/captions/compiled/pacing and exact saved WAV hashes checked, full/mobile encoded boundary poses and decoded boundary WAV excerpts retained |
+| Real derived-artifact tamper checks | Temporary copies with modified compiled/pacing JSON rejected as `COMPILED_BINDING_INVALID`; original media/approvals untouched; `derived-tamper-test.json` |
+| Actual job create/resume/replay | `aaa618af-020c-4fc9-be3b-2aefc7aa27ff` reaches review_ready; five succeeded steps, no provider usage. First replay has identical step/render records and hashes; `job-replay-evidence.json` |
+| Independent job media inspection | Initial assembly failed missing font-tool metadata. After closed holdout evaluation, forwarding the already clip-cache-bound tool identity fixes it; `job-independent-media.json` PASS, existing audio/scene clips reused. No approval gate was weakened |
+
+The reviewer entry point is **[output/phase11c/REVIEW.md](output/phase11c/REVIEW.md)**. Machine evidence: `delivery-evidence.json`, `environment-and-cost.json`, `human-review-pending.json`, `review-final/review-report.json` and `review-last/review-report.json`.
+
+| Actual narrated output | Frames / duration | MP4 SHA-256 |
+|---|---|---|
+| `caching-final/video.mp4` | 408 /13.6s | `2aa7d1fbc6e981aaab1ecacfa780fc7da6ae4bf4aa487fa9a030f8207b308f38` |
+| `files-final/video.mp4` | 423 /14.1s | `6bd2dc7c91b89945ff8477e869c1d7170c843f8f20ce1f350a80bcdc11521a4c` |
+| `queue-final/video.mp4` | 736 /24.533s | `93a44bab928ee309f4fb974f110d1a2b59d4f7d2115e144d2d2448f5aeb064df` |
+| `boundary-chain/video.mp4` | 408 /13.6s | `a030ade3d0b24fdc33656092af5313c2a033305b9747235fb41c130d703f2c5e` |
+| `matched-handoff/video.mp4` | 202 /6.733s | `5dba31bd2781a7217ae5449b8928aea293d627b8ead918585be517f1f365a572` |
+| `kafka-holdout-revision-2/video.mp4` | 642 /21.4s | `1a2b70eb9cb5557d756d0dca3f207a7e88c253297a0b27e9cc5aebae873ec190` |
+| `legacy-http/video.mp4` | 1113 /37.1s | `95905614f9683a73ca1a39a5041c46fb358b8982003f8c42148a7273cb387ee2` |
+| `legacy-city/video.mp4` | 489 /16.3s | `7b0049cdcc59065f9a82f597ebc9bd0f2108a6e0fef83c47b6d0a3dc73dbcac2` |
+
+Paths in this table are relative to `output/phase11c/`. All are 1080×1920@30/yuv420p, unapproved previews with scene speech-span caption fallback and requiresTimingReview:true. Caching, files, queue and transition proofs reuse original saved Kokoro WAV bytes; explicitly revised 1.2.0 inputs use 2s minimum holds. Historical scripts and measured narration are unchanged. Mixed chain proves specialized→specialized, specialized→composed and composed→specialized; matched proof draws the stable token once through the incoming-owned 12-frame window. No frames are subtracted and no narration overlaps.
+
+### Frozen Kafka holdout and exact limits
+
+`freeze.json` records application SHA `eeafc0d06c014ac4379452206d808f2b4744e75e5b6087af1a920d77ca391f1d`, schema/catalog/evaluation prompt identities and context bytes BEFORE the user selected “How Kafka works.” Selection is saved in `holdout-selection.json`. Both successful holdout renders used identical application source, WAV SHA maps, timeline and compiled plan, with no new handler/vocabulary or source-code change between them. Revision 1 exceeded inherited CAPTION_LAYOUT limits before rendering; revision 2 explicitly shortened authored narration and synthesized new local WAVs. Failed revision/audio/logs remain intact; no waveform was filtered, trimmed or rewritten.
+
+The holdout illustrates one partition's append/read/offset with the frozen node/link/token model. Replication, retention, rebalance, multiple-partition semantics and production Kafka coordination are not simulated. The user supplied the TriHUG July 2013 SlideShare talk, read as historical conceptual reference only; no slide imagery or text was copied into video. The user explicitly left the GitHub root reference out after the ADR-required commit/file selection request; no clone, recursive crawl, inferred file approval or invented pin occurred. Manual facts/rights remain unapproved; this does not implement source-guided Phase 11D.
+
+`holdout-sealed.json` closes the experiment before the later runner metadata-only repair. `post-holdout-receipt-repair.json` verifies every frozen grammar/compiler/registry/renderer/prompt file is unchanged; only `src/workflow/runner.ts` changes the application inventory to `0ea9a5ffce08720b4929886e63e6697ff89d95eb64b98e58c1afe043b087baed`. No further holdout renders occurred after that repair. The prior pixel failure remains a failure, not a post-hoc pass.
+
+### Media regression/reproducibility results — partial failure
+
+All six HTTP and four city selected full-size render PNGs are byte-identical to isolated committed `7ed052d` code baselines rendered with the current browser. All four selected Kafka render PNGs match its independent replay exactly. Compiled plans, frame partitions and WAV hashes replay identically. Full 1113-frame encoded HTTP comparison against committed-code baseline passes the existing thresholds (worst mean 0.0006814/255, changed fraction0.000390625).
+
+Strict all-frame **city encoded pixel preservation and Kafka encoded replay FAIL** unchanged per-frame thresholds mean delta≤0.05/255 and changed fraction≤0.005. City worst mean14.8445, fraction0.250829; Kafka worst mean0.145981, fraction0.031367. `final-pixel-results.json` and detailed frame reports retain failures. The older historical HTTP artifact has visible tiled corruption at frame639; current-browser baseline comparison separates that older artifact from the refactor. Current city/baseline discrepancies still need investigation; no cause is proven. Earlier .38 Chrome and current .39 differ, but this does not establish causation or justify widening tolerances. Exact encoded-pixel repeatability is not claimed. AC-01/AC-10 remain partially blocked despite matching selected stills and pure deterministic states.
+
+### Performance, human checks and next recommendation
+
+Existing hardware record: MacBook Air Mac17,3, Apple M5/10 CPU/8 GPU/16GiB; current macOS27.2/build26B123 and Chrome 157.0.8103.39. Current sandbox sysctl denied hardware inventory; hardware provenance is the earlier verified workspace record. Observed BSD wall seconds: caching355.35, files308.30, queue157.39, mixed157.51, matched70.12, Kafka196.89/replay69.94, legacy HTTP117.62/city87.36, first actual job49.52. Concurrent renders/tests materially affect these observations. Per-process/child maximum resident set is approximately0.89–1.26GB for these renders, not simultaneous aggregate memory; aggregate peak is UNVERIFIED. No API charges/model download or new dependency.
+
+Coding-agent inspection covered actual encoded mobile scene and boundary poses. Assets make device/cloud meaningful; tokens move along declared paths; labels/captions remain in their bands. Visual limitations include large unused space, plain panels/paths, small status labels, brief blended-title/diagram ghosting at mixed crossfade, and Kafka's read-token metaphor requiring factual interpretation review. Modest focus/depth is SVG 2D/2.5D; true GPU 3D and premium/cinematic quality are not implemented/proven.
+
+Every boundary has activity-gap decomposition. New demos/holdout gaps are approximately307–400ms; the unchanged city still reports **900ms**, classification unresolved, with exact tail/padding/head contributors. Human listening must distinguish deliberate pause, explicit padding and unintended discontinuity. No human complete-playback, phone, listening/naturalness, word timing, factual, asset-rights or release acceptance has been recorded. Local asset records exercised by files are automated-test-harness-only assertions, not human production rights clearance. Technical asset-backed composition works; full AC-12 remains pending. All rendered files remain approvedForRelease:false and normal exact-artifact gates remain closed.
+
+**Readiness:** Implementation is reviewable, but all-required Phase 11C acceptance is incomplete. AC-02/04/05/07/09 functional evidence is present; AC-03/11 demonstrates frozen limited holdout representation. AC-01/10 need encoded-video reproducibility investigation; AC-06/08/12 need full human listening/visual/mobile/factual/rights acceptance. Review `output/phase11c/REVIEW.md`, retain the failed pixel evidence and provide targeted playback findings. STOP here; no authorization is inferred for 11D/12 or publication.
+
+
+## Phase 11C final acceptance verification — 2026-11-11
+
+**Decision: NOT ACCEPTED; STOP for human review.** The user rejected the Kafka demonstration as production-quality visual explanation and requested verification/reporting only. No application code, tests, original fixture, frozen grammar/renderer, historical media, ADR decision or existing approval record was changed in this pass. Phase 11D/12 remains unstarted. This is not another architecture audit.
+
+The complete 12-requirement matrix, MP4 hashes/paths, before/during/after frames, JSON-versus-renderer limitation analysis and remaining decisions are in [PHASE_11C_ACCEPTANCE_REVIEW_2026-11-11.md](docs/architecture-next/PHASE_11C_ACCEPTANCE_REVIEW_2026-11-11.md). Fresh ignored evidence is in `output/phase11c/acceptance-review-20261111/`, notably `acceptance.json`, `contracts-freeze.json`, `historical-director-drafts.json`, `compiled-cli-validation.json`, `media/review-report.json`, `original-wav-identity.json`, `real-cache-check.json`, `asset-check.json` and `pixel-results.json`.
+
+Fresh commands/results:
+
+- `npm run typecheck`, `npm run lint` (152 files, no fixes), `npm run build`: PASS.
+- `npm test`: **244/244 PASS**, zero failures/skips; actual React handler parity, schema/budget/security, cache/asset dependencies and Phase 08 invalidation tests included. Source/transport/provider positive tests remain explicitly mocked/synthetic where documented.
+- Source plus compiled CLI validation: **9** existing 1.0.0/1.1.0 fixtures and **4** generic examples pass. **5 actual saved Phase 06 drafts** parse without relabeling their director-1.0.0 prompt identities.
+- Fresh `scripts/review-phase11c.mjs` inspection: **8** primary saved narrated MP4s independently pass ffprobe/decode, timeline/SRT/compiled/pacing checks; full/mobile boundary frames and decoded-audio excerpts freshly extracted. A separate input-origin check confirms **33 scene WAVs** match their original saved directories in both hash and samples. No full human listening/phone approval is inferred.
+- Fresh real-producer cache check in isolated job `de123f68-e9dc-494e-a31c-6955ba6617ab`: actual Remotion and FFmpeg, no injected renderer/narrator. Initial two clips render from supplied saved Kokoro WAVs; predecessor visual edit rerenders both, incoming edit rerenders incoming only. Both revisions hit both audio caches and preserve exact WAVs. All three final outputs independently pass media inspection; no synthesis/provider usage/release approval occurs.
+- Existing per-frame tolerances rechecked without widening: HTTP **PASS** (1113 frames; worst mean0.0006814/255, changed fraction0.000390625), city **FAIL** (489;14.8445/0.250829), frozen Kafka replay **FAIL** (642;0.145981/0.031367). Matching selected PNGs do not override those failures; cause remains unresolved.
+- Freeze chronology and both holdout render inventories are verified against `eeafc0d0…391f1d`. Current schema/catalog/prompt hashes match; the previously documented post-experiment runner metadata repair is the sole source difference from the whole-application freeze. Current source SHA remains `0ea9a5ffce08720b4929886e63e6697ff89d95eb64b98e58c1afe043b087baed` throughout this verification.
+
+Confirmed visual/factual blockers include Kafka frame179 and matched frame96 heading ghosting, mixed frame207 overlapping templates/titles, file frame141 preceding successful-storage state under an incoming failure caption, small fixed26px statuses touching node borders, and Kafka's only record moving partition→consumer then resetting back. Kafka still has `editorial.title_options:["caching"]`, the caching summary and copied prior-phase provenance; its source/claim entries remain unreviewed. Document/cloud asset bytes/records pass technical preflight, but explicitly carry automated-test-harness-only review, not human production rights clearance. True GPU 3D is unimplemented.
+
+**Functional acceptance is partial; visual-quality acceptance is rejected/pending; factual/source review is not approved; release approval is not granted.** JSON can improve finite disclosure, separate stored versus read-copy identities and metadata; fixed scale/status placement, link disclosure, heading blending and bounded camera are general capability/quality limits. Dynamic log append/copy semantics, arbitrary layouts/camera/typography and GPU 3D are outside the current grammar. No JSON edits or topic-specific fixes were made in this verification. Remaining human listening/caption/pacing review includes the unchanged city's unresolved900ms boundary. Review the linked report and stop; do not count Kafka or test passes as phase completion.
+
+
+## Phase 11C final engineering closure — 2026-11-11
+
+**ENGINEERING GO for Phase 11D; STOP for user review/start instruction.** The user narrowed closure to confirmed generic defects and engineering readiness, separating it from another manual aesthetic redesign. The earlier rejected video-quality and failed capture comparisons remain historical evidence. No Phase 11D/12 implementation, new provider/dependency/engine, topic component, publication or commit occurred.
+
+The full evidence matrix and A/B/C limitation classification are in [PHASE_11C_ENGINEERING_CLOSURE_2026-11-11.md](docs/architecture-next/PHASE_11C_ENGINEERING_CLOSURE_2026-11-11.md). Fresh machine evidence, movies and logs are under `output/phase11c/engineering-closure-20261111/`.
+
+### Generic fixes and boundaries
+
+- Scene headings fade through inside the accepted 12-frame body crossfade; they are never simultaneously visible. Body interpolation u=k/11, held outgoing pose, measured total frames, narration and global captions/chrome are unchanged. Legacy hard-cut drawing stays on its prior path.
+- Derived compiler/layout **1.0.1** reserves maximum label/status/image geometry, uses 36px text, places group captions in a separate footer and accounts for wrapped token labels. Actual browser checks enforce glyph/node containment. Impossible node/group/path crowding fails with exact scene/path and explicit roomier-layout/shorter-copy guidance; no silent shrinking, clipping or fallback.
+- Matched nodes require compatible reserved geometry. A separate existing nonzero matched-token proof shows continuous cache→application interpolation with one actor.
+- Capture is pinned to one worker, no parallel encoding and no shared-memory capture in the existing Remotion/SVG backend. Encoder settings and source identities remain manifest/cache dependencies. No audio/config/timing/source/asset/release gate code changed in this closure.
+
+Changed application files are `src/domain/{composed,visuals}.ts`, `src/renderers/remotion/{compile,composed-layout,Composition,registry,render}` and `src/visuals/ComposedScene.tsx`; the new helper remains inside the already fingerprinted renderer tree. Added targeted `tests/visual/engineering-closure.test.ts` and one mechanical `examples/phase11c/engineering-regression.videoscript.json`. Updated implemented contracts/engine/component docs, ADR-019 implementation note and architecture/status links. No authoring fields or vocabulary were added, no second registry/timeline/renderer introduced, and historical ADR decisions remain intact.
+
+### Executed verification
+
+| Check | Observed result |
+|---|---|
+| `npm run typecheck`, `npm run lint`, `npm run build` | PASS; lint 154 files, no fixes/warnings |
+| `npm test` | **247/247 PASS**, zero failed/skipped; actual 11-handler parity, geometry/heading/negative cases, timing, cache, assets and Phase 08 gates |
+| Source/compiled legacy contracts | 9 existing 1.0.0/1.1.0 inputs validate; 3 saved Phase 06 drafts read with original prompt identity |
+| New short narrated regression / independent replay | 341 frames /11.3667s; both MP4s byte-identical SHA `e10a152a24fba8a3bacd4795552a428e063de34cb2c5ef37818bf4bd3e2ae09d`; all 341 decoded mobile frames match exactly |
+| Legacy HTTP / city compatibility | 1113 + 489 decoded frames match pre-closure code exactly when capture settings are aligned; zero pixel delta, unchanged tolerances. `baseline-profile-control.json` verifies the isolated baseline changes only capture options/receipt, not legacy drawings/timing/schema |
+| Unchanged three-topic rerenders | Caching 408f, asset-backed file movement 423f and queue 736f execute ComposedScene 1.0.1. No authoring changes; all five known/legacy timelines and SRTs are byte-identical to preceding versions |
+| Real Remotion/FFmpeg cache check | Fresh isolated state; predecessor visual edit rebuilds both clips, incoming-only edit rebuilds incoming only. Both edited rounds hit both audio caches; exact saved WAVs retained; three final assemblies independently pass media QC |
+| Derived/report integrity | Changed compiled/pacing files in temporary copies rejected as COMPILED_BINDING_INVALID; existing release gates remain unchanged |
+| Unsupported capability | Crowded asset/status column case rejected as UNSUPPORTED_STORYBOARD at `$.scenes[0].visual.props.entities[1]`; explicit alternative is returned; no browser fallback |
+| Context budget / preservation | Request data 81,313 bytes, feedback 81,404 within 96KiB. Original Kafka JSON, two MP4s, freeze/selection and accepted detailed ADR match pre-closure hashes |
+
+Source SHA is `3f1376a44bb0f31b98a5cd0820e9c815c365572969cf5cae50d71e9fc24732d1`. Current profile is Node 24.15.0/Remotion 4.0.542/Chrome 157.0.8103.39/pinned FFmpeg n7.1/Inter 5.3.0 on macOS arm64. No cross-platform or CI bitwise guarantee is claimed. The serial profile removes the reproduced failure in these tests; a unique underlying Chrome/compositor cause was not isolated. Older failed pixel results are not relabeled as passes.
+
+### Reviewer artifacts and remaining scope
+
+Primary short proof: [regression-a/video.mp4](output/phase11c/engineering-closure-20261111/regression-a/video.mp4); replay is `regression-b/video.mp4`. Nonzero identity proof: [handoff/video.mp4](output/phase11c/engineering-closure-20261111/handoff/video.mp4). New existing-input videos are `caching/video.mp4`, `files/video.mp4`, `queue/video.mp4`, `legacy-http/video.mp4` and `legacy-city/video.mp4`, all relative to the same engineering evidence directory. `review-a`, `review-known` and `review-last` retain full/mobile boundary PNGs and decoded-audio excerpts; `engineering-acceptance.json`, `pixel-final.json`, `timing-preservation.json`, `real-cache-check.json` and `contracts-and-preservation.json` bind the results. Both regression runs took about 49s wall for 11.37s output; other renders/tests sometimes overlapped, so these are observations rather than isolated benchmarks.
+
+**A — Blocking generic engineering defects:** none remain confirmed within the supported, tested profile. Engineering execution, bounded diagnostics, preserved time, compatibility, cache and review contracts pass.
+
+**B — Creative/content work for better JSON:** scale/whitespace, hierarchy, progressive disclosure, purposeful use of existing motion/focus, choosing appropriate transitions, finite stored-versus-copy identities, factual narrative and accurate metadata. The original four topic storyboards were not redesigned. Their subjective quality and Kafka's stale metadata/source review remain unaccepted; a future explicit storyboard revision must pass ordinary review.
+
+**C — Genuine missing/intentional unsupported renderer capabilities:** native dynamic log/append/copy simulation; general obstacle routing/graph solver; arbitrary styling, typography or camera paths; independent link reveal; cross-template object matching; automatic word alignment; true GPU 3D. Existing finite primitives/reviewed alignment inputs are supported, but prompts cannot create those missing runtime capabilities.
+
+Engineering GO does not approve human production rights (asset records remain explicitly automated-test-harness-only), source claims, full voice/phone/caption quality or release. Speech-span captions remain timing-review-only; known city 900ms pacing remains a human editorial decision, not permission to retime speech. The original frozen holdout is preserved and not retested to manufacture success. STOP for review and explicit authorization before any Phase 11D work.
+
+
+## Phase 11C engineering acceptance — 2026-11-12
+
+The user explicitly accepted Phase 11C as **engineering-complete**. This closes the engineering review gate using the [verified engineering closure](docs/architecture-next/PHASE_11C_ENGINEERING_CLOSURE_2026-11-11.md). The current implementation still matches its source SHA `3f1376a44bb0f31b98a5cd0820e9c815c365572969cf5cae50d71e9fc24732d1`. No application/test/fixture/media or approval record was changed; no tests or renders were rerun for this documentation-only acceptance update.
+
+Production visual quality, factual/source review, asset rights, complete listening/caption quality and exact Phase 08 release approvals remain separate and unapproved. The frozen holdout and declared unsupported capabilities remain unchanged. Phase 11D/12 is not started; acceptance of 11C does not itself authorize another phase, publication or paid calls.

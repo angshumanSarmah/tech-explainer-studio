@@ -118,10 +118,18 @@ export class ReleaseService {
       topic: script.topic,
       sources: script.sources,
       claims: script.claims,
-      scenes: script.scenes.map((s) => ({
+      scenes: script.scenes.map((s, i) => ({
         narration: s.narration,
         educational_goal: s.educational_goal,
         claim_ids: s.claim_ids,
+        ...(s.visual.type === 'composed' ||
+        ('transition' in s && s.transition && s.transition.kind !== 'cut')
+          ? {
+              semanticVisual: s.visual,
+              boundary: ('transition' in s ? s.transition : null) ?? null,
+              previousVisual: i > 0 ? script.scenes[i - 1]?.visual : null,
+            }
+          : {}),
       })),
     };
     const metadata = MetadataSchema.parse(await readJson(options.metadata));
@@ -423,7 +431,7 @@ export class ReleaseService {
   private async reviewCurrent(id: string, gateInput: unknown, input: unknown) {
     const gate = Gate.parse(gateInput),
       record = ReviewSchema.parse(input),
-      { manifest, preview } = await this.inputs(id);
+      { manifest, preview, script } = await this.inputs(id);
     if (record.decision === 'approve') {
       if (gate === 'facts' && record.reviewer === manifest.author)
         block(
@@ -444,6 +452,39 @@ export class ReleaseService {
           'PLAYBACK_REVIEW_REQUIRED',
           'Confirm playback, pronunciation, subtitles, pacing and any timing warnings explicitly',
         );
+      if (gate === 'video' && script.schema_version === '1.2.0') {
+        const binding = manifest.files.find(
+          (f) => f.role === 'render:boundary-pacing.json',
+        );
+        if (!binding)
+          block('PACING_REPORT_REQUIRED', 'Missing measured boundary report');
+        const report = z
+          .object({
+            boundaries: z.array(
+              z.object({ id: z.string(), requiresHumanReview: z.boolean() }),
+            ),
+          })
+          .parse(await readJson(binding.path));
+        const flagged = report.boundaries.filter((b) => b.requiresHumanReview);
+        const supplied = record.boundaryPacing;
+        if (
+          flagged.length &&
+          (!supplied ||
+            supplied.reportSha256 !== binding.sha256 ||
+            new Set(supplied.decisions.map((d) => d.id)).size !==
+              supplied.decisions.length ||
+            flagged.some(
+              (b) =>
+                !supplied.decisions.some(
+                  (d) => d.id === b.id && d.classification === 'deliberate',
+                ),
+            ))
+        )
+          block(
+            'BOUNDARY_PACING_REVIEW_REQUIRED',
+            'Listen to each flagged boundary and record a deliberate pause decision/rationale bound to the exact pacing report; unintended or unresolved pacing needs an explicit repair',
+          );
+      }
       if (gate === 'publish') {
         if (!record.checks.metadata)
           block(

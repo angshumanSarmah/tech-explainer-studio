@@ -6,12 +6,14 @@ import { brandIdentity } from '../branding/identity.ts';
 import { parseVideoScript } from '../domain/validation.ts';
 import type { VideoScript } from '../domain/videoscript.ts';
 import { hash, sourceInventory } from '../render-manifest/manifest.ts';
+import { canonical, compileVisualPlan } from '../renderers/remotion/compile.ts';
 import { RenderInputError } from '../renderers/remotion/plan.ts';
 import {
   type RenderOptions,
   RenderStageError,
   renderSilentPreview,
 } from '../renderers/remotion/render.ts';
+import { boundaryPacing } from '../timing/pacing.ts';
 import {
   AlignmentSchema,
   planNarratedRender,
@@ -122,6 +124,8 @@ export async function renderNarratedPreview(
       allowFallback: options.allowFallback,
       ...(alignment ? { alignment } : {}),
     });
+    const compiledVisualPlan = compileVisualPlan(script, timeline.scenes);
+    const pacing = boundaryPacing(timeline, assets, script.scenes);
     const isMock = assets.some((a) => a.metadata.isMock);
     checkTiming(timeline, timeline.captions, options.strict, isMock);
     const presentation = {
@@ -141,6 +145,26 @@ export async function renderNarratedPreview(
       `${JSON.stringify(timeline, null, 2)}\n`,
       { flag: 'wx' },
     );
+    if (script.schema_version === '1.2.0') {
+      await writeFile(
+        join(output, 'compiled-visual-plan.json'),
+        `${JSON.stringify(
+          {
+            ...compiledVisualPlan,
+            inputSha256: hash(canonical({ script, presentation })),
+            sha256: hash(canonical(compiledVisualPlan)),
+          },
+          null,
+          2,
+        )}\n`,
+        { flag: 'wx' },
+      );
+      await writeFile(
+        join(output, 'boundary-pacing.json'),
+        `${JSON.stringify(pacing, null, 2)}\n`,
+        { flag: 'wx' },
+      );
+    }
     await writeFile(join(output, 'captions.srt'), srt(timeline.captions), {
       flag: 'wx',
     });
@@ -170,10 +194,10 @@ export async function renderNarratedPreview(
     options.onProgress?.(
       `Rendering ${timeline.durationFrames} measured frames with captions`,
     );
-    const renderScript = {
+    const renderScript = parseVideoScript({
       ...script,
       scenes: timeline.scenes.map((item) => item.scene),
-    };
+    });
     const visual = await (deps.renderVisuals ?? renderSilentPreview)(
       renderScript,
       {
@@ -230,6 +254,7 @@ export async function renderNarratedPreview(
         dcBiasFlag: Math.abs(asset.dcOffset) > 0.01,
       })),
       decodedAudio: decoded,
+      boundaryPacing: pacing,
       manualPlaybackChecklist: [
         'Listen for noise, naturalness and technical pronunciation in all six scenes',
         'Check captions against speech; scene-span fallback is not word alignment',
@@ -252,6 +277,9 @@ export async function renderNarratedPreview(
       'narration.wav',
       'qc-report.json',
       'ffprobe.json',
+      ...(script.schema_version === '1.2.0'
+        ? ['compiled-visual-plan.json', 'boundary-pacing.json']
+        : []),
       ...(alignment ? ['alignment.json'] : []),
     ];
     const artifacts = await Promise.all(
@@ -284,6 +312,14 @@ export async function renderNarratedPreview(
       })),
       narration: assets.map(({ pcm: _pcm, ...asset }) => asset),
       sourceVersions: script.sources,
+      ...(script.schema_version === '1.2.0'
+        ? {
+            compiledPlanSha256: hash(canonical(compiledVisualPlan)),
+            pacingReportSha256: hash(
+              await readFile(join(output, 'boundary-pacing.json')),
+            ),
+          }
+        : {}),
       implementation: await sourceInventory(),
       visuals: visual.manifest,
       tools: {

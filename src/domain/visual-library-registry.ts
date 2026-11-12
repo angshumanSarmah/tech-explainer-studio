@@ -27,6 +27,7 @@ const entry = <S extends z.ZodType>(
 ) =>
   Object.freeze({
     schema,
+    crossfade: true,
     version: '1.0.0',
     category,
     description,

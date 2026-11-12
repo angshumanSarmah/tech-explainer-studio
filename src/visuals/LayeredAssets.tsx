@@ -14,10 +14,12 @@ export function LayeredAssets({
   props,
   t,
   assets,
+  namespace = 'layer',
 }: {
   props: z.infer<typeof LayeredAssetSceneSchema>;
   t: number;
   assets: StagedImages;
+  namespace?: string;
 }) {
   const [handle] = useState(() =>
     delayRender('Decode reviewed local image layers'),
@@ -59,7 +61,7 @@ export function LayeredAssets({
             transform={`translate(${l.x + l.panX * u * parallaxDepth} ${l.y + l.panY * u * parallaxDepth}) scale(${scale})`}
           >
             <defs>
-              <clipPath id={`layer-${i}`}>
+              <clipPath id={`${namespace}-${i}`}>
                 <rect width={l.width} height={l.height} rx={24} />
               </clipPath>
             </defs>
@@ -79,7 +81,7 @@ export function LayeredAssets({
               preserveAspectRatio={
                 l.fit === 'cover' ? 'xMidYMid slice' : 'xMidYMid meet'
               }
-              clipPath={`url(#layer-${i})`}
+              clipPath={`url(#${namespace}-${i})`}
             />
             <rect
               width={l.width}

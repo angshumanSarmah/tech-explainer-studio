@@ -3,6 +3,7 @@ import {
   type VideoScript,
   VideoScriptV1Schema,
   VideoScriptV11Schema,
+  VideoScriptV12Schema,
 } from './videoscript.ts';
 import { componentRegistry } from './visuals.ts';
 
@@ -71,13 +72,13 @@ function formatPath(path: PropertyKey[]): string {
 
 export function parseVideoScript(input: unknown): VideoScript {
   const version = record(input)?.schema_version;
-  if (version !== '1.0.0' && version !== '1.1.0')
+  if (version !== '1.0.0' && version !== '1.1.0' && version !== '1.2.0')
     throw new ScriptValidationError('SCRIPT_VALIDATION_FAILED', [
       {
         code: 'INVALID_INPUT',
         scene_id: null,
         path: '$["schema_version"]',
-        reason: 'Supported VideoScript versions: 1.0.0 and 1.1.0',
+        reason: 'Supported VideoScript versions: 1.0.0, 1.1.0 and 1.2.0',
       },
     ]);
   const rawScenes = record(input)?.scenes;
@@ -93,6 +94,7 @@ export function parseVideoScript(input: unknown): VideoScript {
           'tech-animation',
           'cache-aside-proof',
           'registered-animation',
+          'composed',
         ].includes(v.type)
       )
         throw new ScriptValidationError('SCRIPT_VALIDATION_FAILED', [
@@ -118,7 +120,11 @@ export function parseVideoScript(input: unknown): VideoScript {
         ]);
     }
   const result = (
-    version === '1.0.0' ? VideoScriptV1Schema : VideoScriptV11Schema
+    version === '1.0.0'
+      ? VideoScriptV1Schema
+      : version === '1.1.0'
+        ? VideoScriptV11Schema
+        : VideoScriptV12Schema
   ).safeParse(input);
   if (result.success) return result.data;
   const issues = result.error.issues.flatMap((issue): ValidationIssue[] => {

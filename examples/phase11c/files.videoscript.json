@@ -1,0 +1,479 @@
+{
+  "schema_version": "1.2.0",
+  "script_id": "composed-files",
+  "revision": 2,
+  "profile": "technology-explainer",
+  "topic": "cloud-sync",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "cloud",
+      "url": null,
+      "title": "Original illustrative transfer protocol, not a product guarantee",
+      "retrieved_at": null,
+      "source_kind": "pasted_text",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "cloud-mechanism",
+      "text": "This original illustrated protocol transfers a file, processes it and stores it; completion is local to this transfer.",
+      "source_ids": [
+        "cloud"
+      ],
+      "status": "needs_human_review",
+      "scope": "Illustrative model; human evidence, rights, timing and release review required"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "cloud-sync-1",
+      "educational_goal": "An upload moves a file from the device, through the cloud, into storage.",
+      "narration": "An upload moves a file from the device, through the cloud, into storage.",
+      "claim_ids": [
+        "cloud-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Upload and store a file",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "device",
+              "kind": "node",
+              "label": "Device",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-6f4b4a8e101a1cba0957296a",
+                "sha256": "6f4b4a8e101a1cba0957296ac91a6048df947080dc5314510fd717f56e193eea",
+                "recordSha256": "7bb64b0eb497d5ec19717cc31e34a9f39b017b5ce4fff3296d7de2c7adc3ec0a"
+              }
+            },
+            {
+              "id": "cloud",
+              "kind": "node",
+              "label": "Cloud",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-512996f4444f6f81e67af355",
+                "sha256": "512996f4444f6f81e67af355858df79ba0caa7e2457973e2442f64e833a639c0",
+                "recordSha256": "5f79b1d7b4771bcb21880408d1ab4663a000d6243c2958a9155e20564d10058d"
+              }
+            },
+            {
+              "id": "storage",
+              "kind": "node",
+              "label": "Storage",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "device",
+              "label": "File",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "upload",
+              "from": "device",
+              "to": "cloud"
+            },
+            {
+              "id": "persist",
+              "from": "cloud",
+              "to": "storage"
+            },
+            {
+              "id": "retrieve",
+              "from": "storage",
+              "to": "cloud"
+            },
+            {
+              "id": "download",
+              "from": "cloud",
+              "to": "device"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.08266666666666667,
+              "to": 0.43074074074074076
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "upload"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.4777777777777778,
+              "to": 0.8164444444444444
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "persist"
+            }
+          },
+          {
+            "cue_id": "action-2",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.8258518518518518,
+              "to": 0.9293333333333332
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "storage",
+              "value": "Copy stored"
+            }
+          },
+          {
+            "cue_id": "focus-cloud",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.43074074074074076,
+              "to": 0.9293333333333332
+            },
+            "action": {
+              "kind": "focus",
+              "target": "cloud"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      }
+    },
+    {
+      "scene_id": "cloud-sync-2",
+      "educational_goal": "If this transfer fails, storage does not receive a completed copy.",
+      "narration": "If this transfer fails, storage does not receive a completed copy.",
+      "claim_ids": [
+        "cloud-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "A failed transfer stops",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "device",
+              "kind": "node",
+              "label": "Device",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-6f4b4a8e101a1cba0957296a",
+                "sha256": "6f4b4a8e101a1cba0957296ac91a6048df947080dc5314510fd717f56e193eea",
+                "recordSha256": "7bb64b0eb497d5ec19717cc31e34a9f39b017b5ce4fff3296d7de2c7adc3ec0a"
+              }
+            },
+            {
+              "id": "cloud",
+              "kind": "node",
+              "label": "Cloud",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-512996f4444f6f81e67af355",
+                "sha256": "512996f4444f6f81e67af355858df79ba0caa7e2457973e2442f64e833a639c0",
+                "recordSha256": "5f79b1d7b4771bcb21880408d1ab4663a000d6243c2958a9155e20564d10058d"
+              }
+            },
+            {
+              "id": "storage",
+              "kind": "node",
+              "label": "Storage",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "device",
+              "label": "File",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "upload",
+              "from": "device",
+              "to": "cloud"
+            },
+            {
+              "id": "persist",
+              "from": "cloud",
+              "to": "storage"
+            },
+            {
+              "id": "retrieve",
+              "from": "storage",
+              "to": "cloud"
+            },
+            {
+              "id": "download",
+              "from": "cloud",
+              "to": "device"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.0821875,
+              "to": 0.47265625
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "upload"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.47265625,
+              "to": 0.7515625
+            },
+            "action": {
+              "kind": "highlight",
+              "target": "cloud"
+            }
+          },
+          {
+            "cue_id": "action-2",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.6121093750000001,
+              "to": 0.891015625
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "storage",
+              "value": "No completed copy"
+            }
+          },
+          {
+            "cue_id": "focus-cloud",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.47265625,
+              "to": 0.891015625
+            },
+            "action": {
+              "kind": "focus",
+              "target": "cloud"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "cloud-sync-3",
+      "educational_goal": "A download follows the reverse path. One transfer is not global consistency.",
+      "narration": "A download follows the reverse path. One transfer is not global consistency.",
+      "claim_ids": [
+        "cloud-mechanism"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Download reverses the path",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "device",
+              "kind": "node",
+              "label": "Device",
+              "slot": 0,
+              "role": "flow",
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-6f4b4a8e101a1cba0957296a",
+                "sha256": "6f4b4a8e101a1cba0957296ac91a6048df947080dc5314510fd717f56e193eea",
+                "recordSha256": "7bb64b0eb497d5ec19717cc31e34a9f39b017b5ce4fff3296d7de2c7adc3ec0a"
+              }
+            },
+            {
+              "id": "cloud",
+              "kind": "node",
+              "label": "Cloud",
+              "slot": 1,
+              "role": "success",
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-512996f4444f6f81e67af355",
+                "sha256": "512996f4444f6f81e67af355858df79ba0caa7e2457973e2442f64e833a639c0",
+                "recordSha256": "5f79b1d7b4771bcb21880408d1ab4663a000d6243c2958a9155e20564d10058d"
+              }
+            },
+            {
+              "id": "storage",
+              "kind": "node",
+              "label": "Storage",
+              "slot": 2,
+              "role": "muted",
+              "depth": "raised"
+            },
+            {
+              "id": "item",
+              "kind": "token",
+              "at": "storage",
+              "label": "File",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "upload",
+              "from": "device",
+              "to": "cloud"
+            },
+            {
+              "id": "persist",
+              "from": "cloud",
+              "to": "storage"
+            },
+            {
+              "id": "retrieve",
+              "from": "storage",
+              "to": "cloud"
+            },
+            {
+              "id": "download",
+              "from": "cloud",
+              "to": "device"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "action-0",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.08178343949044586,
+              "to": 0.4305732484076434
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "retrieve"
+            }
+          },
+          {
+            "cue_id": "action-1",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.47770700636942676,
+              "to": 0.835923566878981
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "download"
+            }
+          },
+          {
+            "cue_id": "focus-cloud",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.4305732484076434,
+              "to": 0.835923566878981
+            },
+            "action": {
+              "kind": "focus",
+              "target": "cloud"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 5,
+        "max_seconds": 16
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "cloud-sync"
+    ],
+    "summary": "Original cloud-sync illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

@@ -1,4 +1,11 @@
 import { z } from 'zod';
+import {
+  COMPOSED_EXAMPLE,
+  COMPOSITION_LIMITS,
+  COMPOSITION_VERSION,
+  ComposedCueSchema,
+  ComposedPropsSchema,
+} from './composed.ts';
 
 import { displayText, VisualCueSchema } from './visual-common.ts';
 
@@ -84,15 +91,39 @@ export const CacheAsideProofPropsSchema = z.strictObject({
 });
 export type CacheAsideProofProps = z.infer<typeof CacheAsideProofPropsSchema>;
 
-// Validation registry only. No rendering or dynamic module resolution exists here.
+// Authoritative capability descriptors. Renderer bindings attach only static local code.
 export const componentRegistry = Object.freeze({
   ...libraryRegistry,
+  ComposedScene: Object.freeze({
+    crossfade: true,
+    version: COMPOSITION_VERSION,
+    schema: ComposedPropsSchema,
+    description:
+      'Bounded semantic node/link/token composition with reviewed local assets, finite actions and deterministic layouts. Text is 36px with reserved status space; crowded boxes/routes fail explicitly (use row/column or shorter copy). Not a simulator or GPU 3D.',
+    category: 'hybrid_2_5d',
+    example: COMPOSED_EXAMPLE,
+    supportedCues: [
+      'move',
+      'appear',
+      'disappear',
+      'highlight',
+      'update_field',
+      'focus',
+    ],
+    assetRequirements: 'Exact reviewed local AssetRef only',
+    fallback: 'Return typed unsupported capability; no substitution',
+    emptyState: 'At least one node required',
+    safeZone: 'x=96..912 y=420..1280; node/group/path clearance is required',
+    limits: COMPOSITION_LIMITS,
+  }),
   CacheAsideProof: Object.freeze({
+    crossfade: true,
     version: '0.1.0',
     previewOnly: true,
     schema: CacheAsideProofPropsSchema,
   }),
   BrowserRequestFlow: Object.freeze({
+    crossfade: true,
     version: '1.0.0',
     schema: BrowserRequestFlowPropsSchema,
   }),
@@ -127,3 +158,14 @@ export const VisualSpecSchema = z.discriminatedUnion('type', [
 ]);
 
 export type VisualSpec = z.infer<typeof VisualSpecSchema>;
+
+export const ComposedVisualSchema = z.strictObject({
+  type: z.literal('composed'),
+  component: z.literal('ComposedScene'),
+  props: componentRegistry.ComposedScene.schema,
+  cues: z.array(ComposedCueSchema).max(COMPOSITION_LIMITS.cues),
+});
+export const VisualSpecV12Schema = z.union([
+  VisualSpecSchema,
+  ComposedVisualSchema,
+]);

@@ -2,6 +2,7 @@ import { libraryRegistry } from '../../domain/visual-library-registry.ts';
 import { componentRegistry } from '../../domain/visuals.ts';
 import { BrowserRequestFlow } from '../../visuals/BrowserRequestFlow.tsx';
 import { CacheAsideProof } from '../../visuals/CacheAsideProof.tsx';
+import { ComposedScene } from '../../visuals/ComposedScene.tsx';
 import { LibraryScene } from '../../visuals/LibraryScene.tsx';
 
 export const renderRegistry = Object.freeze({
@@ -11,6 +12,11 @@ export const renderRegistry = Object.freeze({
       { ...entry, renderVersion: entry.version, Component: LibraryScene },
     ]),
   ),
+  ComposedScene: Object.freeze({
+    ...componentRegistry.ComposedScene,
+    renderVersion: componentRegistry.ComposedScene.version,
+    Component: ComposedScene,
+  }),
   CacheAsideProof: Object.freeze({
     ...componentRegistry.CacheAsideProof,
     renderVersion: '0.1.0',

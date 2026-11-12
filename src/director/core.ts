@@ -112,12 +112,15 @@ export function makeRequest(
     })),
     contract,
   };
+  assertDirectorDataSize(data);
+  return { system: SYSTEM_PROMPT, data };
+}
+export function assertDirectorDataSize(data: unknown) {
   if (Buffer.byteLength(JSON.stringify(data)) > 98304)
     throw new DirectorError(
       'CONTEXT_LIMIT',
-      'Selected research/contract exceeds 96 KiB; create a smaller reviewed research bundle',
+      'Complete contract/evidence/feedback exceeds 96 KiB; select a smaller reviewed research bundle',
     );
-  return { system: SYSTEM_PROMPT, data };
 }
 export const DirectorDraftSchema = z.strictObject({
   schemaVersion: z.literal('1.0.0'),
@@ -140,7 +143,7 @@ export const DirectorDraftSchema = z.strictObject({
   requiresTimingReview: z.literal(true),
   approvedForRelease: z.literal(false),
   prompt: z.strictObject({
-    version: z.literal(PROMPT_VERSION),
+    version: z.enum(['director-1.0.0', 'director-1.1.0', 'director-1.2.0']),
     sha256: z.string().regex(/^[a-f0-9]{64}$/),
   }),
   generation: z
@@ -328,7 +331,8 @@ export function importDraft(
   if (
     script.scenes.some(
       (s) =>
-        (s.visual.type === 'tech-animation' ||
+        (s.visual.type === 'composed' ||
+          s.visual.type === 'tech-animation' ||
           s.visual.type === 'registered-animation') &&
         s.visual.cues.some((c) => c.trigger.kind === 'phrase'),
     )
@@ -425,6 +429,11 @@ export async function generateDraft(
   let diagnostics: { path: string; reason: string }[] = [];
   for (let attempt = 0; attempt <= repairs; attempt++) {
     signal.throwIfAborted();
+    const data = {
+      ...request.data,
+      ...(attempt ? { repairDiagnostics: diagnostics } : {}),
+    };
+    assertDirectorDataSize(data);
     let response: Awaited<ReturnType<LLMProvider['generate']>>;
     try {
       response = await abortable(
@@ -432,10 +441,7 @@ export async function generateDraft(
           system: attempt
             ? `${request.system}\n\n${PROMPTS.repair}`
             : request.system,
-          data: {
-            ...request.data,
-            ...(attempt ? { repairDiagnostics: diagnostics } : {}),
-          },
+          data,
           signal,
         }),
         signal,

@@ -1,20 +1,12 @@
-import type { SceneV1, VideoScript } from '../../domain/videoscript.ts';
+import type { Scene, VideoScript } from '../../domain/videoscript.ts';
 import { VIDEO, wrapText } from './theme.ts';
 
-export class RenderInputError extends Error {
-  readonly scene_id: string | null;
-  readonly path: string;
-  readonly code = 'UNSUPPORTED_RENDER_INPUT';
-  constructor(reason: string, scene_id: string | null = null, path = '$') {
-    super(reason);
-    this.name = 'RenderInputError';
-    this.scene_id = scene_id;
-    this.path = path;
-  }
-}
+export { RenderInputError } from './input-error.ts';
 
+import { compileVisualPlan } from './compile.ts';
+import { RenderInputError } from './input-error.ts';
 export interface PlannedScene {
-  scene: SceneV1;
+  scene: Scene;
   from: number;
   durationFrames: number;
 }
@@ -52,6 +44,12 @@ export function planSilentRender(script: VideoScript) {
         fail(
           'Title text exceeds the mobile-safe layout; shorten the display text',
           '["visual"]',
+        );
+    } else if (visual.type === 'composed') {
+      if (visual.cues.some((c) => c.trigger.kind !== 'progress'))
+        fail(
+          'Phrase cues require reviewed audio alignment',
+          '["visual"]["cues"]',
         );
     } else if (visual.type === 'cache-aside-proof') {
       if (scene.timing.preferred_seconds * VIDEO.fps < 30)
@@ -150,6 +148,7 @@ export function planSilentRender(script: VideoScript) {
     throw new RenderInputError(
       'Silent preview exceeds the one-hour render limit',
     );
+  compileVisualPlan(script, scenes);
   return {
     scenes,
     durationFrames: from,

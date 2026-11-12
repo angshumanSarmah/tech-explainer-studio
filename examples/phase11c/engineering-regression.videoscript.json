@@ -1,0 +1,364 @@
+{
+  "schema_version": "1.2.0",
+  "script_id": "phase11c-engineering-regression",
+  "revision": 1,
+  "profile": "technology-explainer",
+  "topic": "Generic renderer engineering regression",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [],
+  "claims": [],
+  "scenes": [
+    {
+      "scene_id": "regression-1",
+      "educational_goal": "Mechanical renderer regression, not an educational claim",
+      "narration": "An item moves between two nodes.",
+      "claim_ids": [],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "An item follows a declared path",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "sender",
+              "label": "Sender",
+              "role": "flow",
+              "kind": "node",
+              "slot": 0,
+              "depth": "raised"
+            },
+            {
+              "id": "receiver",
+              "label": "Receiver",
+              "role": "success",
+              "kind": "node",
+              "slot": 2,
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-6f4b4a8e101a1cba0957296a",
+                "sha256": "6f4b4a8e101a1cba0957296ac91a6048df947080dc5314510fd717f56e193eea",
+                "recordSha256": "7bb64b0eb497d5ec19717cc31e34a9f39b017b5ce4fff3296d7de2c7adc3ec0a"
+              }
+            },
+            {
+              "id": "item",
+              "label": "Item",
+              "role": "highlight",
+              "kind": "token",
+              "at": "sender"
+            }
+          ],
+          "links": [
+            {
+              "id": "delivery",
+              "from": "sender",
+              "to": "receiver"
+            }
+          ],
+          "groups": [
+            {
+              "id": "system",
+              "label": "Message path",
+              "members": [
+                "sender",
+                "receiver"
+              ]
+            }
+          ],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "delivery",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.25,
+              "to": 0.65
+            },
+            "action": {
+              "kind": "move",
+              "target": "item",
+              "value": "delivery"
+            }
+          },
+          {
+            "cue_id": "state",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.7,
+              "to": 0.9
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "receiver",
+              "value": "Ready for the next item"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 3,
+        "max_seconds": 12
+      }
+    },
+    {
+      "scene_id": "regression-2",
+      "educational_goal": "Mechanical renderer regression, not an educational claim",
+      "narration": "It stays visible as the heading changes.",
+      "claim_ids": [],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "A different heading stays readable",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "sender",
+              "label": "Sender",
+              "role": "flow",
+              "kind": "node",
+              "slot": 0,
+              "depth": "raised"
+            },
+            {
+              "id": "receiver",
+              "label": "Receiver",
+              "role": "success",
+              "kind": "node",
+              "slot": 2,
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-6f4b4a8e101a1cba0957296a",
+                "sha256": "6f4b4a8e101a1cba0957296ac91a6048df947080dc5314510fd717f56e193eea",
+                "recordSha256": "7bb64b0eb497d5ec19717cc31e34a9f39b017b5ce4fff3296d7de2c7adc3ec0a"
+              }
+            },
+            {
+              "id": "item",
+              "label": "Item",
+              "role": "highlight",
+              "kind": "token",
+              "at": "receiver"
+            }
+          ],
+          "links": [
+            {
+              "id": "delivery",
+              "from": "sender",
+              "to": "receiver"
+            }
+          ],
+          "groups": [
+            {
+              "id": "system",
+              "label": "Message path",
+              "members": [
+                "sender",
+                "receiver"
+              ]
+            }
+          ],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "state",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.2,
+              "to": 0.4
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "receiver",
+              "value": "Ready for the next item"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 3,
+        "max_seconds": 12
+      },
+      "transition": {
+        "kind": "match",
+        "preset": "short",
+        "entityIds": [
+          "item"
+        ]
+      }
+    },
+    {
+      "scene_id": "regression-3",
+      "educational_goal": "Mechanical renderer regression, not an educational claim",
+      "narration": "A registered template crossfades in.",
+      "claim_ids": [],
+      "visual": {
+        "type": "registered-animation",
+        "component": "CacheAsideScene",
+        "taxonomy_version": "1.0.0",
+        "props": {
+          "visualPhase": "hit",
+          "keyLabel": "product:42",
+          "valueLabel": "Product data",
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 3,
+        "max_seconds": 12
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "regression-4",
+      "educational_goal": "Mechanical renderer regression, not an educational claim",
+      "narration": "Two templates share this transition.",
+      "claim_ids": [],
+      "visual": {
+        "type": "registered-animation",
+        "component": "CacheAsideScene",
+        "taxonomy_version": "1.0.0",
+        "props": {
+          "visualPhase": "lookup",
+          "keyLabel": "product:42",
+          "valueLabel": "Product data",
+          "illustrative": true
+        },
+        "cues": []
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 3,
+        "max_seconds": 12
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "regression-5",
+      "educational_goal": "Mechanical renderer regression, not an educational claim",
+      "narration": "The generic composition returns.",
+      "claim_ids": [],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Return to common primitives",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "sender",
+              "label": "Sender",
+              "role": "flow",
+              "kind": "node",
+              "slot": 0,
+              "depth": "raised"
+            },
+            {
+              "id": "receiver",
+              "label": "Receiver",
+              "role": "success",
+              "kind": "node",
+              "slot": 2,
+              "depth": "raised",
+              "asset": {
+                "assetId": "asset-6f4b4a8e101a1cba0957296a",
+                "sha256": "6f4b4a8e101a1cba0957296ac91a6048df947080dc5314510fd717f56e193eea",
+                "recordSha256": "7bb64b0eb497d5ec19717cc31e34a9f39b017b5ce4fff3296d7de2c7adc3ec0a"
+              }
+            },
+            {
+              "id": "item",
+              "label": "Item",
+              "role": "highlight",
+              "kind": "token",
+              "at": "receiver"
+            }
+          ],
+          "links": [
+            {
+              "id": "delivery",
+              "from": "sender",
+              "to": "receiver"
+            }
+          ],
+          "groups": [
+            {
+              "id": "system",
+              "label": "Message path",
+              "members": [
+                "sender",
+                "receiver"
+              ]
+            }
+          ],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "state",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.2,
+              "to": 0.4
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "receiver",
+              "value": "Ready for the next item"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 3,
+        "max_seconds": 12
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "Generic renderer regression"
+    ],
+    "summary": "Mechanical test of titles, readable status, matched identity, mixed templates and timing.",
+    "simplifications": [
+      "Synthetic mechanical fixture; not a factual topic explainer or human rights approval."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11c-engineering-regression-v1",
+    "model_id": "manual-test-fixture",
+    "created_at": "2026-11-11T07:01:14.723Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

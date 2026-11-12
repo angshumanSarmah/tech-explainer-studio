@@ -1,0 +1,455 @@
+{
+  "schema_version": "1.2.0",
+  "script_id": "composed-kafka-holdout",
+  "revision": 2,
+  "profile": "technology-explainer",
+  "topic": "How Kafka works — illustrative single partition",
+  "audience": "beginner",
+  "language": "en",
+  "target": {
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "sources": [
+    {
+      "source_id": "author-notes",
+      "url": null,
+      "title": "Unreviewed manual Kafka illustration; no retrieved source",
+      "retrieved_at": null,
+      "source_kind": "pasted_text",
+      "license_review": "needs_human_review",
+      "revision": null,
+      "content_sha256": null
+    },
+    {
+      "source_id": "trihug-2013",
+      "url": "https://www.slideshare.net/slideshow/kafka-talk-tri-hug/24576257",
+      "title": "David Arthur: Introduction and Overview of Apache Kafka, TriHUG July 23, 2013",
+      "retrieved_at": null,
+      "source_kind": "documentation",
+      "license_review": "reference_only_no_reuse_grant",
+      "revision": null,
+      "content_sha256": null
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "kafka-model",
+      "text": "Illustrative single-partition append/read/offset model; replication, groups, retention and delivery guarantees are not simulated.",
+      "source_ids": [
+        "author-notes",
+        "trihug-2013"
+      ],
+      "status": "needs_human_review",
+      "scope": "Human factual verification required; no source approval or full Kafka coverage asserted; user-supplied 2013 reference supports historical conceptual review only; no modern coordination claims or slide media reused"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "kafka-1",
+      "educational_goal": "An ordered log",
+      "narration": "A Kafka producer appends a record to a partition. This is one simplified partition.",
+      "claim_ids": [
+        "kafka-model"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "An ordered log",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "slot": 0,
+              "label": "Producer",
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "partition",
+              "kind": "node",
+              "slot": 1,
+              "label": "Partition",
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "consumer",
+              "kind": "node",
+              "slot": 2,
+              "label": "Consumer",
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "record",
+              "kind": "token",
+              "at": "producer",
+              "label": "Record",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "append",
+              "from": "producer",
+              "to": "partition"
+            },
+            {
+              "id": "read",
+              "from": "partition",
+              "to": "consumer"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "append",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.25,
+              "to": 0.68
+            },
+            "action": {
+              "kind": "move",
+              "target": "record",
+              "value": "append"
+            }
+          },
+          {
+            "cue_id": "saved",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.68,
+              "to": 0.8
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "partition",
+              "value": "Stored record"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 8,
+        "max_seconds": 20
+      }
+    },
+    {
+      "scene_id": "kafka-2",
+      "educational_goal": "Read without removing",
+      "narration": "A consumer reads a stored record. Reading does not remove the record from the log.",
+      "claim_ids": [
+        "kafka-model"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Read without removing",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "slot": 0,
+              "label": "Producer",
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "partition",
+              "kind": "node",
+              "slot": 1,
+              "label": "Partition",
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "consumer",
+              "kind": "node",
+              "slot": 2,
+              "label": "Consumer",
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "record",
+              "kind": "token",
+              "at": "partition",
+              "label": "Record",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "append",
+              "from": "producer",
+              "to": "partition"
+            },
+            {
+              "id": "read",
+              "from": "partition",
+              "to": "consumer"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "read",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.25,
+              "to": 0.7
+            },
+            "action": {
+              "kind": "move",
+              "target": "record",
+              "value": "read"
+            }
+          },
+          {
+            "cue_id": "keep",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.25,
+              "to": 0.5
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "partition",
+              "value": "Still stored"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 8,
+        "max_seconds": 20
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "kafka-3",
+      "educational_goal": "Remember a position",
+      "narration": "An offset marks a position in one partition. Consumers track where to read next.",
+      "claim_ids": [
+        "kafka-model"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "Remember a position",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "slot": 0,
+              "label": "Producer",
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "partition",
+              "kind": "node",
+              "slot": 1,
+              "label": "Partition",
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "consumer",
+              "kind": "node",
+              "slot": 2,
+              "label": "Consumer",
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "record",
+              "kind": "token",
+              "at": "consumer",
+              "label": "Record",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "append",
+              "from": "producer",
+              "to": "partition"
+            },
+            {
+              "id": "read",
+              "from": "partition",
+              "to": "consumer"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "offset",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.2,
+              "to": 0.5
+            },
+            "action": {
+              "kind": "update_field",
+              "target": "consumer",
+              "value": "Next offset: 1"
+            }
+          },
+          {
+            "cue_id": "focus",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.25,
+              "to": 0.8
+            },
+            "action": {
+              "kind": "focus",
+              "target": "partition"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 8,
+        "max_seconds": 20
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    },
+    {
+      "scene_id": "kafka-4",
+      "educational_goal": "A bounded illustration",
+      "narration": "Replication, groups, and retention rules are outside this simplified illustration.",
+      "claim_ids": [
+        "kafka-model"
+      ],
+      "visual": {
+        "type": "composed",
+        "component": "ComposedScene",
+        "props": {
+          "title": "A bounded illustration",
+          "layout": "row",
+          "entities": [
+            {
+              "id": "producer",
+              "kind": "node",
+              "slot": 0,
+              "label": "Producer",
+              "role": "flow",
+              "depth": "raised"
+            },
+            {
+              "id": "partition",
+              "kind": "node",
+              "slot": 1,
+              "label": "Partition",
+              "role": "highlight",
+              "depth": "raised"
+            },
+            {
+              "id": "consumer",
+              "kind": "node",
+              "slot": 2,
+              "label": "Consumer",
+              "role": "success",
+              "depth": "raised"
+            },
+            {
+              "id": "record",
+              "kind": "token",
+              "at": "partition",
+              "label": "Record",
+              "role": "highlight"
+            }
+          ],
+          "links": [
+            {
+              "id": "append",
+              "from": "producer",
+              "to": "partition"
+            },
+            {
+              "id": "read",
+              "from": "partition",
+              "to": "consumer"
+            }
+          ],
+          "groups": [],
+          "camera": "gentle-focus",
+          "illustrative": true
+        },
+        "cues": [
+          {
+            "cue_id": "scope",
+            "trigger": {
+              "kind": "progress",
+              "from": 0.2,
+              "to": 0.85
+            },
+            "action": {
+              "kind": "highlight",
+              "target": "partition"
+            }
+          }
+        ]
+      },
+      "timing": {
+        "min_seconds": 2,
+        "preferred_seconds": 8,
+        "max_seconds": 20
+      },
+      "transition": {
+        "kind": "crossfade",
+        "preset": "short"
+      }
+    }
+  ],
+  "editorial": {
+    "title_options": [
+      "caching"
+    ],
+    "summary": "Original caching illustration for Phase 11 visual review.",
+    "simplifications": [
+      "Illustrative timing and geometry, not measured system performance.",
+      "Source references need snapshot/claim review before release."
+    ]
+  },
+  "provenance": {
+    "prompt_version": "phase11-authored-v1",
+    "model_id": "manual-original-fixture",
+    "created_at": "2026-11-10T00:00:00Z"
+  },
+  "brand": {
+    "id": "tech-explainer",
+    "version": "1.0.0"
+  }
+}

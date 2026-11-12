@@ -44,6 +44,9 @@ export function sceneKey(
     version: 1,
     sceneId: scene.scene_id,
     visual: scene.visual,
+    ...('transition' in scene && scene.transition
+      ? { transition: scene.transition }
+      : {}),
     context,
     visualBrand,
     implementation,

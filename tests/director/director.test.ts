@@ -32,7 +32,7 @@ test('manual legacy import is keyless, executable, draft-only and explicit about
 });
 test('export derives the current strict schema, complete example and real registered catalog from Zod', () => {
   const exported = directorContract(fixture());
-  assert.equal(exported.currentVideoScriptVersion, '1.1.0');
+  assert.equal(exported.currentVideoScriptVersion, '1.2.0');
   assert.deepEqual(
     Object.keys(exported.catalog.components).sort(),
     Object.keys(componentRegistry).sort(),

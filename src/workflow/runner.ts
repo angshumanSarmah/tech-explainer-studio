@@ -3,11 +3,13 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import type { NarrationProvider } from '../audio/types.ts';
 import { brandIdentity } from '../branding/identity.ts';
+import { parseVideoScript } from '../domain/validation.ts';
 import type { VideoScript } from '../domain/videoscript.ts';
 import { loadNarrationAsset } from '../media/narration-input.ts';
 import { renderNarratedPreview } from '../media/pipeline.ts';
 import { checkTiming, runMedia } from '../media/qc.ts';
 import { hash } from '../render-manifest/manifest.ts';
+import { compileVisualPlan } from '../renderers/remotion/compile.ts';
 import { probeSilentVideo } from '../renderers/remotion/media-tools.ts';
 import {
   type RenderOptions,
@@ -252,10 +254,11 @@ export class JobRunner {
         })),
         captions: timeline.captions,
       };
-      const script = {
+      const script = parseVideoScript({
         ...snapshot.script,
         scenes: timeline.scenes.map((s) => s.scene),
-      };
+      });
+      const compiledVisualPlan = compileVisualPlan(script, timeline.scenes);
       const clips: {
         sceneId: string;
         from: number;
@@ -266,9 +269,22 @@ export class JobRunner {
       for (const [index, item] of timeline.scenes.entries()) {
         if (options.sceneId && item.scene.scene_id !== options.sceneId)
           continue;
+        const compiledScene = compiledVisualPlan.scenes[index];
+        if (!compiledScene)
+          throw new WorkflowError(
+            'COMPILED_SCENE_MISSING',
+            'scene',
+            'Missing compiled scene context',
+            item.scene.scene_id,
+          );
         const key = sceneKey(
           item.scene,
           {
+            ...(snapshot.script.schema_version === '1.2.0'
+              ? {
+                  compiledDependency: compiledScene.dependency,
+                }
+              : {}),
             ordinal: index,
             count: timeline.scenes.length,
             from: item.from,
@@ -392,6 +408,9 @@ export class JobRunner {
               const manifest = {
                 kind: 'cached-scene-assembly',
                 approvedForRelease: false,
+                // The same tool/font identity already keys every consumed clip.
+                // Preserve it for independent Phase 08 inspection of assemblies.
+                tools: impl.visuals,
                 scenes: clips.map(({ files, ...clip }) => ({
                   ...clip,
                   artifacts: files,

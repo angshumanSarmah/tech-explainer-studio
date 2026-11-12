@@ -23,7 +23,7 @@ import type { CliOutput } from './run.ts';
 export const RELEASE_HELP = `Usage:
   studio release inventory --render <render-directory> --bundle <bundle.json> --cover <cover.png> --output <new-rights.json>
   studio release prepare --render <render-directory> --bundle <bundle.json> --ledger <ledger.json> --rights <rights.json> --metadata <metadata.json> --cover <cover.png> --author <identity> --origin manual_import|deepseek|ollama [--job <id>]
-  studio review facts|rights|video|publish --release <id> --reviewer <identity> --rationale <text> --decision approve|reject [--playback --pronunciation --subtitles --pacing --timing-warnings --metadata-reviewed]
+  studio review facts|rights|video|publish --release <id> --reviewer <identity> --rationale <text> --decision approve|reject [--playback --pronunciation --subtitles --pacing --timing-warnings --metadata-reviewed] [--boundary-pacing <review.json>]
   studio release check --release <id>
   studio release inspect --release <id>
   studio release audit --release <id>
@@ -64,6 +64,7 @@ export async function runReleaseCli(
         playback: { type: 'boolean' },
         pronunciation: { type: 'boolean' },
         subtitles: { type: 'boolean' },
+        'boundary-pacing': { type: 'string' },
         pacing: { type: 'boolean' },
         'timing-warnings': { type: 'boolean' },
         'metadata-reviewed': { type: 'boolean' },
@@ -91,6 +92,7 @@ export async function runReleaseCli(
                       'pronunciation',
                       'subtitles',
                       'pacing',
+                      'boundary-pacing',
                       'timing-warnings',
                     ]
                   : []),
@@ -242,10 +244,8 @@ export async function runReleaseCli(
       const decision = requireValue('decision');
       if (!['approve', 'reject'].includes(decision))
         block('RELEASE_USAGE', 'Decision must be approve or reject');
-      result = await service.review(
-        requireValue('release'),
-        action,
-        reviewRecord(
+      result = await service.review(requireValue('release'), action, {
+        ...reviewRecord(
           requireValue('reviewer'),
           requireValue('rationale'),
           decision as 'approve' | 'reject',
@@ -258,7 +258,10 @@ export async function runReleaseCli(
             metadata: v['metadata-reviewed'] ?? false,
           },
         ),
-      );
+        ...(v['boundary-pacing']
+          ? { boundaryPacing: await readJson(v['boundary-pacing']) }
+          : {}),
+      });
     } else if (action === 'prepare') {
       const origin = requireValue('origin');
       if (!['manual_import', 'deepseek', 'ollama'].includes(origin))

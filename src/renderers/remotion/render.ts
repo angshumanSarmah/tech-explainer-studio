@@ -28,6 +28,7 @@ import {
 import { VisualAssetError } from '../../visual-assets/model.ts';
 import { stageVisualAssets } from '../../visual-assets/store.ts';
 import type { CompositionProps } from './Composition.tsx';
+import { canonical, compileVisualPlan } from './compile.ts';
 import { executeFile, executeMedia, probeSilentVideo } from './media-tools.ts';
 import { planSilentRender } from './plan.ts';
 import { CAPTION, THEME, VIDEO } from './theme.ts';
@@ -65,6 +66,7 @@ export async function renderSilentPreview(
   const plan = options.presentation
     ? resolvePresentation(script, options.presentation)
     : planSilentRender(script);
+  const compiledVisualPlan = compileVisualPlan(script, plan.scenes);
   const range = options.frameRange;
   if (
     range &&
@@ -217,7 +219,8 @@ export async function renderSilentPreview(
       const phase =
         item.scene.visual.type === 'title-card'
           ? item.scene.visual.variant
-          : item.scene.visual.type === 'registered-animation'
+          : item.scene.visual.type === 'registered-animation' ||
+              item.scene.visual.type === 'composed'
             ? item.scene.visual.component
             : item.scene.visual.props.visualPhase;
       await still(
@@ -296,7 +299,10 @@ export async function renderSilentPreview(
       imageFormat: 'png',
       crf: 18,
       x264Preset: 'medium',
-      concurrency: 4,
+      // Bounded serial capture avoids history/surface races and memory-pressure tiling.
+      concurrency: 1,
+      disallowParallelEncoding: true,
+      disableSharedMemoryCapture: true,
       muted: true,
       enforceAudioTrack: false,
       overwrite: false,
@@ -326,6 +332,9 @@ export async function renderSilentPreview(
       ),
     );
     const manifest = {
+      ...(script.schema_version === '1.2.0'
+        ? { compiledPlanSha256: sha256(canonical(compiledVisualPlan)) }
+        : {}),
       spatialScenes: plan.scenes.flatMap(({ scene }) =>
         scene.visual.type === 'registered-animation' &&
         scene.visual.component === 'CityDemandHeatmap'
@@ -374,7 +383,8 @@ export async function renderSilentPreview(
         phase:
           scene.visual.type === 'title-card'
             ? scene.visual.variant
-            : scene.visual.type === 'registered-animation'
+            : scene.visual.type === 'registered-animation' ||
+                scene.visual.type === 'composed'
               ? scene.visual.component
               : scene.visual.props.visualPhase,
       })),
@@ -396,7 +406,9 @@ export async function renderSilentPreview(
         pixelFormat: 'yuv420p',
         crf: 18,
         preset: 'medium',
-        concurrency: 4,
+        concurrency: 1,
+        parallelEncoding: false,
+        sharedMemoryCapture: false,
         screenshotFormat: 'png',
       },
       stills,
@@ -407,6 +419,22 @@ export async function renderSilentPreview(
         'Platform safe guides need a human device review; this is not release approval',
       ],
     };
+    if (script.schema_version === '1.2.0')
+      await writeFile(
+        join(outputDir, 'compiled-visual-plan.json'),
+        `${JSON.stringify(
+          {
+            ...compiledVisualPlan,
+            inputSha256: sha256(
+              canonical({ script, presentation: options.presentation }),
+            ),
+            sha256: sha256(canonical(compiledVisualPlan)),
+          },
+          null,
+          2,
+        )}\n`,
+        { flag: 'wx' },
+      );
     await writeFile(
       join(scratch, 'render-manifest.json'),
       `${JSON.stringify(manifest, null, 2)}\n`,

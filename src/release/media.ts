@@ -12,6 +12,8 @@ import {
   runMedia,
 } from '../media/qc.ts';
 import { hash, NarrationArtifactSchema } from '../render-manifest/manifest.ts';
+import { canonical, compileVisualPlan } from '../renderers/remotion/compile.ts';
+import { boundaryPacing } from '../timing/pacing.ts';
 import {
   AlignmentSchema,
   planNarratedRender,
@@ -99,6 +101,31 @@ export async function inspectReleaseMedia(dir: string) {
     allowFallback: true,
     ...(alignment ? { alignment } : {}),
   });
+  if (script.schema_version === '1.2.0') {
+    const compiled = compileVisualPlan(script, timeline.scenes);
+    const recorded = await readJson(join(dir, 'compiled-visual-plan.json'));
+    const presentation = {
+      scenes: timeline.scenes.map(({ from, durationFrames }) => ({
+        from,
+        durationFrames,
+      })),
+      captions: timeline.captions,
+    };
+    if (
+      canonical(recorded) !==
+        canonical({
+          ...compiled,
+          inputSha256: hash(canonical({ script, presentation })),
+          sha256: hash(canonical(compiled)),
+        }) ||
+      canonical(await readJson(join(dir, 'boundary-pacing.json'))) !==
+        canonical(boundaryPacing(timeline, assets, script.scenes))
+    )
+      block(
+        'COMPILED_BINDING_INVALID',
+        'Compiled plan or pacing diagnostics differ from measured inputs',
+      );
+  }
   if (
     JSON.stringify(await readJson(join(dir, 'timeline.json'))) !==
       JSON.stringify(timeline) ||
